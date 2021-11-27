@@ -1,0 +1,7 @@
+backup/log/backup/*
+backup/log/clean/*
+backup/gpgpass
+backup/env
+
+mediaserver/porkbun-dynamic-dns-python
+mediaserver/.env
