@@ -4,7 +4,7 @@ Description=photos file sync from nextcloud to mediaserver
 [Service]
 Type=forking
 Restart=always
-ExecStart=/home/chris/scripts/photos-sync/photos-sync.sh
+ExecStart=/home/chris/scripts/cloud/photos-sync/photos-sync.sh
 
 [Install]
 WantedBy=multi-user.target

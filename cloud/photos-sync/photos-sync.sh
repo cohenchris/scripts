@@ -2,4 +2,4 @@
 
 echo "Starting lsyncd..."
 
-lsyncd /home/chris/scripts/photos-sync/lsyncd.conf
+lsyncd /home/chris/scripts/cloud/photos-sync/lsyncd.conf
