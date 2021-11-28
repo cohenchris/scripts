@@ -155,6 +155,21 @@ function backup_local () {
   rsync -av --progress ".maxage" $DST_ROUTE:/backups/$SRC
 }
 
+##### Backup music files to mediaserver and nextcloud #####
+function backup_music() {
+  cd $MUSIC_DIR
+
+	echo -e "$(date) : ${GREEN}Start music backup to local HDD${NC}"
+  rsync -arP --delete . $MUSIC_BACKUPS_DIR
+  mail_log $? "music backup to local HDD"
+	echo -e "$(date) : ${GREEN}Music backed up to local HDD${NC}"
+
+	echo -e "$(date) : ${GREEN}Start music backup to $DST${NC}"
+  rsync -arP --delete . $DST_ROUTE:$MUSIC_BACKUPS_DIR
+  mail_log $? "music backup to $DST"
+	echo -e "$(date) : ${GREEN}Music backed up to $DST${NC}"
+}
+
 ####################
 #    B2 BACKUPS    #
 ####################
@@ -265,6 +280,11 @@ function mail_log() {
 START="$(date +%s)"
 
 pause_containers
+
+
+if [ "$SRC" == "mediaserver" ]; then
+  backup_music
+fi
 
 TAR_START="$(date +%s)"
 tarball_dir
