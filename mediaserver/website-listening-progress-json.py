@@ -73,15 +73,21 @@ def scan_library() -> List[Artist]:
             omit = False
             tracklist: List[Track] = []
 
+            # If album only has one song, it's a single. Omit from JSON
+            if (len(album.tracks()) == 1):
+                omit = True
+                continue
+
             for track in album:
-                # If album isn't fully rated, omit
+                # If album isn't fully rated, omit from JSON
                 if track.userRating is None:
                     omit = True
                     break
                 tracklist.append(Track(track.title, track.userRating))
 
-            # omit unrated albums
+
             if not omit:
+                # omit unrated albums
                 library.append  (   Album   (
                                             album.title,
                                             artist.title,
@@ -103,7 +109,6 @@ def scan_library() -> List[Artist]:
 
 
 library = scan_library()
-
 
 os.chdir(WEBSITE_PUBLIC_DIR)
 
@@ -140,7 +145,6 @@ for album in library:
 #             image.write(response.content)
 
     # make album directory
-    print(album.title)
     album.title = album.title.replace("/", "+")  # temp fix for album titles with a slash - breaks the next statements
     album_dir = os.path.join(artist_dir, album.title)
     try:
