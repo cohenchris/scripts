@@ -44,6 +44,7 @@ function tarball_dir () {
     tar --exclude=".git" \
         --exclude="scripts" \
         --exclude="photos" \
+        --exclude="mediaserver/transcode" \
         --exclude="mediaserver/config/lidarr/MediaCover" \
         --exclude="mediaserver/config/plex/Library/Application Support/Plex Media Server/Metadata" \
         --exclude="mediaserver/config/plex/Library/Application Support/Plex Media Server/Cache" \
