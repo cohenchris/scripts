@@ -4,8 +4,6 @@ GREEN="\e[32m"
 RED="\e[31m"
 NC="\e[0m"
 
-cd $CLEAN_DST_DIR
-
 SCRIPT_DIR=$(dirname "$0")
 cd $SCRIPT_DIR
 source ./env
@@ -33,8 +31,6 @@ function clean_local () {
     CURR=$(stat -c %Z "$filename")
     AGE=$(($NOW-$CURR))
     DAYS=$(($AGE/86400))
-
-    echo -e "${GREEN}$filename is $DAYS days old${NC}"
 
     if [[ $DAYS -ge $MAX_AGE ]]; then
       echo -e "${RED}$filename is $DAYS days old - deleting...${NC}"
