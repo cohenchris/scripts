@@ -83,7 +83,7 @@ backup_files_locally
 backup_files_to_mediaserver
 
 # Step 3: Backup to B2
-#backup_files_to_b2
+backup_files_to_b2
 
 # Send status mail to personal email
 echo -e "${GREEN}Sending email to $ADMIN_EMAIL...${NC}"
