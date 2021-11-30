@@ -1,0 +1,10 @@
+[Unit]
+Description=file sync from nextcloud to mediaserver
+
+[Service]
+Type=forking
+Restart=always
+ExecStart=/home/chris/scripts/cloud/files-sync/files-sync.sh
+
+[Install]
+WantedBy=multi-user.target

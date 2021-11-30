@@ -38,12 +38,12 @@ function tarball_dir () {
   if [ "$SRC" == "nextcloud" ]; then
     tar --exclude=".git" \
         --exclude="scripts" \
-        --exclude="photos" \
+        --exclude="files" \
         -cz $DIR_TO_BACKUP | gpg --symmetric -o "$LOCAL_DST_DIR/$BACKUP_NAME" --passphrase-file gpgpass --pinentry-mode loopback
   else
     tar --exclude=".git" \
         --exclude="scripts" \
-        --exclude="photos" \
+        --exclude="files" \
         --exclude="mediaserver/transcode" \
         --exclude="mediaserver/config/lidarr/MediaCover" \
         --exclude="mediaserver/config/plex/Library/Application Support/Plex Media Server/Metadata" \
