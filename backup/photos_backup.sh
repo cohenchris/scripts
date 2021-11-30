@@ -50,7 +50,7 @@ function backup_photos_to_b2() {
 
 	# Upload
 	echo -e "$(date) : ${GREEN}Uploading...${NC}"
-  /usr/local/bin/b2 sync --keepDays 14 . b2://$BBPHOTOSBUCKET
+  /usr/local/bin/b2 sync --keepDays 30 . b2://$BBPHOTOSBUCKET
 
   # Log event to mail log
   mail_log $? "b2 photos backup"
