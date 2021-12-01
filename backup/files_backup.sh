@@ -5,6 +5,9 @@ BACKUP_SCRIPTS_DIR=$(dirname "$0")
 cd $BACKUP_SCRIPTS_DIR
 source ./env
 
+# Will cause command to fail if ANYTHING in the pipe fails (useful for mail logging)
+set -o pipefail
+
 # redirect all output to LOG_FILE
 LOG_FILE="files-backup-$DATE.log"
 cd $FILES_BACKUP_LOG_DIR
