@@ -39,7 +39,7 @@ function tarball_dir () {
     tar --exclude=".git" \
         --exclude="scripts" \
         --exclude="files" \
-        --exclude="cloud/nextcloud/data/appdata*"
+        --exclude="cloud/nextcloud/data/appdata*" \
         -cz $DIR_TO_BACKUP | gpg --symmetric -o "$LOCAL_DST_DIR/$BACKUP_NAME" --passphrase-file gpgpass --pinentry-mode loopback
   else
     tar --exclude=".git" \
