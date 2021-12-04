@@ -320,6 +320,10 @@ echo -e "${GREEN}TOTAL ELAPSED TIME: $(show_time $TOTAL)${NC}"
 echo
 
 # Send status mail to personal email
-echo -e "${GREEN}Sending email to $ADMIN_EMAIL...${NC}"
-cat $MAIL_FILE | mail -s "$STATUS - $SRC $DATE" $ADMIN_EMAIL
+if [ $STATUS == "FAIL" ]; then
+  echo -e "${GREEN}Failure, sending email to $ADMIN_EMAIL...${NC}"
+  cat $MAIL_FILE | mail -s "$STATUS - $SRC $DATE" $ADMIN_EMAIL
+else
+  echo -e "${GREEN}Success, not sending email to $ADMIN_EMAIL...${NC}"
+fi
 rm $MAIL_FILE
