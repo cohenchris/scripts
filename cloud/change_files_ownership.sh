@@ -1,7 +1,6 @@
 #!/bin/bash
 
-sudo chown -R www-data:www-data ~/files
-sudo chmod -R 0750 ~/files
+sudo chown -R www-data:www-data /home/chris/files
+sudo chmod -R 0750 /home/chris/files
 
-cd ~/cloud
-docker-compose exec --user www-data nextcloud php occ files:scan --all
+docker exec --user www-data nextcloud php occ files:scan --all
