@@ -322,7 +322,12 @@ echo
 # Send status mail to personal email
 if [ $STATUS == "FAIL" ]; then
   echo -e "${GREEN}Failure, sending email to $ADMIN_EMAIL...${NC}"
-  cat $MAIL_FILE | mail -s "$STATUS - $SRC $DATE" $ADMIN_EMAIL
+  MAIL_BODY=$(cat $MAIL_FILE)
+  echo "To: $ADMIN_EMAIL" > $MAIL_FILE
+  echo "From: $SRC <$SRC@$MAIL_DOMAIN>" >> $MAIL_FILE
+  echo "Subject: $STATUS - files $DATE" >> $MAIL_FILE
+  echo "$MAIL_BODY" >> $MAIL_FILE
+  ssmtp $ADMIN_EMAIL < $MAIL_FILE
 else
   echo -e "${GREEN}Success, not sending email to $ADMIN_EMAIL...${NC}"
 fi

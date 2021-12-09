@@ -89,9 +89,14 @@ backup_files_to_mediaserver
 backup_files_to_b2
 
 # Send status mail to personal email
-if [ $STATUS == "FAIL" ]; then
+if ! [ $STATUS == "FAIL" ]; then
   echo -e "${GREEN}Failure, sending email to $ADMIN_EMAIL...${NC}"
-  cat $FILES_BACKUP_MAIL_FILE | mail -s "$STATUS - files $DATE" $ADMIN_EMAIL
+  MAIL_BODY=$(cat $FILES_BACKUP_MAIL_FILE)
+  echo "To: $ADMIN_EMAIL" > $FILES_BACKUP_MAIL_FILE
+  echo "From: $SRC <$SRC@$MAIL_DOMAIN>" >> $FILES_BACKUP_MAIL_FILE
+  echo "Subject: $STATUS - files $DATE" >> $FILES_BACKUP_MAIL_FILE
+  echo "$MAIL_BODY" >> $FILES_BACKUP_MAIL_FILE
+  ssmtp $ADMIN_EMAIL < $FILES_BACKUP_MAIL_FILE
 else
   echo -e "${GREEN}Success, not sending email to $ADMIN_EMAIL...${NC}"
 fi
