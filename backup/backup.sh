@@ -319,16 +319,19 @@ echo -e "${GREEN}B2 BACKUP TIME: $(show_time $B2)${NC}"
 echo -e "${GREEN}TOTAL ELAPSED TIME: $(show_time $TOTAL)${NC}"
 echo
 
-# Send status mail to personal email
+# Log status
 if [ $STATUS == "FAIL" ]; then
   echo -e "${GREEN}Failure, sending email to $ADMIN_EMAIL...${NC}"
-  MAIL_BODY=$(cat $MAIL_FILE)
-  echo "To: $ADMIN_EMAIL" > $MAIL_FILE
-  echo "From: $SRC <$SRC@$MAIL_DOMAIN>" >> $MAIL_FILE
-  echo "Subject: $STATUS - files $DATE" >> $MAIL_FILE
-  echo "$MAIL_BODY" >> $MAIL_FILE
-  ssmtp $ADMIN_EMAIL < $MAIL_FILE
 else
-  echo -e "${GREEN}Success, not sending email to $ADMIN_EMAIL...${NC}"
+  echo -e "${GREEN}Success, sending email to $ADMIN_EMAIL...${NC}"
 fi
+
+# Send status email
+MAIL_BODY=$(cat $MAIL_FILE)
+echo "To: $ADMIN_EMAIL" > $MAIL_FILE
+echo "From: $SRC <$SRC@$MAIL_DOMAIN>" >> $MAIL_FILE
+echo "Subject: $STATUS - files $DATE" >> $MAIL_FILE
+echo "$MAIL_BODY" >> $MAIL_FILE
+ssmtp $ADMIN_EMAIL < $MAIL_FILE
+
 rm $MAIL_FILE
