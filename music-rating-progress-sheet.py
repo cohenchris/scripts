@@ -16,7 +16,7 @@ start_time = time.time()
 
 load_dotenv()
 baseurl = os.getenv("PLEX_URL")
-token = os.getenv("token")
+token = os.getenv("PLEX_TOKEN")
 
 account = MyPlexAccount(token)
 server = PlexServer(baseurl, token)
@@ -104,6 +104,7 @@ for artist in artist_ratings:
 artist_rating_sheet.append(["TOTALS", f"{round(total_albums_rated/total_albums * 100, 2)}% ({total_albums_rated}/{total_albums})"])
 
 
+print(artist_rating_sheet)
 
 #
 # WRITE ALL CELLS TO SHEET

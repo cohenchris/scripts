@@ -4,72 +4,66 @@ GREEN="\e[32m"
 RED="\e[31m"
 NC="\e[0m"
 
-BACKUP_SCRIPTS_DIR=$(dirname "$0")
-cd $BACKUP_SCRIPTS_DIR
+# Source the environment file
+BASE_DIR=$(dirname "$0")
+cd $BASE_DIR
 source ./env
-
-# Status initially is a success
-STATUS=SUCCESS
 
 # Will cause command to fail if ANYTHING in the pipe fails (useful for mail logging)
 set -o pipefail
 
 # redirect all output to LOG_FILE
-LOG_FILE="$SRC-backup-$DATE.log"
-cd $BACKUP_LOG_DIR
+LOG_FILE="backup-$DATE.log"
+cd $LOG_DIR
 touch $LOG_FILE
 exec 1>$LOG_FILE
 exec 2>&1
 
+# Status is initially success
+STATUS=SUCCESS
+
+
 # Start log file to be emailed
-echo -e "$SRC backup $DATE\n---------------------------\n\n" > $MAIL_FILE
+echo -e "backup $DATE\n---------------------------\n\n" > $MAIL_FILE
 
 ##### Tarball #####
 function tarball_dir () {
-  echo -e "${GREEN}Tarballing and encrypting $SRC files...${NC}"
+  echo -e "${GREEN}Tarballing and encrypting server files...${NC}"
   
   # First, export crontab files
   cd $DIR_TO_BACKUP
-  crontab -l > crontab.txt
-  sudo crontab -l > sudo_crontab.txt
-  
-  cd $BACKUP_SCRIPTS_DIR
+  crontab -l -u $BACKUP_USER > crontab.txt
+  crontab -l > sudo_crontab.txt
+    
+  cd $BASE_DIR
 
-  if [ "$SRC" == "nextcloud" ]; then
-    tar --exclude=".git" \
-        --exclude="scripts" \
-        --exclude="files" \
-        --exclude="cloud/nextcloud/data/appdata*/preview" \
-        -cz $DIR_TO_BACKUP | gpg --symmetric -o "$LOCAL_DST_DIR/$BACKUP_NAME" --passphrase-file gpgpass --pinentry-mode loopback
-  else
-    tar --exclude=".git" \
-        --exclude="scripts" \
-        --exclude="files" \
-        --exclude="mediaserver/transcode" \
-        --exclude="mediaserver/config/lidarr/MediaCover" \
-        --exclude="mediaserver/config/plex/Library/Application Support/Plex Media Server/Metadata" \
-        --exclude="mediaserver/config/plex/Library/Application Support/Plex Media Server/Cache" \
-        --exclude="mediaserver/config/plex/Library/Application Support/Plex Media Server/Media" \
-        --exclude="mediaserver/config/jellyfin/cache" \
-        --exclude="mediaserver/config/jellyfin/data/transcodes" \
-        --exclude="mediaserver/config/jellyfin/data/metadata" \
-        -cz $DIR_TO_BACKUP | gpg --symmetric -o "$LOCAL_DST_DIR/$BACKUP_NAME" --passphrase-file gpgpass --pinentry-mode loopback
-  fi
+  tar --exclude=".git" \
+      --exclude="scripts" \
+      --exclude="files" \
+      --exclude="server/config/nextcloud/data/appdata*/preview" \
+      --exclude="server/transcode" \
+      --exclude="server/config/lidarr/MediaCover" \
+      --exclude="server/config/plex/Library/Application Support/Plex Media Server/Metadata" \
+      --exclude="server/config/plex/Library/Application Support/Plex Media Server/Cache" \
+      --exclude="server/config/plex/Library/Application Support/Plex Media Server/Media" \
+      --exclude="server/config/jellyfin/cache" \
+      --exclude="server/config/jellyfin/data/transcodes" \
+      --exclude="server/config/jellyfin/data/metadata" \
+      -cz $DIR_TO_BACKUP | gpg --symmetric -o "$BACKUP_DIR/$BACKUP_NAME" --passphrase-file gpgpass --pinentry-mode loopback
+  tar_status=$?
 
   # Clear crontab files
   cd $DIR_TO_BACKUP
   rm crontab.txt sudo_crontab.txt
-  cd $BACKUP_SCRIPTS_DIR
-
-  tar_status=$?
+  cd $BASE_DIR
 
   # Log event to mail.log
   mail_log $tar_status "compression and encryption"
 
   # If tar fails, remove the file. If this is not done, subsequent steps will "succeed", even though they are working with a basically empty tgz.gpg file.
   if [ $tar_status -gt 0 ]; then
-    echo -e "${RED}Tarball/encryption failed. Removing $LOCAL_DST_DIR/$BACKUP_NAME...${NC}"
-    rm $LOCAL_DST_DIR/$BACKUP_NAME
+    echo -e "${RED}Tarball/encryption failed. Removing $BACKUP_DIR/$BACKUP_NAME...${NC}"
+    rm $BACKUP_DIR/$BACKUP_NAME
   fi
 
 }
@@ -81,17 +75,9 @@ function tarball_dir () {
 
 ##### Pause running containers #####
 function pause_containers() {
-  if [ "$SRC" == "nextcloud" ]; then
-    # turn on nextcloud maintenance mode
-    echo -e "${GREEN}Turning on nextcloud maintenance mode...${NC}"
-    cd /home/chris/cloud
-    /usr/local/bin/docker-compose exec -T --user www-data nextcloud php occ maintenance:mode --on
-  else
-    echo -e "${GREEN}Stopping all mediaserver containers...${NC}"
-    # stop mediaserver containers
-    cd /home/phrog/mediaserver
-    /usr/local/bin/docker-compose down
-  fi
+  echo -e "${GREEN}Stopping all server containers...${NC}"
+  cd /home/$BACKUP_USER/server
+  /usr/local/bin/docker-compose down
 
   # Log event to mail.log
   mail_log $? "container pause"
@@ -99,17 +85,9 @@ function pause_containers() {
 
 ##### Resume previously running containers #####
 function resume_containers() {
-  if [ "$SRC" == "nextcloud" ]; then
-    # turn off nextcloud maintenance mode
-    echo -e "${GREEN}Turning off nextcloud maintenance mode...${NC}"
-    cd /home/chris/cloud
-    /usr/local/bin/docker-compose exec -T --user www-data nextcloud php occ maintenance:mode --off
-  else
-    # restart mediaserver containers
-    echo -e "${GREEN}Restarting all mediaserver containers...${NC}"
-    cd /home/phrog/mediaserver
-    /usr/local/bin/docker-compose up -d
-  fi
+  echo -e "${GREEN}Restarting all server containers...${NC}"
+  cd /home/$BACKUP_USER/server
+  /usr/local/bin/docker-compose up -d
 
   # Log event to mail.log
   mail_log $? "container resume"
@@ -123,16 +101,16 @@ function clean_local () {
   # Now, in seconds since Epoch
   NOW=$(date +%s)
 
-  for filename in $LOCAL_DST_DIR/*; do
+  for filename in $BACKUP_DIR/*; do
     CURR=$(stat -c %Z "$filename")
     AGE=$(($NOW-$CURR))
     DAYS=$(($AGE/86400))
 
     echo -e "${GREEN}$filename is $DAYS days old${NC}"
 
-    if [[ $DAYS -ge $LOCAL_DELETE_OLDER_THAN ]]; then
+    if [[ $DAYS -ge $BACKUP_MAX_AGE ]]; then
       # log deletion to mail.log
-      echo "Deleting $filename -- $DAYS old  (max $LOCAL_DELETE_OLDER_THAN)" >> $MAIL_FILE
+      echo "Deleting $filename -- $DAYS days old  (max $BACKUP_MAX_AGE)" >> $MAIL_FILE
 
       echo -e "${RED}Deleting $filename!!${NC}"
       rm -f $filename
@@ -140,36 +118,37 @@ function clean_local () {
   done
 
   # Log event to mail.log
-  mail_log $? "local clean"
+  mail_log $? "local backup clean"
 }
+
 
 ##### Backup local backups to other computer #####
 function backup_local () {
-  echo -e "${GREEN}Backing up $SRC to $DST${NC}"
-  cd $LOCAL_DST_DIR
-  rsync -av --progress --delete "$BACKUP_NAME" $DST_ROUTE:/backups/$SRC
+  echo -e "${GREEN}Backing up to backup server${NC}"
+  cd $BACKUP_DIR
+  rsync -av --progress --delete "$BACKUP_NAME" $DST_ROUTE:$BACKUP_DIR
 
   # Log event to mail.log
   mail_log $? "local rsync backup (main backup)"
 
   # Save max age locally for the other server. Cleaning script cleans out that folder based on this file
-  echo $LOCAL_DELETE_OLDER_THAN > .maxage
-  rsync -av --progress ".maxage" $DST_ROUTE:/backups/$SRC
+  echo $BACKUP_MAX_AGE > .maxage
+  rsync -av --progress ".maxage" $DST_ROUTE:$BACKUP_DIR
 }
 
-##### Backup music files to mediaserver and nextcloud #####
+##### Backup music files to server and nextcloud #####
 function backup_music() {
-  cd $MUSIC_DIR
+  cd $MUSIC
 
 	echo -e "$(date) : ${GREEN}Start music backup to local HDD${NC}"
-  rsync -arP --delete . $MUSIC_BACKUPS_DIR
+  rsync -arP --delete . $MUSIC_BACKUPS
   mail_log $? "music backup to local HDD"
 	echo -e "$(date) : ${GREEN}Music backed up to local HDD${NC}"
 
-	echo -e "$(date) : ${GREEN}Start music backup to $DST${NC}"
-  rsync -arP --delete . $DST_ROUTE:$MUSIC_BACKUPS_DIR
-  mail_log $? "music backup to $DST"
-	echo -e "$(date) : ${GREEN}Music backed up to $DST${NC}"
+	echo -e "$(date) : ${GREEN}Start music backup to backup server${NC}"
+  rsync -arP --delete . $DST_ROUTE:$MUSIC_BACKUPS
+  mail_log $? "music backup to backup server"
+	echo -e "$(date) : ${GREEN}Music backed up to backup server${NC}"
 }
 
 ####################
@@ -178,30 +157,25 @@ function backup_music() {
 
 ##### Backup to B2 bucket #####
 function backup_to_b2 () {
-  cd $LOCAL_DST_DIR
-
-	BUFILE=$(readlink -f "$BACKUP_NAME") # Backup FILE
+  cd $BACKUP_DIR
 
 	# Begin Backup
-	echo -e "$(date) : ${GREEN}Start backup of $BUFILE to $BBBUCKET${NC}"
-	BUPATH=$(dirname "$BUFILE")
-	cd "$BUPATH"
-	FILENAME=$(basename "$BUFILE")
+	echo -e "$(date) : ${GREEN}Start backup of $BACKUP_NAME to $B2_BACKUP_BUCKET${NC}"
 
 	# Upload
 	SHA=`sha1sum "$BACKUP_NAME" | awk '{print $1}'`
 	echo -e "$(date) : ${GREEN}$BACKUP_NAME checksum:${NC}"
 	echo -e "$(date) : 	${GREEN}$SHA${NC}"
 	echo -e "$(date) : ${GREEN}Uploading...${NC}"
-	/usr/local/bin/b2 upload_file --sha1 $SHA $BBBUCKET "$BACKUP_NAME" "$BACKUP_NAME"
+	/usr/local/bin/b2 upload_file --sha1 $SHA $B2_BACKUP_BUCKET "$BACKUP_NAME" "$BACKUP_NAME"
   # Log event to mail.log
   mail_log $? "b2 backup"
-	echo -e "$(date) : ${GREEN}Uploaded to $BBBUCKET:$BACKUP_NAME${NC}"
+	echo -e "$(date) : ${GREEN}Uploaded to $B2_BACKUP_BUCKET:$BACKUP_NAME${NC}"
 }
 
 ##### Clean the B2 bucket #####
 function clean_b2 () {
-  FILES=$(/usr/local/bin/b2 ls --long --json $BBBUCKET)
+  FILES=$(/usr/local/bin/b2 ls --long --json $B2_BACKUP_BUCKET)
   NOW=$(date +%s)
 
   # Loop through each file in the bucket
@@ -216,12 +190,12 @@ function clean_b2 () {
     DAYS=$(($AGE/86400))
     echo -e "${GREEN}$fileName is $DAYS days old${NC}"
 
-    if [[ $DAYS -ge $REMOTE_DELETE_OLDER_THAN ]]; then
+    if [[ $DAYS -ge $B2_MAX_AGE ]]; then
       echo -e "${RED}Deleting $fileName!${NC}"
       # log deletion
       /usr/local/bin/b2 delete-file-version $fileName $fileId
       # log deletion to mail.log
-      echo "Deleting $fileName -- $DAYS days old  (max $REMOTE_DELETE_OLDER_THAN days)" >> $MAIL_FILE
+      echo "Deleting $fileName -- $DAYS days old  (max $B2_MAX_AGE days)" >> $MAIL_FILE
     fi
   done
 
@@ -275,6 +249,18 @@ function mail_log() {
   fi
 }
 
+poll_smtp()
+{
+  email=$1
+  file=$2
+  echo $email $file
+  while ! ssmtp $email < $file
+  do
+    echo -e "${RED}email failed, trying again...${NC}"
+    sleep 5
+  done
+}
+
 
 ############################################################################
 # Do da backup
@@ -283,10 +269,7 @@ START="$(date +%s)"
 
 pause_containers
 
-
-if [ "$SRC" == "mediaserver" ]; then
-  backup_music
-fi
+backup_music
 
 TAR_START="$(date +%s)"
 tarball_dir
@@ -321,7 +304,7 @@ echo
 
 # Log status
 if [ $STATUS == "FAIL" ]; then
-  echo -e "${GREEN}Failure, sending email to $ADMIN_EMAIL...${NC}"
+  echo -e "${RED}Failure, sending email to $ADMIN_EMAIL...${NC}"
 else
   echo -e "${GREEN}Success, sending email to $ADMIN_EMAIL...${NC}"
 fi
@@ -333,6 +316,5 @@ echo "From: root <root@$MAIL_DOMAIN>" >> $MAIL_FILE
 echo "Subject: $STATUS - files $DATE" >> $MAIL_FILE
 echo
 echo "$MAIL_BODY" >> $MAIL_FILE
-ssmtp $ADMIN_EMAIL < $MAIL_FILE
-
+poll_smtp $ADMIN_EMAIL $MAIL_FILE
 rm $MAIL_FILE

@@ -15,7 +15,7 @@ PLEX_URL = os.getenv('PLEX_URL')
 PLEX_TOKEN = os.getenv('PLEX_TOKEN')
 
 # Place that the website expects data to be
-WEBSITE_PUBLIC_DIR = os.getenv("WEBSITE_PUBLIC_DIR")
+WEBSITE_PUBLIC_DIR = os.getenv("WEBSITE_HTML_DIR")
 
 account = MyPlexAccount(PLEX_TOKEN)
 server = PlexServer(PLEX_URL, PLEX_TOKEN)

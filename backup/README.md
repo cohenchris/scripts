@@ -1,4 +1,4 @@
-# Backup script for mediaserver and nextcloud
+# Backup script for homelab
 
 1. Copy sample.env -> env
 2. Fill in all fields in env file
