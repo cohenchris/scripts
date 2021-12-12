@@ -86,7 +86,6 @@ poll_smtp()
 {
   email=$1
   file=$2
-  echo $email $file
   while ! ssmtp $email < $file
   do
     echo -e "${RED}email failed, trying again...${NC}"

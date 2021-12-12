@@ -151,6 +151,36 @@ function backup_music() {
 	echo -e "$(date) : ${GREEN}Music backed up to backup server${NC}"
 }
 
+##### Clean remote backup files #####
+function clean_remote () {
+  # Now, in seconds since epoch
+  NOW=$(date +%s)
+
+ssh $DST_ROUTE << EOF
+  for filename in $BACKUP_DIR/*; do
+    CURR=$(stat -c %Z "$filename")
+    AGE=$((NOW - CURR))
+    DAYS=$((AGE / 86400))
+
+    echo -e "${GREEN}$filename is $DAYS days old${NC}"
+
+    if [[ $DAYS -ge $BACKUP_MAX_AGE ]]; then
+      # log deletion to mail.log
+      echo "Deleting $filename -- $DAYS old (max $BACKUP_MAX_AGE)" >> $MAIL_FILE
+
+      echo -e "${RED}Deleting $filename!!${NC}"
+      rm -f $filename
+    fi
+  done
+  exit
+EOF
+
+  mail_log $? "remote backup clean"
+
+  echo -e "${GREEN}Finished cleaning up remote backup server${NC}"
+}
+
+
 ####################
 #    B2 BACKUPS    #
 ####################
@@ -253,7 +283,6 @@ poll_smtp()
 {
   email=$1
   file=$2
-  echo $email $file
   while ! ssmtp $email < $file
   do
     echo -e "${RED}email failed, trying again...${NC}"
@@ -282,6 +311,8 @@ clean_local
 BACKUP_LOCAL_START="$(date +%s)"
 backup_local
 BACKUP_LOCAL_END="$(date +%s)"
+
+clean_remote
 
 clean_b2
 
