@@ -331,6 +331,7 @@ MAIL_BODY=$(cat $MAIL_FILE)
 echo "To: $ADMIN_EMAIL" > $MAIL_FILE
 echo "From: root <root@$MAIL_DOMAIN>" >> $MAIL_FILE
 echo "Subject: $STATUS - files $DATE" >> $MAIL_FILE
+echo
 echo "$MAIL_BODY" >> $MAIL_FILE
 ssmtp $ADMIN_EMAIL < $MAIL_FILE
 
