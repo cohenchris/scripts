@@ -5,6 +5,8 @@ BASE_DIR=$(dirname $0)
 cd $BASE_DIR
 source ./env
 
+DATE=$(date +"%Y%m%d-%H%m")
+
 # Will cause command to fail if ANYTHING in the pipe fails (useful for mail logging)
 set -o pipefail
 
@@ -115,6 +117,7 @@ if [ $STATUS == "FAIL" ]; then
   poll_smtp $ADMIN_EMAIL $MAIL_FILE
 else
   echo -e "${GREEN}Files backup succeeded!$ADMIN_EMAIL...${NC}"
+  poll_smtp $ADMIN_EMAIL $MAIL_FILE # remove me later
 fi
   
 rm $MAIL_FILE

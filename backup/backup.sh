@@ -9,6 +9,8 @@ BASE_DIR=$(dirname "$0")
 cd $BASE_DIR
 source ./env
 
+DATE=$(date +"%Y%m%d")
+
 # Will cause command to fail if ANYTHING in the pipe fails (useful for mail logging)
 set -o pipefail
 
