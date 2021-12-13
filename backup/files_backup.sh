@@ -103,17 +103,18 @@ backup_files_to_mediaserver
 # Step 3: Backup to B2
 backup_files_to_b2
 
-# Send status mail to personal email
-if [ $STATUS == "FAIL" ]; then
-  echo -e "${RED}Files backup failed...$ADMIN_EMAIL...${NC}"
-else
-  echo -e "${GREEN}Files backup succeeded!$ADMIN_EMAIL...${NC}"
-fi
-
 MAIL_BODY=$(cat $MAIL_FILE)
 echo "To: $ADMIN_EMAIL" > $MAIL_FILE
 echo "From: $USER <$USER@$MAIL_DOMAIN>" >> $MAIL_FILE
 echo "Subject: $STATUS - files backup $DATE" >> $MAIL_FILE
 echo "$MAIL_BODY" >> $MAIL_FILE
-poll_smtp $ADMIN_EMAIL $MAIL_FILE
+
+# Send status mail to personal email
+if [ $STATUS == "FAIL" ]; then
+  echo -e "${RED}Files backup failed...$ADMIN_EMAIL...${NC}"
+  poll_smtp $ADMIN_EMAIL $MAIL_FILE
+else
+  echo -e "${GREEN}Files backup succeeded!$ADMIN_EMAIL...${NC}"
+fi
+  
 rm $MAIL_FILE
