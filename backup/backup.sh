@@ -153,22 +153,22 @@ function backup_music() {
 
 ##### Clean remote backup files #####
 function clean_remote () {
+ssh $DST_ROUTE << "EOF"
   # Now, in seconds since epoch
   NOW=$(date +%s)
 
-ssh $DST_ROUTE << EOF
   for filename in $BACKUP_DIR/*; do
     CURR=$(stat -c %Z "$filename")
     AGE=$((NOW - CURR))
     DAYS=$((AGE / 86400))
 
-    echo -e "${GREEN}$filename is $DAYS days old${NC}"
+    # echo -e "${GREEN}$filename is $DAYS days old${NC}"
 
     if [[ $DAYS -ge $BACKUP_MAX_AGE ]]; then
       # log deletion to mail.log
-      echo "Deleting $filename -- $DAYS old (max $BACKUP_MAX_AGE)" >> $MAIL_FILE
+      # echo "Deleting $filename -- $DAYS old (max $BACKUP_MAX_AGE)" >> $MAIL_FILE
 
-      echo -e "${RED}Deleting $filename!!${NC}"
+      # echo -e "${RED}Deleting $filename!!${NC}"
       rm -f $filename
     fi
   done
