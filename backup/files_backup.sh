@@ -24,7 +24,7 @@ STATUS=SUCCESS
 echo -e "files backup $DATE\n---------------------------\n\n" > $MAIL_FILE
 
 ##### Backup files to this computer's HDD #####
-function backup_files_locally() {
+function backup_files_local() {
   echo -e "${GREEN}Backing up files to local HDD...${NC}"
   
   cd $LOCAL_FILES_DIR
@@ -37,8 +37,8 @@ function backup_files_locally() {
 }
 
 
-##### Backup files to mediaserver's HDD #####
-function backup_files_to_mediaserver() {
+##### Backup files to backup server's HDD #####
+function backup_files_remote() {
   echo -e "${GREEN}Backing up files to backup server...${NC}"
 
   cd $LOCAL_FILES_DIR
@@ -87,8 +87,9 @@ function mail_log() {
 poll_smtp()
 {
   email=$1
-  file=$2
-  while ! ssmtp $email < $file
+  subject=$2
+  file=$3
+  while ! mail -s "$subject" $email < $file
   do
     echo -e "${RED}email failed, trying again...${NC}"
     sleep 5
@@ -97,27 +98,23 @@ poll_smtp()
 
 
 # Step 1: Backup to this computer's HDD
-backup_files_locally
+backup_files_local
 
-# Step 2: Backup to mediaserver's HDD
-backup_files_to_mediaserver
+# Step 2: Backup to backup server's HDD
+backup_files_remote
 
 # Step 3: Backup to B2
 backup_files_to_b2
 
-MAIL_BODY=$(cat $MAIL_FILE)
-echo "To: $ADMIN_EMAIL" > $MAIL_FILE
-echo "From: $USER <$USER@$MAIL_DOMAIN>" >> $MAIL_FILE
-echo "Subject: $STATUS - files backup $DATE" >> $MAIL_FILE
-echo "$MAIL_BODY" >> $MAIL_FILE
 
+SUBJECT="$STATUS - files backup $DATE"
 # Send status mail to personal email
 if [ $STATUS == "FAIL" ]; then
-  echo -e "${RED}Files backup failed...$ADMIN_EMAIL...${NC}"
-  poll_smtp $ADMIN_EMAIL $MAIL_FILE
+  echo -e "${RED}Files backup failed...${NC}"
+  poll_smtp $ADMIN_EMAIL "$SUBJECT" $MAIL_FILE
 else
-  echo -e "${GREEN}Files backup succeeded!$ADMIN_EMAIL...${NC}"
-  poll_smtp $ADMIN_EMAIL $MAIL_FILE # remove me later
+  echo -e "${GREEN}Files backup succeeded!...${NC}"
+  poll_smtp $ADMIN_EMAIL "$SUBJECT" $MAIL_FILE # remove me later
 fi
   
 rm $MAIL_FILE

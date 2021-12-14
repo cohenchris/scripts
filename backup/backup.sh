@@ -9,8 +9,6 @@ BASE_DIR=$(dirname "$0")
 cd $BASE_DIR
 source ./env
 
-DATE=$(date +"%Y%m%d")
-
 # Will cause command to fail if ANYTHING in the pipe fails (useful for mail logging)
 set -o pipefail
 
@@ -284,8 +282,9 @@ function mail_log() {
 poll_smtp()
 {
   email=$1
-  file=$2
-  while ! ssmtp $email < $file
+  subject=$2
+  file=$3
+  while ! mail -s "$subject" $email < $file
   do
     echo -e "${RED}email failed, trying again...${NC}"
     sleep 5
@@ -337,17 +336,13 @@ echo
 
 # Log status
 if [ $STATUS == "FAIL" ]; then
-  echo -e "${RED}Failure, sending email to $ADMIN_EMAIL...${NC}"
+  echo -e "${RED}Backup was a failure...${NC}"
 else
-  echo -e "${GREEN}Success, sending email to $ADMIN_EMAIL...${NC}"
+  echo -e "${GREEN}Backup was a success!${NC}"
 fi
 
 # Send status email
-MAIL_BODY=$(cat $MAIL_FILE)
-echo "To: $ADMIN_EMAIL" > $MAIL_FILE
-echo "From: root <root@$MAIL_DOMAIN>" >> $MAIL_FILE
-echo "Subject: $STATUS - files $DATE" >> $MAIL_FILE
-echo
-echo "$MAIL_BODY" >> $MAIL_FILE
-poll_smtp $ADMIN_EMAIL $MAIL_FILE
+SUBJECT="$STATUS - backup $DATE"
+poll_smtp $ADMIN_EMAIL "$SUBJECT" $MAIL_FILE
+
 rm $MAIL_FILE
