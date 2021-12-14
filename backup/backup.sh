@@ -153,30 +153,33 @@ function backup_music() {
 
 ##### Clean remote backup files #####
 function clean_remote () {
-ssh $DST_ROUTE << "EOF"
-  # Now, in seconds since epoch
-  NOW=$(date +%s)
 
-  for filename in $BACKUP_DIR/*; do
-    CURR=$(stat -c %Z "$filename")
-    AGE=$((NOW - CURR))
-    DAYS=$((AGE / 86400))
+  function clean_remote_internal () {
+    BACKUP_DIR=$1
+    BACKUP_MAX_AGE=$2
 
-    # echo -e "${GREEN}$filename is $DAYS days old${NC}"
+    # Now, in seconds since epoch
+    NOW=$(date +%s)
 
-    if [[ $DAYS -ge $BACKUP_MAX_AGE ]]; then
-      # log deletion to mail.log
-      # echo "Deleting $filename -- $DAYS old (max $BACKUP_MAX_AGE)" >> $MAIL_FILE
+    for filename in $BACKUP_DIR/*; do
+      CURR=$(stat -c %Z "$filename")
+      AGE=$((NOW - CURR))
+      DAYS=$((AGE / 86400))
 
-      # echo -e "${RED}Deleting $filename!!${NC}"
-      rm -f $filename
-    fi
-  done
-  exit
-EOF
+      echo "$filename is $DAYS days old"
+
+      if [[ $DAYS -ge $BACKUP_MAX_AGE ]]; then
+        # log deletion to mail.log
+        echo "Deleting $filename -- $DAYS days old (max $BACKUP_MAX_AGE)"
+        rm $filename
+      fi
+    done
+    exit
+  }
+
+  ssh $DST_ROUTE "$(typeset -f clean_remote_internal); clean_remote_internal $BACKUP_DIR $BACKUP_MAX_AGE"
 
   mail_log $? "remote backup clean"
-
   echo -e "${GREEN}Finished cleaning up remote backup server${NC}"
 }
 

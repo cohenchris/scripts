@@ -30,7 +30,7 @@ function backup_files_local() {
   cd $LOCAL_FILES_DIR
 
   # backup
-  rsync -arP --delete . $LOCAL_FILES_BACKUP_DIR
+  rsync -arP --delete . $FILES_BACKUP_DIR
 
   # Log event to mail.log
   mail_log $? "backup to local HDD"
@@ -44,7 +44,7 @@ function backup_files_remote() {
   cd $LOCAL_FILES_DIR
 
   # backup
-  rsync -arP --delete . $DST_ROUTE:$REMOTE_FILES_BACKUP_DIR
+  rsync -arP --delete . $DST_ROUTE:$FILES_BACKUP_DIR
 
   # Log event to mail.log
   mail_log $? "backup to backup server"
