@@ -9,4 +9,6 @@ docker-compose up -d --remove-orphans
 
 cd
 
-docker restart sonarr lidarr radarr
+docker restart sonarr lidarr radarr >/dev/null 2>&1 &
+
+/home/phrog/scripts/fix_nextcloud_warnings.sh >/dev/null 2>&1 &
