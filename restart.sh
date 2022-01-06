@@ -9,6 +9,9 @@ docker-compose up -d --remove-orphans
 
 cd
 
+# This needs to happen so that themes are loaded properly
 docker restart sonarr lidarr radarr >/dev/null 2>&1 &
 
-/home/phrog/scripts/fix_nextcloud_warnings.sh >/dev/null 2>&1 &
+# Fix nextcloud warnings
+docker exec nextcloud apt -y update
+docker exec nextcloud apt -y install libmagickcore-6.q16-6-extra ffmpeg

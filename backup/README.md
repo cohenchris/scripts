@@ -6,6 +6,11 @@
 4. Set up a cron job to execute backup.sh
 5. Set up SMTP for your server (/etc/ssmtp/ssmtp.conf)
 
+## Restore
+```sh
+rsync -arzP -e ssh <src> <dst>
+```
+
 
 ## Resources:
 - [Nextcloud Export-data](https://github.com/nextcloud/nextcloud-snap/blob/master/src/import-export/bin/export-data)

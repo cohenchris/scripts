@@ -1,4 +1,5 @@
 #!/bin/bash
+# Continue to upload a large backup file interrupted on its way to B2
 
 source ./env
 
