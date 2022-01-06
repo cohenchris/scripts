@@ -1,6 +1,6 @@
 #!/bin/bash
 # Backup files
-# To restore: borg extract $BORG_REPO::$BACKUP_NAME
+# To restore: borg extract /backups/files::<backup_name>
 #   note: execute this where you would like the 'files' folder to be placed
 
 # Source env file and prepare env vars
@@ -24,9 +24,8 @@ echo "REMOTE BACKUP" >> $MAIL_FILE
 backup_and_prune
 
 # Backup to Backblaze B2
-# b2 sync --delete --replaceNewer $DIRNAME b2://cc-files-backup
 cd $FILES_BACKUP_DIR
-b2 sync . b2://$FILES_BACKUP_BUCKET
+b2 sync --delete --replaceNewer . b2://$FILES_BACKUP_BUCKET
 mail_log $? "b2 backup"
 
 finish

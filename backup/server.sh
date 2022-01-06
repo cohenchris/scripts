@@ -1,6 +1,6 @@
 #!/bin/bash
 # Backup important server files
-# To restore: borg extract $BORG_REPO::$BACKUP_NAME
+# To restore: borg extract /backups/server::<backup_name>
 #   note: execute this where you would like the 'server' folder to be placed (under /home/phrog)
 
 # Source env file
@@ -29,9 +29,8 @@ echo "REMOTE BACKUP" >> $MAIL_FILE
 backup_and_prune
 
 # Upload to b2
-#b2 sync --delete --replaceNewer $DIRNAME b2://cc-server-backup
 cd $SERVER_BACKUP_DIR
-b2 sync . b2://$SERVER_BACKUP_BUCKET
+b2 sync --delete --replaceNewer . b2://$SERVER_BACKUP_BUCKET
 mail_log $? "b2 backup"
 
 # Remove crontab backup

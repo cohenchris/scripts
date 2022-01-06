@@ -1,4 +1,3 @@
-https://jstaf.github.io/2018/03/12/backups-with-borg-rsync.html
 # Backup scripts for homelab
 
 1. Fill in all fields in env file
@@ -10,3 +9,4 @@ https://jstaf.github.io/2018/03/12/backups-with-borg-rsync.html
 ## Resources:
 - [Nextcloud Export-data](https://github.com/nextcloud/nextcloud-snap/blob/master/src/import-export/bin/export-data)
 - [Nextcloud Tools](https://github.com/syseleven/nextcloud-tools)
+- [Backup with Borg](https://jstaf.github.io/2018/03/12/backups-with-borg-rsync.html)
