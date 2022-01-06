@@ -1,0 +1,109 @@
+# General Settings
+DATE=$(date +"%Y%m%d-%H%M")
+BACKUP_NAME="$BACKUP_TYPE-backup-$DATE"
+BACKUP_USER="phrog"
+
+# Logging
+LOG_DIR="/var/log/backups"
+mkdir -p $LOG_DIR
+LOG_FILE="$BACKUP_TYPE-backup-$DATE.log"
+touch $LOG_DIR/$LOG_FILE
+exec 1>$LOG_DIR/$LOG_FILE
+exec 2>&1
+
+# Borg
+export BORG_PASSPHRASE=$(cat /home/phrog/scripts/backup/borg/gpgpass)
+
+# Backup server
+BACKUP_SERVER="pi@192.168.24.4"
+
+# Name of dirs to backup
+SERVER_DIR="/home/phrog/server"
+SERVER_BACKUP_DIR="/backups/server"
+SERVER_BACKUP_BUCKET=cc-server-backup
+MUSIC_DIR="/media/music"
+MUSIC_BACKUP_DIR="/backups/music"
+FILES_DIR="/home/phrog/files"
+FILES_BACKUP_DIR="/backups/files"
+FILES_BACKUP_BUCKET=cc-files-backup
+
+# Email
+ADMIN_EMAIL=chris@chriscohen.dev
+MAIL_FILE="/var/log/backups/$BACKUP_TYPE-backup-mail.log"
+MAIL_DOMAIN=chriscohen.dev
+
+# Colors
+GREEN="\e[32m"
+RED="\e[31m"
+NC="\e[0m"
+
+# Start mail file
+echo -e "$BACKUP_TYPE backup $DATE\n\n" > $MAIL_FILE
+
+##### FUNCTIONS #####
+function mail_log() {
+  code=$1
+  message=$2
+
+  if [ $code -gt 0 ]; then
+    # Failure
+    echo "[✘]    $message" >> $MAIL_FILE
+    STATUS=FAIL
+  else
+    # Success
+    echo "[✔]    $message" >> $MAIL_FILE
+  fi
+}
+
+function poll_smtp() {
+  email=$1
+  subject=$2
+  file=$3
+  while ! mail -s "$subject" $email < $file
+  do
+    echo -e "${RED}email failed, trying again...${NC}"
+    sleep 5
+  done
+}
+
+function backup_and_prune() {
+  if [ $BACKUP_TYPE == "server" ]; then
+    borg create \
+        --exclude="server/config/nextcloud/data/appdata*/preview" \
+        --exclude="server/transcode" \
+        --exclude="server/config/lidarr/MediaCover" \
+        --exclude="server/config/plex/Library/Application Support/Plex Media Server/Metadata" \
+        --exclude="server/config/plex/Library/Application Support/Plex Media Server/Cache" \
+        --exclude="server/config/plex/Library/Application Support/Plex Media Server/Media" \
+        --exclude="server/config/jellyfin/cache" \
+        --exclude="server/config/jellyfin/data/transcodes" \
+        --exclude="server/config/jellyfin/data/metadata" \
+        --progress --stats ::$BACKUP_NAME $DIRNAME
+    mail_log $? "borg backup"
+  else
+    borg create --progress --stats ::$BACKUP_NAME $DIRNAME
+    mail_log $? "borg backup"
+  fi
+  borg prune --keep-daily 14 --keep-weekly 8 --keep-monthly 6 $BORG_REPO
+  mail_log $? "borg prune"
+}
+
+function finish() {
+  # Log status
+  if [ $STATUS == "FAIL" ]; then
+    echo -e "${RED}Files backup failed...${NC}"
+  else
+    echo -e "${GREEN}Files backup succeeded!...${NC}"
+  fi
+
+  if ! [ $BACKUP_TYPE == "music" ]; then
+    # Append log file to mail file
+    echo -e "\n\n----- LOGS -----\n\n" >> $MAIL_FILE
+    cat $LOG_FILE >> $MAIL_FILE
+    
+    SUBJECT="$STATUS - $BACKUP_TYPE backup $DATE"
+    poll_smtp $ADMIN_EMAIL "$SUBJECT" $MAIL_FILE
+  fi 
+
+  rm $MAIL_FILE
+}

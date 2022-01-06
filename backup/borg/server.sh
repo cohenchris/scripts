@@ -1,45 +1,44 @@
 #!/bin/bash
 # Backup important server files
 # To restore: borg extract $BORG_REPO::$BACKUP_NAME
-#   note: execute this where you would like the 'phrog' folder to be placed (under /home/)
+#   note: execute this where you would like the 'server' folder to be placed (under /home/phrog)
 
 # Source env file
 BACKUP_TYPE=$(basename $0 | cut -d "." -f 1)
 source $(dirname "$0")/env
-BACKUP_DIR="./$BACKUP_USER"
+DIRNAME=$(basename $SERVER_DIR)
 STATUS=SUCCESS
 
-# Shutdown server
-cd $SERVER_BACKUP_DIR/server
-docker-compose down
-
 # Go to directory that we will backup
-cd $SERVER_BACKUP_DIR
+cd $SERVER_DIR
+# Shutdown server
+docker-compose down
 # Export crontab
 crontab -l -u $BACKUP_USER > crontab.txt
 crontab -l > sudo_crontab.txt
 cd ../
 
 # Backup to local drive
-export BORG_REPO="/backups/server"
+export BORG_REPO=$SERVER_BACKUP_DIR
+echo "LOCAL BACKUP" >> $MAIL_FILE
 backup_and_prune
 
 # Backup to backup server
-export BORG_REPO="pi@192.168.24.4:/backups/server"
+export BORG_REPO="$BACKUP_SERVER:$SERVER_BACKUP_DIR"
+echo "REMOTE BACKUP" >> $MAIL_FILE
 backup_and_prune
 
 # Upload to b2
-#b2 sync --delete --replaceNewer $BACKUP_DIR b2://cc-server-backup
-b2 sync $BACKUP_DIR b2://cc-server-backup
+#b2 sync --delete --replaceNewer $DIRNAME b2://cc-server-backup
+cd $SERVER_BACKUP_DIR
+b2 sync . b2://$SERVER_BACKUP_BUCKET
+mail_log $? "b2 backup"
 
 # Remove crontab backup
-cd $BACKUP_DIR
-echo "LOCAL BACKUP" >> $MAIL_FILE
+cd $SERVER_DIR
 rm crontab.txt sudo_crontab.txt
 
 # Start server
-cd /home/$BACKUP_USER/server
-echo "REMOTE BACKUP" >> $MAIL_FILE
 docker-compose up -d
 
 finish

@@ -1,7 +1,3 @@
-backup/log/backup/*
-backup/log/clean/*
-backup/gpgpass
-backup/env
+gpgpass
 porkbun-dynamic-dns-python
 .env
-env
