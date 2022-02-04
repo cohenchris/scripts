@@ -12,7 +12,7 @@ exec 1>$LOG_DIR/$LOG_FILE
 exec 2>&1
 
 # Borg
-export BORG_PASSPHRASE=$(cat /home/phrog/scripts/backup/borg/gpgpass)
+export BORG_PASSPHRASE=$(cat /home/phrog/scripts/backup/gpgpass)
 
 # Backup server
 BACKUP_SERVER="pi@192.168.24.4"
@@ -84,7 +84,12 @@ function backup_and_prune() {
     borg create --progress --stats ::$BACKUP_NAME $DIRNAME
     mail_log $? "borg backup"
   fi
-  borg prune --keep-daily 14 --keep-weekly 8 --keep-monthly 6 $BORG_REPO
+
+  # Archives to keep:
+  #   --keep-within 14d   ->     all created within the past 2 weeks
+  #   --keep-weekly 8     ->     one from each of the 8 previous weeks
+  #   --keep-monthly 6    ->     one from each of the 6 previous months
+  borg prune --keep-within 14d --keep-weekly 8 --keep-monthly 6 $BORG_REPO
   mail_log $? "borg prune"
 }
 
@@ -99,7 +104,7 @@ function finish() {
   if ! [ $BACKUP_TYPE == "music" ]; then
     # Append log file to mail file
     echo -e "\n\n----- LOGS -----\n\n" >> $MAIL_FILE
-    cat $LOG_FILE >> $MAIL_FILE
+    cat $LOG_DIR/$LOG_FILE >> $MAIL_FILE
     
     SUBJECT="$STATUS - $BACKUP_TYPE backup $DATE"
     poll_smtp $ADMIN_EMAIL "$SUBJECT" $MAIL_FILE

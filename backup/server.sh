@@ -30,7 +30,7 @@ backup_and_prune
 
 # Upload to b2
 cd $SERVER_BACKUP_DIR
-b2 sync --delete --replaceNewer . b2://$SERVER_BACKUP_BUCKET
+/usr/local/bin/b2 sync --delete --replaceNewer . b2://$SERVER_BACKUP_BUCKET
 mail_log $? "b2 backup"
 
 # Remove crontab backup

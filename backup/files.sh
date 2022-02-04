@@ -25,7 +25,7 @@ backup_and_prune
 
 # Backup to Backblaze B2
 cd $FILES_BACKUP_DIR
-b2 sync --delete --replaceNewer . b2://$FILES_BACKUP_BUCKET
+/usr/local/bin/b2 sync --delete --replaceNewer . b2://$FILES_BACKUP_BUCKET
 mail_log $? "b2 backup"
 
 finish

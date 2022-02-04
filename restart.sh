@@ -13,5 +13,4 @@ cd
 docker restart sonarr lidarr radarr >/dev/null 2>&1 &
 
 # Fix nextcloud warnings
-docker exec nextcloud apt -y update
-docker exec nextcloud apt -y install libmagickcore-6.q16-6-extra ffmpeg
+docker exec nextcloud apt -y update; docker exec nextcloud apt -y install libmagickcore-6.q16-6-extra ffmpeg >/dev/null 2>&1 &
