@@ -71,7 +71,6 @@ function finish() {
     python3 /home/phrog/scripts/ha-notify.py "ERROR - $BACKUP_NAME backup failed..."
     echo -e "${RED}Backup failed...${NC}"
   else
-    python3 /home/phrog/scripts/ha-notify.py "SUCCESS - $BACKUP_NAME backup succeeded!"
     echo -e "${GREEN}Backup succeeded!...${NC}"
   fi
 
