@@ -8,10 +8,10 @@ source $DIRNAME/.env
 BACKUP_FILE=${BACKUP_NAME}.json
 BW_PASS_FILE=$DIRNAME/bwpass
 
-cd $MISC_BACKUP_DIR
-
 # Login + save credentials
-export BW_SESSION=$(bw unlock --raw --passwordfile $BW_PASS_FILE)
+export BW_SESSION=$(bw unlock --raw --passwordfile ${BW_PASS_FILE})
+
+cd $MISC_BACKUP_DIR
 
 # Backup to local drive
 rm $MISC_BACKUP_DIR/bw*
@@ -26,4 +26,4 @@ rsync -r ./${BACKUP_FILE} ${BACKUP_SERVER}:${MISC_BACKUP_DIR}
 
 # Deinitialize
 unset BW_SESSION
-bw logout
+bw lock
