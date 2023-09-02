@@ -6,11 +6,20 @@ import sys
 
 # Home Assistant configuration
 home_assistant_url = "https://homeassistant.chriscohen.dev"
-access_token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI4YjQwNzJlYjNmNDA0NTkwODlkMzU1ZDA4YWUwMWVmNyIsImlhdCI6MTY4Njc5MDUwMywiZXhwIjoyMDAyMTUwNTAzfQ.eJQmBjQ0l9sXGM1OalEZyau7xl7iQQnQO824VbRjHEI"
 device_id = "chris"
+hatoken_path="/home/phrog/scripts/hatoken"
+
+try:
+    with open(hatoken_path, 'r') as file:
+        access_token = file.read().rstrip()
+
+except FileNotFoundError:
+    print(f"The file '{file_path}' was not found.")
+except Exception as e:
+    print(f"An error occurred: {e}")
 
 # Notification configuration
-title = "Phrog Status"
+title = "Server Status"
 message = sys.argv[1]
 category = "my_category"
 

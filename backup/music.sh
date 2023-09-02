@@ -6,7 +6,9 @@
 # Source env file and prepare env vars
 BACKUP_TYPE=$(basename $0 | cut -d "." -f 1)
 source $(dirname "$0")/.env
-DIRNAME=$(basename $MUSIC_BACKUP_DIR)
+
+BACKUP_DIRNAME=$(basename $MUSIC_BACKUP_DIR)
+SCRIPT_DIRNAME=$(dirname "$0")
 STATUS=SUCCESS
 
 # Go to directory that we will backup

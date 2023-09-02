@@ -50,10 +50,10 @@ function backup_and_prune() {
         --exclude="server/config/plex/Library/Application Support/Plex Media Server/Metadata" \
         --exclude="server/config/plex/Library/Application Support/Plex Media Server/Cache" \
         --exclude="server/config/plex/Library/Application Support/Plex Media Server/Media" \
-        --progress --stats ::$BACKUP_NAME $DIRNAME
+        --progress --stats ::$BACKUP_NAME $BACKUP_DIRNAME
     mail_log $? "borg backup"
   else
-    borg create --progress --stats ::$BACKUP_NAME $DIRNAME
+    borg create --progress --stats ::$BACKUP_NAME $BACKUP_DIRNAME
     mail_log $? "borg backup"
   fi
 
@@ -68,9 +68,11 @@ function backup_and_prune() {
 function finish() {
   # Log status
   if [ $STATUS == "FAIL" ]; then
-    echo -e "${RED}Files backup failed...${NC}"
+    python3 /home/phrog/scripts/ha-notify.py "ERROR - $BACKUP_NAME backup failed..."
+    echo -e "${RED}Backup failed...${NC}"
   else
-    echo -e "${GREEN}Files backup succeeded!...${NC}"
+    python3 /home/phrog/scripts/ha-notify.py "SUCCESS - $BACKUP_NAME backup succeeded!"
+    echo -e "${GREEN}Backup succeeded!...${NC}"
   fi
 
   if ! [ $BACKUP_TYPE == "music" ]; then

@@ -3,10 +3,10 @@
 
 # Set up environment variables
 BACKUP_TYPE=$(basename $0 | cut -d "." -f 1)
-DIRNAME=$(dirname "$0")
-source $DIRNAME/.env
+SCRIPT_DIRNAME=$(dirname $0)
+source $SCRIPT_DIRNAME/.env
 BACKUP_FILE=${BACKUP_NAME}.json
-BW_PASS_FILE=$DIRNAME/bwpass
+BW_PASS_FILE=$SCRIPT_DIRNAME/bwpass
 
 # Login + save credentials
 export BW_SESSION=$(bw unlock --raw --passwordfile ${BW_PASS_FILE})
