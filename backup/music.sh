@@ -5,7 +5,7 @@
 
 # Source env file and prepare env vars
 BACKUP_TYPE=$(basename $0 | cut -d "." -f 1)
-source $(dirname "$0")/env
+source $(dirname "$0")/.env
 DIRNAME=$(basename $MUSIC_BACKUP_DIR)
 STATUS=SUCCESS
 
@@ -22,3 +22,6 @@ export BORG_REPO="$BACKUP_SERVER:$MUSIC_BACKUP_DIR"
 backup_and_prune
 
 finish
+
+# Deinitialize
+unset BORG_PASSPHRASE

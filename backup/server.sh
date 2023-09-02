@@ -3,9 +3,9 @@
 # To restore: borg extract /backups/server::<backup_name>
 #   note: execute this where you would like the 'server' folder to be placed (under /home/phrog)
 
-# Source env file
+# Set up environment variables
 BACKUP_TYPE=$(basename $0 | cut -d "." -f 1)
-source $(dirname "$0")/env
+source $(dirname "$0")/.env
 DIRNAME=$(basename $SERVER_DIR)
 STATUS=SUCCESS
 
@@ -14,7 +14,7 @@ cd $SERVER_DIR
 # Shutdown server
 docker-compose down
 # Export crontab
-crontab -l -u $BACKUP_USER > crontab.txt
+crontab -l -u $CRON_BACKUP_USER > crontab.txt
 crontab -l > sudo_crontab.txt
 cd ../
 
@@ -41,3 +41,6 @@ rm crontab.txt sudo_crontab.txt
 docker-compose up -d
 
 finish
+
+# Deinitialize
+unset BORG_PASSPHRASE

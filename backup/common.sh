@@ -1,36 +1,11 @@
-# General Settings
-DATE=$(date +"%Y%m%d-%H%M")
-BACKUP_NAME="$BACKUP_TYPE-backup-$DATE"
-BACKUP_USER="phrog"
-
-# Logging
+# Set up logging
 LOG_DIR="/var/log/backups"
-mkdir -p $LOG_DIR
 LOG_FILE="$BACKUP_TYPE-backup-$DATE.log"
+MAIL_FILE="$LOG_DIR/$BACKUP_TYPE-backup-mail.log"
+mkdir -p $LOG_DIR
 touch $LOG_DIR/$LOG_FILE
 exec 1>$LOG_DIR/$LOG_FILE
 exec 2>&1
-
-# Borg
-export BORG_PASSPHRASE=$(cat /home/phrog/scripts/backup/gpgpass)
-
-# Backup server
-BACKUP_SERVER="pi@192.168.24.4"
-
-# Name of dirs to backup
-SERVER_DIR="/home/phrog/server"
-SERVER_BACKUP_DIR="/backups/server"
-SERVER_BACKUP_BUCKET=cc-server-backup
-MUSIC_DIR="/media/music"
-MUSIC_BACKUP_DIR="/backups/music"
-FILES_DIR="/home/phrog/files"
-FILES_BACKUP_DIR="/backups/files"
-FILES_BACKUP_BUCKET=cc-files-backup
-
-# Email
-ADMIN_EMAIL=chris@chriscohen.dev
-MAIL_FILE="/var/log/backups/$BACKUP_TYPE-backup-mail.log"
-MAIL_DOMAIN=chriscohen.dev
 
 # Colors
 GREEN="\e[32m"
@@ -75,9 +50,6 @@ function backup_and_prune() {
         --exclude="server/config/plex/Library/Application Support/Plex Media Server/Metadata" \
         --exclude="server/config/plex/Library/Application Support/Plex Media Server/Cache" \
         --exclude="server/config/plex/Library/Application Support/Plex Media Server/Media" \
-        --exclude="server/config/jellyfin/cache" \
-        --exclude="server/config/jellyfin/data/transcodes" \
-        --exclude="server/config/jellyfin/data/metadata" \
         --progress --stats ::$BACKUP_NAME $DIRNAME
     mail_log $? "borg backup"
   else

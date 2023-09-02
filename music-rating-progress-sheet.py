@@ -150,8 +150,7 @@ wb.save(filename="musicRatingProgress.xlsx")
 # SAVE TO NEXTCLOUD (etc/musicRatingProgress.ods)
 #
 
-os.system("rclone sync musicRatingProgress.xlsx nextcloud:etc/ --progress")
-
-os.system("rm musicRatingProgress.*")
+os.system("mv musicRatingProgress.xlsx /home/phrog/files/etc/")
+os.system("docker exec -it --user www-data nextcloud php occ files:scan --all")
 
 print("--- %s seconds ---" % (time.time() - start_time))

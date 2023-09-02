@@ -73,8 +73,9 @@ def scan_library() -> List[Artist]:
             omit = False
             tracklist: List[Track] = []
 
-            # If album only has one song, it's a single. Omit from JSON
-            if (len(album.tracks()) == 1):
+            # If album only has 4 or fewer songs, we count it as an EP. Omit from JSON.
+            if (len(album.tracks()) <= 4):
+                print(f"omitting {album.title}")
                 omit = True
                 continue
 

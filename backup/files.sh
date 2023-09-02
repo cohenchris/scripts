@@ -3,9 +3,9 @@
 # To restore: borg extract /backups/files::<backup_name>
 #   note: execute this where you would like the 'files' folder to be placed
 
-# Source env file and prepare env vars
+# Set up environment variables
 BACKUP_TYPE=$(basename $0 | cut -d "." -f 1)
-source $(dirname "$0")/env
+source $(dirname "$0")/.env
 DIRNAME=$(basename $FILES_DIR)
 STATUS=SUCCESS
 
@@ -29,3 +29,6 @@ cd $FILES_BACKUP_DIR
 mail_log $? "b2 backup"
 
 finish
+
+# Deinitialize
+unset BORG_PASSPHRASE
