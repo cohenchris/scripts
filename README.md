@@ -6,3 +6,9 @@
 4. Clone https://github.com/porkbundomains/porkbun-dynamic-dns-python
 5. Fill out porkbun-dynamic-dns-python/config.json
 6. Set up a cron job to execute porkbun-dynamic-dns-python/porkbun-ddns.py
+7. Create 'hatoken' with Home Assistant long-term access token
+    Then, set secure access permissions
+    ```
+    chmod 600 hatoken
+    chown root:root hatoken
+    ```
