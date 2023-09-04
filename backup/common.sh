@@ -81,6 +81,13 @@ function finish() {
     
     SUBJECT="$STATUS - $BACKUP_TYPE backup $DATE"
     poll_smtp $ADMIN_EMAIL "$SUBJECT" $MAIL_FILE
+  else
+    # Only send HomeAssistant notifications with non-music backups
+    if [ $STATUS == "FAIL" ]; then
+      python3 /home/phrog/scripts/ha-notify.py "ERROR - $BACKUP_NAME backup failed..."
+    else
+      python3 /home/phrog/scripts/ha-notify.py "SUCCESS - $BACKUP_NAME backup succeeded!"
+    fi
   fi 
 
   rm $MAIL_FILE
