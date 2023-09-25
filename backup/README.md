@@ -9,7 +9,7 @@
    chmod 600 <filename>
    chown root:root <filename>
    ```
-5. Set up a cron job to execute files.sh, server.sh, and music.sh
+5. Set up a cron job to execute files.sh, server.sh, music.sh, and misc.sh when desired
 6. Set up SMTP for your server (/etc/ssmtp/ssmtp.conf)
 
 

@@ -1,17 +1,3 @@
-# Set up logging
-LOG_DIR="/var/log/backups"
-LOG_FILE="$BACKUP_TYPE-backup-$DATE.log"
-MAIL_FILE="$LOG_DIR/$BACKUP_TYPE-backup-mail.log"
-mkdir -p $LOG_DIR
-touch $LOG_DIR/$LOG_FILE
-exec 1>$LOG_DIR/$LOG_FILE
-exec 2>&1
-
-# Colors
-GREEN="\e[32m"
-RED="\e[31m"
-NC="\e[0m"
-
 # Start mail file
 echo -e "$BACKUP_TYPE backup $DATE\n\n" > $MAIL_FILE
 
@@ -39,6 +25,8 @@ function poll_smtp() {
     echo -e "${RED}email failed, trying again...${NC}"
     sleep 5
   done
+
+  echo -e "${GREEN}email sent!${NC}"
 }
 
 function backup_and_prune() {
@@ -74,21 +62,19 @@ function finish() {
     echo -e "${GREEN}Backup succeeded!...${NC}"
   fi
 
-  if ! [ $BACKUP_TYPE == "music" ]; then
-    # Append log file to mail file
-    echo -e "\n\n----- LOGS -----\n\n" >> $MAIL_FILE
-    cat $LOG_DIR/$LOG_FILE >> $MAIL_FILE
+  # Append log file to mail file
+  echo -e "\n\n----- LOGS -----\n\n" >> $MAIL_FILE
+  cat $LOG_DIR/$LOG_FILE >> $MAIL_FILE
     
-    SUBJECT="$STATUS - $BACKUP_TYPE backup $DATE"
-    poll_smtp $ADMIN_EMAIL "$SUBJECT" $MAIL_FILE
+  SUBJECT="$STATUS - $BACKUP_TYPE backup $DATE"
+  poll_smtp $ADMIN_EMAIL "$SUBJECT" $MAIL_FILE
+
+  # Send notification via home assistant
+  if [ $STATUS == "FAIL" ]; then
+    python3 /home/phrog/scripts/ha-notify.py "ERROR - $BACKUP_NAME backup failed..."
   else
-    # Only send HomeAssistant notifications with non-music backups
-    if [ $STATUS == "FAIL" ]; then
-      python3 /home/phrog/scripts/ha-notify.py "ERROR - $BACKUP_NAME backup failed..."
-    else
-      python3 /home/phrog/scripts/ha-notify.py "SUCCESS - $BACKUP_NAME backup succeeded!"
-    fi
-  fi 
+    python3 /home/phrog/scripts/ha-notify.py "SUCCESS - $BACKUP_NAME backup succeeded!"
+  fi
 
   rm $MAIL_FILE
 }

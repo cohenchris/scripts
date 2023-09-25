@@ -10,6 +10,15 @@ import shutil
 from PIL import Image
 from dotenv import load_dotenv
 
+
+#####################################
+# Prepare environment and load Plex #
+#####################################
+RED = "\033[91m"
+GREEN = "\033[92m"
+BLUE = "\033[94m"
+RESET = "\033[0m"
+
 load_dotenv()
 PLEX_URL = os.getenv('PLEX_URL')
 PLEX_TOKEN = os.getenv('PLEX_TOKEN')
@@ -18,8 +27,14 @@ PLEX_TOKEN = os.getenv('PLEX_TOKEN')
 WEBSITE_PUBLIC_DIR = os.getenv("WEBSITE_HTML_DIR")
 
 account = MyPlexAccount(PLEX_TOKEN)
-server = PlexServer(PLEX_URL, PLEX_TOKEN)
+session = requests.Session()
+session.verify = False
+requests.packages.urllib3.disable_warnings()
+server = PlexServer(PLEX_URL, PLEX_TOKEN, session)
 
+##################################
+########## JSON Defines ##########
+##################################
 class Track:
     def __init__(self, title: str, rating: float):
         self.title = title
@@ -64,109 +79,134 @@ class Artist:
 
 
 
+##################################
+########## Library Scan ##########
+##################################
 def scan_library() -> List[Artist]:
+    # Scan all artists
     artists = server.library.section("Music").searchArtists()
-    library: List[Album] = []
+    library: List[Artist] = []
 
+    # Iterate through each artist
     for artist in artists:
+        albumlist: List[Album] = []
+        artist_log_str = ""
+        
+        # Iterate through each of the artist's albums
         for album in artist.albums():
-            omit = False
+            omitAlbum = False
             tracklist: List[Track] = []
 
-            # If album only has 4 or fewer songs, we count it as an EP. Omit from JSON.
+            # Determine eligible albums
             if (len(album.tracks()) <= 4):
-                print(f"omitting {album.title}")
-                omit = True
+                # If album only has 4 or fewer songs, we count it as an EP. Omit from JSON.
+                artist_log_str += RED + f"\t{album.title} (<4 songs)\n" + RESET
+                omitAlbum = True
                 continue
-
+            
+            # Iterate through each track in the given album, reading the rating from each track
             for track in album:
                 # If album isn't fully rated, omit from JSON
                 if track.userRating is None:
-                    omit = True
+                    omitAlbum = True
                     break
                 tracklist.append(Track(track.title, track.userRating))
 
-
-            if not omit:
+            # Add album to output, if it is eligible
+            if not omitAlbum:
+                # add fully-rated albums
+                artist_log_str += GREEN + f"\t{album.title}\n" + RESET
+                albumlist.append(Album(
+                                       album.title,
+                                       artist.title,
+                                       [genre.tag for genre in album.genres],
+                                       album.studio,
+                                       album.year,
+                                       tracklist,
+                                       f"{album.key}/thumb"
+                                      )
+                                 )
+            else:
                 # omit unrated albums
-                library.append  (   Album   (
-                                            album.title,
-                                            artist.title,
-                                            [genre.tag for genre in album.genres],
-                                            album.studio,
-                                            album.year,
-                                            tracklist,
-                                            f"{album.key}/thumb"
-                                            )
-                                )
-        # omit artists with zero rated albums
-#        if len(albumlist) > 0:
-#            library.append(Artist(artist.title, albumlist, f"{artist.key}/thumb"))
+                artist_log_str += RED + f"\t{album.title} (unrated)\n" + RESET
+
+        # Determine eligible artists
+        if len(albumlist) > 0:
+            # Add artists with 1 or more rated albums
+            artist_log_str = BLUE + f"{artist.title}\n" + RESET + artist_log_str
+            library.append(Artist(artist.title, albumlist, f"{artist.key}/thumb"))
+        else:
+            # If the artist has no rated albums, omit from JSON
+            artist_log_str = BLUE + f"OMITTING {artist.title} (no fully-rated albums available)\n" + RESET + artist_log_str
+
+        print(artist_log_str)
 
     return library
 
 
+##########################
+########## Main ##########
+##########################
 
-
-
+# Scan library for eligible albums
 library = scan_library()
-
 os.chdir(WEBSITE_PUBLIC_DIR)
 
-# Output library to a JSON file
+music_dir = os.path.join(WEBSITE_PUBLIC_DIR, "music")
+
+# Remove existing music directory tree, if it exists
+try:
+    shutil.rmtree(music_dir)
+except FileNotFoundError:
+    pass
+
+os.mkdir(music_dir)
+os.chdir(music_dir)
+
+# Write eligible album JSON to a file
 with open("library.json", "w") as f:
     f.write(json.dumps(library, default=lambda o: o.__dict__, indent=4, ensure_ascii=True))
 
-# Download all artist images and album art
-metadata_dir = os.path.join(WEBSITE_PUBLIC_DIR, "metadata")
-try:
-    shutil.rmtree(metadata_dir)
-except FileNotFoundError:
-    pass
+# Download all metadata (artist images and album art)
+metadata_dir = os.path.join(music_dir, "metadata")
 
-try:
-    os.mkdir(metadata_dir)
-except FileNotFoundError:
-    pass
+# Create new metadata directory
+os.mkdir(metadata_dir)
 
-for album in library:
+# For each valid artist/albums, create a directory for each artist, with supporting metadata
+for artist in library:
     # make artist directory, if it doesn't exist already
-    artist_dir = os.path.join(metadata_dir, album.artist)
-    try:
-        os.mkdir(artist_dir)
-    except FileExistsError:
-        pass
-
+    artist_dir = os.path.join(metadata_dir, artist.name)
+    os.mkdir(artist_dir)
     # download artist image
-#    artist_image_path = os.path.join(artist_dir, "image.jpg")
-#     if not os.path.isfile(artist_image_path):
-#         # Only get image if it doesn't exist
-#         with open(artist_image_path, "wb") as image:
-#             response = requests.get(f"{PLEX_URL}{artist.image}?X-Plex-Token={PLEX_TOKEN}")
-#             image.write(response.content)
+    artist_image_path = os.path.join(artist_dir, "image.jpg")
+    with open(artist_image_path, "wb") as image:
+        response = requests.get(f"{PLEX_URL}{artist.image}?X-Plex-Token={PLEX_TOKEN}", verify=False)
+        image.write(response.content)
 
-    # make album directory
-    album.title = album.title.replace("/", "+")  # temp fix for album titles with a slash - breaks the next statements
-    album_dir = os.path.join(artist_dir, album.title)
-    try:
-        os.mkdir(album_dir)
-    except FileExistsError:
-        pass
-
-    # download album art
-    album_cover_path = os.path.join(album_dir, "cover.jpg")
-    if not os.path.isfile(album_cover_path):
-        # Only get cover if it doesn't exist
-        with open(album_cover_path, "wb") as cover:
-            response = requests.get(f"{PLEX_URL}{album.cover}?X-Plex-Token={PLEX_TOKEN}")
-            cover.write(response.content)
-        # Compress image
+    for album in artist.albums:
+        # make album directories
+        album.title = album.title.replace("/", "+")  # temp fix for album titles with a slash - breaks the next statements
+        album_dir = os.path.join(artist_dir, album.title)
         try:
-            img = Image.open(album_cover_path)
-            img.save(album_cover_path, optimize=True, quality=20)
-        except OSError:
-            # Download again
-            with open(album_cover_path, "wb") as cover:
-                response = requests.get(f"{PLEX_URL}{album.cover}?X-Plex-Token={PLEX_TOKEN}")
-                cover.write(response.content)
+            os.mkdir(album_dir)
+        except FileExistsError:
             pass
+
+        # download album art
+        album_cover_path = os.path.join(album_dir, "cover.jpg")
+        if not os.path.isfile(album_cover_path):
+            # Only get cover if it doesn't exist
+            with open(album_cover_path, "wb") as cover:
+                response = requests.get(f"{PLEX_URL}{album.cover}?X-Plex-Token={PLEX_TOKEN}", verify=False)
+                cover.write(response.content)
+            # Compress image
+            try:
+                img = Image.open(album_cover_path)
+                img.save(album_cover_path, optimize=True, quality=20)
+            except OSError:
+                # Download again
+                with open(album_cover_path, "wb") as cover:
+                    response = requests.get(f"{PLEX_URL}{album.cover}?X-Plex-Token={PLEX_TOKEN}", verify=False)
+                    cover.write(response.content)
+                pass
