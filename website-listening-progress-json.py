@@ -36,8 +36,8 @@ server = PlexServer(PLEX_URL, PLEX_TOKEN, session)
 ########## JSON Defines ##########
 ##################################
 class Track:
-    def __init__(self, title: str, rating: float):
-        self.title = title
+    def __init__(self, name: str, rating: float):
+        self.name = name 
         self.rating = rating
 
     def toJSON(self):
@@ -45,8 +45,8 @@ class Track:
 
 
 class Album:
-    def __init__(self, title: str, artist: str, genres: List[str], label: str, year: int, tracks: List[Track], cover: str):
-        self.title = title                                                      # album title
+    def __init__(self, name: str, artist: str, genres: List[str], label: str, year: int, tracks: List[Track], cover: str):
+        self.name = name                                                        # album name
         self.artist = artist
         self.genres = ", ".join(genres) if len(genres) > 0 else "[no genres]"   # genres (comma-separated)
         self.label = label if label is not None else "[no label]"               # label released
@@ -186,8 +186,8 @@ for artist in library:
 
     for album in artist.albums:
         # make album directories
-        album.title = album.title.replace("/", "+")  # temp fix for album titles with a slash - breaks the next statements
-        album_dir = os.path.join(artist_dir, album.title)
+        album.name = album.name.replace("/", "+")  # temp fix for album names with a slash - breaks the next statements
+        album_dir = os.path.join(artist_dir, album.name)
         try:
             os.mkdir(album_dir)
         except FileExistsError:
