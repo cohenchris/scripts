@@ -1,4 +1,5 @@
-#!/bin/python3
+#!/bin/python3.11
+
 from __future__ import division             # allows division to be float by default
 from plexapi.myplex import MyPlexAccount
 from plexapi.server import PlexServer
@@ -17,6 +18,7 @@ from dotenv import load_dotenv
 RED = "\033[91m"
 GREEN = "\033[92m"
 BLUE = "\033[94m"
+YELLOW = "\033[93m"
 RESET = "\033[0m"
 
 load_dotenv()
@@ -77,7 +79,23 @@ class Artist:
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
+##################################
+######## Helper Functions ########
+##################################
+def convert_to_webp(source):
+    root, ext = os.path.splitext(source)
+    destination = root + ".webp"
 
+    try:
+        image = Image.open(source)
+        image.save(destination, format="webp")
+
+        os.remove(source);
+    except:
+        # Some artist images are not available, skip errors with these
+        pass
+
+    return destination
 
 ##################################
 ########## Library Scan ##########
@@ -100,7 +118,7 @@ def scan_library() -> List[Artist]:
             # Determine eligible albums
             if (len(album.tracks()) <= 4):
                 # If album only has 4 or fewer songs, we count it as an EP. Omit from JSON.
-                artist_log_str += RED + f"\t{album.title} (<4 songs)\n" + RESET
+                artist_log_str += YELLOW + f"\t{album.title} (<4 songs)\n" + RESET
                 omitAlbum = True
                 continue
             
@@ -132,6 +150,9 @@ def scan_library() -> List[Artist]:
 
         # Determine eligible artists
         if len(albumlist) > 0:
+            # Sort albums high-low rating in their respective arrays
+            albumlist = sorted(albumlist, key=lambda album: album.rating, reverse=True)
+
             # Add artists with 1 or more rated albums
             artist_log_str = BLUE + f"{artist.title}\n" + RESET + artist_log_str
             library.append(Artist(artist.title, albumlist, f"{artist.key}/thumb"))
@@ -183,6 +204,8 @@ for artist in library:
     with open(artist_image_path, "wb") as image:
         response = requests.get(f"{PLEX_URL}{artist.image}?X-Plex-Token={PLEX_TOKEN}", verify=False)
         image.write(response.content)
+    # Convert to webp for better performance
+    convert_to_webp(artist_image_path)
 
     for album in artist.albums:
         # make album directories
@@ -200,13 +223,6 @@ for artist in library:
             with open(album_cover_path, "wb") as cover:
                 response = requests.get(f"{PLEX_URL}{album.cover}?X-Plex-Token={PLEX_TOKEN}", verify=False)
                 cover.write(response.content)
-            # Compress image
-            try:
-                img = Image.open(album_cover_path)
-                img.save(album_cover_path, optimize=True, quality=20)
-            except OSError:
-                # Download again
-                with open(album_cover_path, "wb") as cover:
-                    response = requests.get(f"{PLEX_URL}{album.cover}?X-Plex-Token={PLEX_TOKEN}", verify=False)
-                    cover.write(response.content)
-                pass
+            # Convert to webp for better performance
+            convert_to_webp(album_cover_path)
+
