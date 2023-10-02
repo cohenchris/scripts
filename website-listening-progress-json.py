@@ -88,7 +88,7 @@ def convert_to_webp(source):
 
     try:
         image = Image.open(source)
-        image.save(destination, format="webp")
+        image.save(destination, format="webp", quality=1)
 
         os.remove(source);
     except:
