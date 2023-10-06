@@ -216,7 +216,7 @@ for artist in library:
     with open(artist_image_path, "wb") as image:
         response = requests.get(f"{PLEX_URL}{artist.artistImage}?X-Plex-Token={PLEX_TOKEN}", verify=False)
         image.write(response.content)
-        artist.artistImage = "data/music/metadata/" + artist.artistName + "/image.webp"; # path for Hugo to find the image
+        artist.artistImage = "/music/metadata/" + artist.artistName + "/image.webp"; # path for Hugo to find the image
 
     # Convert to webp for better performance
     convert_to_webp(artist_image_path)
@@ -237,7 +237,7 @@ for artist in library:
             with open(album_cover_path, "wb") as cover:
                 response = requests.get(f"{PLEX_URL}{album.albumCover}?X-Plex-Token={PLEX_TOKEN}", verify=False)
                 cover.write(response.content)
-                album.albumCover = "data/music/metadata/" + album.albumArtist + "/" + album.albumTitle + "/cover.webp"
+                album.albumCover = "/music/metadata/" + album.albumArtist + "/" + album.albumTitle + "/cover.webp"
             # Convert to webp for better performance
             convert_to_webp(album_cover_path)
 
