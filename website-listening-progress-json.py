@@ -38,43 +38,59 @@ server = PlexServer(PLEX_URL, PLEX_TOKEN, session)
 ########## JSON Defines ##########
 ##################################
 class Track:
-    def __init__(self, name: str, rating: float):
-        self.name = name 
-        self.rating = rating
+    def __init__(self,
+                 trackName: str,
+                 trackRating: float):
+
+        self.trackName = trackName 
+        self.trackRating = trackRating
 
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
 
 class Album:
-    def __init__(self, name: str, artist: str, genres: List[str], label: str, year: int, tracks: List[Track], cover: str):
-        self.name = name                                                        # album name
-        self.artist = artist
-        self.genres = ", ".join(genres) if len(genres) > 0 else "[no genres]"   # genres (comma-separated)
-        self.label = label if label is not None else "[no label]"               # label released
-        self.year = year                                                        # release year
-        self.tracks = tracks                                                    # array of Track objects
-        self.cover = cover                                                      # uri to cover of the album 
+    def __init__(self,
+                 albumTitle: str,
+                 albumArtist: str,
+                 albumGenres: List[str],
+                 albumLabel: str,
+                 albumYear: int,
+                 albumTracks: List[Track],
+                 albumCover: str):
+
+        self.albumTitle = albumTitle                                                            # album name
+        self.albumArtist = albumArtist                                                          # album artist
+        self.albumGenres = ", ".join(albumGenres) if len(albumGenres) > 0 else "[no genres]"    # genres (comma-separated)
+        self.albumLabel = albumLabel if albumLabel is not None else "[no label]"                # label released
+        self.albumYear = albumYear                                                              # release year
+        self.albumTracks = albumTracks                                                          # array of Track objects
+        self.albumCover = albumCover                                                            # uri to cover of the album 
 
         # favorites
-        highest = max(self.tracks, key=lambda t: t.rating).rating
-        self.favorites = []
-        [self.favorites.append(track) for track in self.tracks if track.rating == highest]
+        highest = max(self.albumTracks, key=lambda t: t.trackRating).trackRating
+        self.albumFavorites = []
+        [self.albumFavorites.append(track) for track in self.albumTracks if track.trackRating == highest]
 
         # overall album rating
         total = 0
-        [total := total + track.rating for track in self.tracks]
-        self.rating = round((total / len(self.tracks)), 2)
+        [total := total + track.trackRating for track in self.albumTracks]
+        self.albumRating = round((total / len(self.albumTracks)), 2)
 
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
 
 class Artist:
-    def __init__(self, name: str, albums: List[Album], image: str):
-        self.name = name        # name of artist
-        self.albums = albums    # array of Album objects
-        self.image = image      # uri to image of the artist
+    def __init__(self,
+                 artistName: str,
+                 artistAlbums: List[Album],
+                 artistImage: str):
+
+        self.artistName = artistName                    # name of artist
+        self.artistAlbums = artistAlbums                # array of Album objects
+        self.artistImage = artistImage                  # uri to image of the artist
+        self.artistNumRatedAlbums = len(artistAlbums)   # number of rated albums for this artist
 
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
@@ -141,7 +157,7 @@ def scan_library() -> List[Artist]:
                                        album.studio,
                                        album.year,
                                        tracklist,
-                                       f"{album.key}/thumb"
+                                       f"{album.key}/thumb" # link to download the image, will be changed later
                                       )
                                  )
             else:
@@ -151,7 +167,7 @@ def scan_library() -> List[Artist]:
         # Determine eligible artists
         if len(albumlist) > 0:
             # Sort albums high-low rating in their respective arrays
-            albumlist = sorted(albumlist, key=lambda album: album.rating, reverse=True)
+            albumlist = sorted(albumlist, key=lambda album: album.albumRating, reverse=True)
 
             # Add artists with 1 or more rated albums
             artist_log_str = BLUE + f"{artist.title}\n" + RESET + artist_log_str
@@ -184,10 +200,6 @@ except FileNotFoundError:
 os.mkdir(music_dir)
 os.chdir(music_dir)
 
-# Write eligible album JSON to a file
-with open("library.json", "w") as f:
-    f.write(json.dumps(library, default=lambda o: o.__dict__, indent=4, ensure_ascii=True))
-
 # Download all metadata (artist images and album art)
 metadata_dir = os.path.join(music_dir, "metadata")
 
@@ -197,20 +209,22 @@ os.mkdir(metadata_dir)
 # For each valid artist/albums, create a directory for each artist, with supporting metadata
 for artist in library:
     # make artist directory, if it doesn't exist already
-    artist_dir = os.path.join(metadata_dir, artist.name)
+    artist_dir = os.path.join(metadata_dir, artist.artistName)
     os.mkdir(artist_dir)
     # download artist image
     artist_image_path = os.path.join(artist_dir, "image.jpg")
     with open(artist_image_path, "wb") as image:
-        response = requests.get(f"{PLEX_URL}{artist.image}?X-Plex-Token={PLEX_TOKEN}", verify=False)
+        response = requests.get(f"{PLEX_URL}{artist.artistImage}?X-Plex-Token={PLEX_TOKEN}", verify=False)
         image.write(response.content)
+        artist.artistImage = "data/music/metadata/" + artist.artistName + "/image.webp"; # path for Hugo to find the image
+
     # Convert to webp for better performance
     convert_to_webp(artist_image_path)
 
-    for album in artist.albums:
+    for album in artist.artistAlbums:
         # make album directories
-        album.name = album.name.replace("/", "+")  # temp fix for album names with a slash - breaks the next statements
-        album_dir = os.path.join(artist_dir, album.name)
+        album.albumTitle = album.albumTitle.replace("/", "+")  # temp fix for album names with a slash - breaks the next statements
+        album_dir = os.path.join(artist_dir, album.albumTitle)
         try:
             os.mkdir(album_dir)
         except FileExistsError:
@@ -221,8 +235,13 @@ for artist in library:
         if not os.path.isfile(album_cover_path):
             # Only get cover if it doesn't exist
             with open(album_cover_path, "wb") as cover:
-                response = requests.get(f"{PLEX_URL}{album.cover}?X-Plex-Token={PLEX_TOKEN}", verify=False)
+                response = requests.get(f"{PLEX_URL}{album.albumCover}?X-Plex-Token={PLEX_TOKEN}", verify=False)
                 cover.write(response.content)
+                album.albumCover = "data/music/metadata/" + album.albumArtist + "/" + album.albumTitle + "/cover.webp"
             # Convert to webp for better performance
             convert_to_webp(album_cover_path)
+
+# Write eligible album JSON to a file
+with open("library.json", "w") as f:
+    f.write(json.dumps(library, default=lambda o: o.__dict__, indent=4, ensure_ascii=True))
 
