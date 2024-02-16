@@ -6,7 +6,7 @@ if [ $? -ne 0 ]; then
   exit
 fi
 
-cd /home/phrog/server
+cd /home/$USER/server
 docker-compose pull
 docker-compose up -d
 

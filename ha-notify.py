@@ -5,6 +5,9 @@ import json
 import sys
 import os
 from dotenv import load_dotenv
+from time import sleep
+
+MAX_NOTIFICATION_ATTEMPTS=100
 
 # Load environment variables
 load_dotenv()
@@ -25,10 +28,15 @@ payload = {
 }
 
 # Send the POST request until it succeeds
-response = requests.post(url, headers=headers, data=json.dumps(payload))
-while True:
-    if response.status_code == 200:
-        print('Notification sent successfully!')
-        break
-    else:
+for attempt in range(1, MAX_NOTIFICATION_ATTEMPTS + 1):
+    try:
+        response = requests.post(url, headers=headers, data=json.dumps(payload))
+        if response.status_code == 200:
+            print('Notification sent successfully!')
+            break
+        else:
+            print("Notification failed, trying again...")
+            sleep(5)
+    except:
         print("Notification failed, trying again...")
+        sleep(5)

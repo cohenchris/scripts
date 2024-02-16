@@ -1,3 +1,5 @@
+MAX_MAIL_ATTEMPTS=100
+
 # Start mail file
 echo -e "$BACKUP_TYPE backup $DATE\n\n" > $MAIL_FILE
 
@@ -23,6 +25,14 @@ function poll_smtp() {
   while ! mail -s "$subject" $email < $file
   do
     echo -e "${RED}email failed, trying again...${NC}"
+
+    # Limit to 100 attempts. If it goes infinitely, it could fill up the disk.
+    MAX_MAIL_ATTEMPTS=$((MAX_MAIL_ATTEMPTS-1))
+    if [ $MAX_MAIL_ATTEMPTS -eq 0 ]; then
+      echo -e "${RED}email failed,${NC}"
+      return
+    fi
+
     sleep 5
   done
 
@@ -33,7 +43,6 @@ function backup_and_prune() {
   if [ $BACKUP_TYPE == "server" ]; then
     borg create \
         --exclude="server/config/nextcloud/data/appdata*/preview" \
-        --exclude="server/transcode" \
         --exclude="server/config/lidarr/MediaCover" \
         --exclude="server/config/plex/Library/Application Support/Plex Media Server/Metadata" \
         --exclude="server/config/plex/Library/Application Support/Plex Media Server/Cache" \
@@ -56,7 +65,7 @@ function backup_and_prune() {
 function finish() {
   # Log status
   if [ $STATUS == "FAIL" ]; then
-    python3 /home/phrog/scripts/ha-notify.py "${BACKUP_TYPE^} Backup" "ERROR - $BACKUP_NAME backup failed..."
+    python3 /home/$LOCAL_USER/scripts/ha-notify.py "${BACKUP_TYPE^} Backup" "ERROR - $BACKUP_NAME backup failed..."
     echo -e "${RED}Backup failed...${NC}"
   else
     echo -e "${GREEN}Backup succeeded!...${NC}"
@@ -71,9 +80,9 @@ function finish() {
 
   # Send notification via home assistant
   if [ $STATUS == "FAIL" ]; then
-    python3 /home/phrog/scripts/ha-notify.py "${BACKUP_TYPE^} Backup" "ERROR - $BACKUP_NAME backup failed..."
+    python3 /home/$LOCAL_USER/scripts/ha-notify.py "${BACKUP_TYPE^} Backup" "ERROR - $BACKUP_NAME backup failed..."
   else
-    python3 /home/phrog/scripts/ha-notify.py "${BACKUP_TYPE^} Backup" "SUCCESS - $BACKUP_NAME backup succeeded!"
+    python3 /home/$LOCAL_USER/scripts/ha-notify.py "${BACKUP_TYPE^} Backup" "SUCCESS - $BACKUP_NAME backup succeeded!"
   fi
 
   rm $MAIL_FILE

@@ -1,16 +1,16 @@
 # Backup scripts for homelab
 
 1. Fill in all fields in env file
-2. Edit ha-notify path in common.sh
-3. Create a file named 'gpgpass' containing the encryption password for backups.
-4. Create a file named 'bwpass' containing the encryption password for bw backup
-5. For both 'gpgpass' and 'bwpass'
+2. Create a file named 'gpgpass' containing the desired encryption password for borg backups
+3. Create a file named 'bwpass' containing the encryption password for bitwarden backups
+4. For both 'gpgpass' and 'bwpass'
    ```
    chmod 600 <filename>
    chown root:root <filename>
    ```
-5. Set up a cron job to execute files.sh, server.sh, music.sh, and misc.sh when desired
-6. Set up SMTP for your server (/etc/ssmtp/ssmtp.conf)
+5. Set up a cron job to execute files.sh, server.sh, music.sh, and misc.sh when desired.
+    - Make sure to stagger to prevent backup corruption. For example, I execute music.sh at 2am, misc.sh at 3am, files.sh every 4 hours, and server.sh at 5am.
+6. Set up SSMTP to enable email notifications about your backups (/etc/ssmtp/ssmtp.conf)
 
 
 ## Resources:

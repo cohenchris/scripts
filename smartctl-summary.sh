@@ -1,5 +1,9 @@
 #!/bin/bash
 
+source $(dirname "$0")/.env
+DATE=$(date +"%Y%m%d")
+
+
 touch smartlog
 echo "------------------------------ /dev/sda ------------------------------" >> smartlog
 echo >> smartlog
@@ -19,9 +23,6 @@ echo >> smartlog
 echo "------------------------------ /dev/sdd ------------------------------" >> smartlog
 echo >> smartlog
 smartctl -a /dev/sdd >> smartlog
-
-DATE=$(date +"%Y%m%d")
-EMAIL="chris@chriscohen.dev"
 
 while ! mail -s "S.M.A.R.T. Logs $DATE" $EMAIL < smartlog
 do
