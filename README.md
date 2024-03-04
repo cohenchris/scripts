@@ -24,3 +24,6 @@
 - This script updates all installed packages on this system, and updates all running docker containers.
 
 *Make sure to `mv sample.env .env` for environment variables to take effect*
+
+#### `manual-usbs-misc-backup.sh`
+- As part of my 3-2-1 backup system, I have 2x USB sticks in a fireproof safe with the very basics that I would need to restore backups in a worst-case-scenario.
