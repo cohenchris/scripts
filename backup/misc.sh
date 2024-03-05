@@ -38,13 +38,13 @@ bw lock
 cd $MISC_BACKUP_DIR
 
 # Backup all misc files to backup server
-rsync -r --delete . ${BACKUP_SERVER}:${MISC_BACKUP_DIR}
+rsync -r --delete --update . ${BACKUP_SERVER}:${MISC_BACKUP_DIR}
 
 # Backup to Backblaze B2
 /usr/local/bin/b2 sync --delete --replaceNewer . b2://$MISC_BACKUP_BUCKET
 
 # Backup to Nextcloud /etc/backups/misc
-rsync -r --delete . /home/$LOCAL_USER/files/etc/backups/misc
-/home/$LOCAL_USER/scripts/scan-nextcloud-files.sh
+rsync -r --delete --update . /home/$LOCAL_USER/files/etc/backups/misc
+/home/$LOCAL_USER/scripts/scan-nextcloud-files.sh $LOCAL_USER
 
 finish

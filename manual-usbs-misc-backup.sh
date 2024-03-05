@@ -12,6 +12,8 @@ fi
 STARTING_DIR=$(pwd)
 echo $STARTING_DIR
 
+SCRIPT_DIRNAME=$(dirname "$(realpath "$0")")
+
 # List devices
 fdisk -l
 
@@ -74,8 +76,10 @@ cp -r /backups/misc/* .
 
 cd passwords
 
-# User must remove password from backup_codes.txt interactively here
-/usr/bin/vim backup_codes.txt
+# Decrypt backup_codes.txt
+BACKUP_CODES_PASSWORD=$(cat $SCRIPT_DIRNAME/backupcodespass)
+echo -e "${BACKUP_CODES_PASSWORD}\n:X\n\n\n:wq\n" | /usr/bin/vim backup_codes.txt
+unset BACKUP_CODES_PASSWORD
 
 # Decrypt + extract raivo backup
 ZIPPASS=$(sed -n '5{s/^[[:space:]]*//;s/[[:space:]]*$//;p;q}' backup_codes.txt)

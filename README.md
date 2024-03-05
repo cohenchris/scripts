@@ -1,5 +1,6 @@
 # Scripts
 
+
 #### `auto-restart-502.sh`
 - At times, I get some inexplicable 502 errors for some services that I run. This script restarts any services with a 502 error.
 
@@ -26,4 +27,9 @@
 *Make sure to `mv sample.env .env` for environment variables to take effect*
 
 #### `manual-usbs-misc-backup.sh`
+- Create a file named 'backupcodespass' containing the encryption password for backup_codes.txt in misc backup
+   ```
+   chmod 600 backupcodespass
+   chown root:root backupcodespass
+   ```
 - As part of my 3-2-1 backup system, I have 2x USB sticks in a fireproof safe with the very basics that I would need to restore backups in a worst-case-scenario.
