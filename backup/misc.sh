@@ -41,7 +41,7 @@ cd $MISC_BACKUP_DIR
 rsync -r --delete --update . ${BACKUP_SERVER}:${MISC_BACKUP_DIR}
 
 # Backup to Backblaze B2
-/usr/local/bin/b2 sync --delete --replaceNewer . b2://$MISC_BACKUP_BUCKET
+bbb2 sync --delete --replaceNewer . b2://$MISC_BACKUP_BUCKET
 
 # Backup to Nextcloud /etc/backups/misc
 rsync -r --delete --update . /home/$LOCAL_USER/files/etc/backups/misc
