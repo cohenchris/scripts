@@ -23,6 +23,7 @@ export BW_SESSION=$(bw unlock --raw --passwordfile ${BW_PASS_FILE})
 cd $BW_BACKUP_DIR
 
 # Backup to local drive
+bw sync
 bw export --raw --session $BW_SESSION --format encrypted_json --password $(cat $BW_PASS_FILE) > ${BW_BACKUP_FILE}
 
 # Prune BW backups, keep last 30 days

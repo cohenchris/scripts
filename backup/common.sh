@@ -1,5 +1,3 @@
-SCRIPT_DIRNAME=$(dirname $0)
-
 MAX_MAIL_ATTEMPTS=100
 
 # Start mail file
@@ -67,7 +65,7 @@ function backup_and_prune() {
 function finish() {
   # Log status
   if [ $STATUS == "FAIL" ]; then
-    python3 ${SCRIPT_DIRNAME}/../ha-notify.py "${BACKUP_TYPE^} Backup" "ERROR - $BACKUP_NAME backup failed..."
+    python3 ${SCRIPTS_DIR}/ha-notify.py "${BACKUP_TYPE^} Backup" "ERROR - $BACKUP_NAME backup failed..."
     echo -e "${RED}Backup failed...${NC}"
   else
     echo -e "${GREEN}Backup succeeded!...${NC}"
@@ -82,9 +80,9 @@ function finish() {
 
   # Send notification via home assistant
   if [ $STATUS == "FAIL" ]; then
-    python3 ${SCRIPT_DIRNAME}/../ha-notify.py "${BACKUP_TYPE^} Backup" "ERROR - $BACKUP_NAME backup failed..."
+    python3 ${SCRIPTS_DIR}/ha-notify.py "${BACKUP_TYPE^} Backup" "ERROR - $BACKUP_NAME backup failed..."
   else
-    python3 ${SCRIPT_DIRNAME}/../ha-notify.py "${BACKUP_TYPE^} Backup" "SUCCESS - $BACKUP_NAME backup succeeded!"
+    python3 ${SCRIPTS_DIR}/ha-notify.py "${BACKUP_TYPE^} Backup" "SUCCESS - $BACKUP_NAME backup succeeded!"
   fi
 
   rm $MAIL_FILE
