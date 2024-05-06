@@ -1,5 +1,5 @@
 # Start mail file
-echo -e "${BACKUP_TYPE} backup ${DATE}\n\n" > ${MAIL_FILE}
+echo "---------- TASKS ----------" > ${MAIL_FILE}
 
 
 
