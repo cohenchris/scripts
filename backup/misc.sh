@@ -35,8 +35,8 @@ bw lock
 ####################################################
 #   Propagate misc backups to backup server + B2   #
 ####################################################
-# 1. Backup all misc files to backup server
-remote_sync ${MISC_LOCAL_BACKUP_DIR} ${MISC_REMOTE_BACKUP_DIR}
+# 1. Create a borg backup on the remote backup server
+rsync -r --delete --update --progress ${MISC_LOCAL_BACKUP_DIR} ${REMOTE_BACKUP_SERVER}:${MISC_REMOTE_BACKUP_DIR}
 
 # 3. Sync a copy of the backup to Backblaze B2
 backblaze_sync ${MISC_LOCAL_BACKUP_DIR} ${MISC_BACKUP_BUCKET}

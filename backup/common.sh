@@ -146,31 +146,6 @@ function backblaze_sync() {
 
 
 
-# remote_sync(dir_to_sync, backup_dest)
-#   dir_to_sync - backup directory to sync to remote
-#   backup_dest - destination to sync backup
-#
-# Syncs a given directory to a given destination on the remote backup server
-function remote_sync() {
-  dir_to_sync=$1
-  backup_dest=$2
-
-  # Sanity check
-  if [[ -z "${dir_to_sync}" || -z "${backup_dest}" ]]; then
-    echo -e "${RED}remote_sync - invalid arguments${NC}" >> ${MAIL_FILE}
-    STATUS=FAIL
-    return
-  fi
-
-  # Sync to remote backup server
-  cd ${dir_to_sync}
-  #rsync -r --progress --delete --update . $REMOTE_BACKUP_SERVER:${backup_dest}
-  mail_log "remote backup" $?
-  cd ${WORKING_DIR}
-}
-
-
-
 # finish()
 #
 # Logs, notifies me via HomeAssistant, emails me the backup status, and cleans up
