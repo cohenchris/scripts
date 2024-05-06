@@ -3,27 +3,18 @@
 # To restore: borg extract /backups/music::<backup_name>
 #   note: execute this where you would like the 'music' folder to be placed
 
-# Source env file and prepare env vars
-BACKUP_TYPE=$(basename $0 | cut -d "." -f 1)
+if [ "$(id -u)" -ne 0 ]; then
+    echo "This script must be run as root" 
+    exit 1
+fi
+
+# Set up environment
 source $(dirname "$0")/.env
 
-BACKUP_DIRNAME=$(basename $MUSIC_BACKUP_DIR)
-SCRIPT_DIRNAME=$(dirname "$0")
-STATUS=SUCCESS
+# 1. Create a backup to local drive
+borg_backup ${MUSIC_DIR_TO_BACKUP} ${MUSIC_LOCAL_BACKUP_DIR}
 
-# Go to directory that we will backup
-cd $MUSIC_DIR
-cd ../
-
-# Backup to local drive
-export BORG_REPO=$MUSIC_BACKUP_DIR
-backup_and_prune
-
-# Backup to backup server
-export BORG_REPO="$BACKUP_SERVER:$MUSIC_BACKUP_DIR"
-backup_and_prune
+# 2. Rsync a copy of the backup to remote backup server
+remote_sync ${MUSIC_LOCAL_BACKUP_DIR} ${MUSIC_REMOTE_BACKUP_DIR}
 
 finish
-
-# Deinitialize
-unset BORG_PASSPHRASE

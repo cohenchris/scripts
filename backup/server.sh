@@ -3,45 +3,36 @@
 # To restore: borg extract /backups/server::<backup_name>
 #   note: execute this where you would like the 'server' folder to be placed
 
-# Set up environment variables
-BACKUP_TYPE=$(basename $0 | cut -d "." -f 1)
+if [ "$(id -u)" -ne 0 ]; then
+    echo "This script must be run as root" 
+    exit 1
+fi
+
+# Set up environment
 source $(dirname "$0")/.env
-BACKUP_DIRNAME=$(basename $SERVER_DIR)
-SCRIPT_DIRNAME=$(dirname $0)
-STATUS=SUCCESS
 
 # Go to directory that we will backup
-cd $SERVER_DIR
+cd ${SERVER_DIR_TO_BACKUP}
 # Shutdown server
 docker-compose down
 # Export crontab
-crontab -l -u $LOCAL_USER > crontab.txt
+crontab -l -u ${CRON_BACKUP_USER} > crontab.txt
 crontab -l > sudo_crontab.txt
-cd ../
+cd ${WORKING_DIR}
 
-# Backup to local drive
-export BORG_REPO=$SERVER_BACKUP_DIR
-echo "LOCAL BACKUP" >> $MAIL_FILE
-backup_and_prune
+# 1. Create a backup to local drive
+borg_backup ${SERVER_DIR_TO_BACKUP} ${SERVER_LOCAL_BACKUP_DIR}
 
-# Backup to backup server
-export BORG_REPO="$BACKUP_SERVER:$SERVER_BACKUP_DIR"
-echo "REMOTE BACKUP" >> $MAIL_FILE
-backup_and_prune
-
-# Upload to b2
-cd $SERVER_BACKUP_DIR
-bbb2 sync --delete --replace-newer . b2://$SERVER_BACKUP_BUCKET
-mail_log $? "b2 backup"
-
-# Remove crontab backup
-cd $SERVER_DIR
+# Start services back up
+cd ${SERVER_DIR_TO_BACKUP}
 rm crontab.txt sudo_crontab.txt
-
-# Start server
 docker-compose up -d
+cd ${WORKING_DIR}
+
+# 2. Rsync a copy of the backup to remote backup server
+remote_sync ${SERVER_LOCAL_BACKUP_DIR} ${SERVER_REMOTE_BACKUP_DIR}
+
+# 3. Sync a copy of the backup to Backblaze B2
+backblaze_sync ${SERVER_LOCAL_BACKUP_DIR} ${SERVER_BACKUP_BUCKET}
 
 finish
-
-# Deinitialize
-unset BORG_PASSPHRASE

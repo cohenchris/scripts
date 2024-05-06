@@ -3,33 +3,27 @@
 # To restore: borg extract /backups/files::<backup_name>
 #   note: execute this where you would like the 'files' folder to be placed
 
-# Set up environment variables
-BACKUP_TYPE=$(basename $0 | cut -d "." -f 1)
+if [ "$(id -u)" -ne 0 ]; then
+    echo "This script must be run as root" 
+    exit 1
+fi
+
+# Set up environment
 source $(dirname "$0")/.env
-BACKUP_DIRNAME=$(basename $FILES_DIR)
-SCRIPT_DIRNAME=$(dirname $0)
-STATUS=SUCCESS
 
-# Go to directory that we will backup
-cd $FILES_DIR
-cd ../
+# Put Nextcloud in maintenance mode to prevent file changes
+docker exec -it -u www-data nextcloud php occ maintenace:mode --on
 
-# Backup to local drive
-export BORG_REPO=$FILES_BACKUP_DIR
-echo "LOCAL BACKUP" >> $MAIL_FILE
-backup_and_prune
+# 1. Create a backup to local drive
+borg_backup ${FILES_DIR_TO_BACKUP} ${FILES_LOCAL_BACKUP_DIR}
 
-# Backup to backup server
-export BORG_REPO="$BACKUP_SERVER:$FILES_BACKUP_DIR"
-echo "REMOTE BACKUP" >> $MAIL_FILE
-backup_and_prune
+# Take Nextcloud out of maintenance mode
+docker exec -it -u www-data nextcloud php occ maintenace:mode --off
 
-# Backup to Backblaze B2
-cd $FILES_BACKUP_DIR
-bbb2 sync --delete --replace-newer . b2://$FILES_BACKUP_BUCKET
-mail_log $? "b2 backup"
+# 2. Rsync a copy of the backup to remote backup server
+remote_sync ${FILES_LOCAL_BACKUP_DIR} ${FILES_REMOTE_BACKUP_DIR}
+
+# 3. Sync a copy of the backup to Backblaze B2
+backblaze_sync ${FILES_LOCAL_BACKUP_DIR} ${FILES_BACKUP_BUCKET}
 
 finish
-
-# Deinitialize
-unset BORG_PASSPHRASE
