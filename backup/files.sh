@@ -12,7 +12,7 @@ fi
 source $(dirname "$0")/.env
 
 # Put Nextcloud in maintenance mode to prevent file changes
-docker exec -it -u www-data nextcloud php occ maintenace:mode --on
+docker exec -it -u www-data nextcloud php occ maintenance:mode --on
 
 # 1. Create a borg backup on the local drive
 echo "Local Backup" >> ${MAIL_FILE}
@@ -23,7 +23,7 @@ echo "Remote Backup" >> ${MAIL_FILE}
 borg_backup ${FILES_DIR_TO_BACKUP} ${REMOTE_BACKUP_SERVER}:${FILES_REMOTE_BACKUP_DIR}
 
 # Take Nextcloud out of maintenance mode
-docker exec -it -u www-data nextcloud php occ maintenace:mode --off
+docker exec -it -u www-data nextcloud php occ maintenance:mode --off
 
 # 3. Sync a copy of the backup to Backblaze B2
 backblaze_sync ${FILES_LOCAL_BACKUP_DIR} ${FILES_BACKUP_BUCKET}
