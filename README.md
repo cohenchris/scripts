@@ -1,15 +1,15 @@
 # Scripts
 
-**Remember to fill out `sample.env`, then `mv sample.env .env` for these variables to take effect**
+**Please fill out `sample.env`, then `mv sample.env .env` for these scripts to work properly**
 
-#### `download-youtube-videos.sh`
+#### `download-youtube-videos.sh <FILENAME>`
 - Create a file which contains youtube links on separate lines
 - Given the filename as an argument, this script will download each youtube video
 
 #### `dynamic-seedbox.sh`
 - Sends the IP of qbittorrent to MyAnonamouse, which requires the correct IP in order to record ratios.
 
-#### `ha-notify.py`
+#### `ha-notify.py <SUBJECT> <BODY>`
 - A python script to easily send a notification to the Home Assistant app on my phone.
 
 #### `manual-usbs-misc-backup.sh`
@@ -29,7 +29,8 @@
 #### `scan-nextcloud-files.sh`
 - This script sets all file permissions and ownerships for my Nextcloud files. This ensures proper access controls for the Nextcloud web UI. Afterwards, it has Nextcloud scan all files, ensuring that the web UI is aware of and displays all present files.
 
-#### `smartctl-summary.sh`
-- This script sends a drive health summary email to my inbox.
-
-
+#### `device-health.sh {test | report}`
+- This script is used for the monitoring of device health via smartctl (list your devices inside the script)
+- There are two different functions
+   - `test` - run a full smartctl test on the declared devices
+   - `report` - email a comprehensive report on the last executed smartctl job
