@@ -6,6 +6,8 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 source $(dirname "$0")/.env
+
+# List all of your devices here
 declare -a devices=(
   /dev/sda
   /dev/sdb
