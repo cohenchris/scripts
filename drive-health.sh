@@ -7,22 +7,14 @@ fi
 
 source $(dirname "$0")/.env
 
-# List all of your devices here
-declare -a devices=(
-  /dev/sda
-  /dev/sdb
-  /dev/sdc
-  /dev/sdd
-)
-
 
 
 # smartctl_test()
 #
-# Run a full smartctl test on the declared devices
+# Run a full smartctl test on the defined drives
 function smartctl_test() {
-  for device in ${devices[@]}; do
-    smartctl -t long $device >/dev/null 2>&1
+  for drive in ${DRIVES_TO_SCAN[@]}; do
+    smartctl -t long $drive >/dev/null 2>&1
   done
 }
 
@@ -37,21 +29,21 @@ function smartctl_report() {
   BODY=/tmp/body
   rm $BODY
 
-  # Summarize each declared device
-  for device in ${devices[@]}; do
-    echo "------------------------------ $device ------------------------------" >> $BODY
-    if [[ $(smartctl -H $device) == *"PASSED" ]]; then
+  # Summarize each declared drive
+  for drive in ${DRIVES_TO_SCAN[@]}; do
+    echo "------------------------------ $drive ------------------------------" >> $BODY
+    if [[ $(smartctl -H $drive) == *"PASSED" ]]; then
       # Print short-form health that basically only shows "PASSED"
-      smartctl -H $device >> $BODY
+      smartctl -H $drive >> $BODY
     else
       # There's something wrong, print a more comprehensive summary
-      smartctl -a $device >> $BODY
+      smartctl -a $drive >> $BODY
       STATUS="FAIL"
     fi
   done
 
   # Send the summary email
-  SUBJECT="$STATUS - Device Health Report $DATE"
+  SUBJECT="$STATUS - Drive Health Report $DATE"
   send_email "$EMAIL" "$SUBJECT" "$BODY"
   rm $BODY
 }
