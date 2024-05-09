@@ -6,6 +6,12 @@
 - Create a file which contains youtube links on separate lines
 - Given the filename as an argument, this script will download each youtube video
 
+#### `drive-health.sh {test | report}`
+- This script is used for the monitoring of drive health via smartctl (list your drives inside the script)
+- There are two different functions
+   - `test` - run a full smartctl test on the declared drives
+   - `report` - email a comprehensive report on the last executed smartctl job
+
 #### `dynamic-seedbox.sh`
 - Sends the IP of qbittorrent to MyAnonamouse, which requires the correct IP in order to record ratios.
 
@@ -29,8 +35,5 @@
 #### `scan-nextcloud-files.sh`
 - This script sets all file permissions and ownerships for my Nextcloud files. This ensures proper access controls for the Nextcloud web UI. Afterwards, it has Nextcloud scan all files, ensuring that the web UI is aware of and displays all present files.
 
-#### `device-health.sh {test | report}`
-- This script is used for the monitoring of device health via smartctl (list your devices inside the script)
-- There are two different functions
-   - `test` - run a full smartctl test on the declared devices
-   - `report` - email a comprehensive report on the last executed smartctl job
+#### `test-qbittorrent.sh`
+- This script checks to see if qBittorrent is connectable. If it is not, it will restart the program.
