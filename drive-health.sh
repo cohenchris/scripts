@@ -27,7 +27,7 @@ function smartctl_report() {
   DATE=$(date +"%Y%m%d")
   STATUS="SUCCESS"
   BODY=/tmp/body
-  rm $BODY
+  rm -f $BODY
 
   # Summarize each declared drive
   for drive in ${DRIVES_TO_SCAN[@]}; do
