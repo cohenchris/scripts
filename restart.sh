@@ -1,6 +1,8 @@
 #!/bin/bash
 
-source $(dirname "$0")/.env
+WORKING_DIR=$(dirname "$0")
+source $WORKING_DIR/.env
+
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
 
 cd ${SERVER_DIR}
@@ -11,7 +13,6 @@ docker-compose up -d --remove-orphans
 cd
 
 # Fix nextcloud warnings
-docker exec nextcloud apt -y update
-docker exec nextcloud apt -y install libmagickcore-6.q16-6-extra ffmpeg
+${WORKING_DIR}/nextcloud-install-ffmpeg.sh
 
-$(dirname "$0")/dynamic-seedbox.sh
+$WORKING_DIR/dynamic-seedbox.sh

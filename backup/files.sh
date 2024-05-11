@@ -9,7 +9,8 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # Set up environment
-source $(dirname "$0")/.env
+WORKING_DIR=$(dirname "$0")
+source $WORKING_DIR/.env
 
 # Put Nextcloud in maintenance mode to prevent file changes
 docker exec -it -u www-data nextcloud php occ maintenance:mode --on

@@ -1,6 +1,7 @@
 #!/bin/bash
 
-source $(dirname "$0")/.env
+WORKING_DIR=$(dirname "$0")
+source $WORKING_DIR/.env
 
 echo "Scanning ${NEXTCLOUD_FILES_DIR}..."
 

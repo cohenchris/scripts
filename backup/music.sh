@@ -9,7 +9,8 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # Set up environment
-source $(dirname "$0")/.env
+WORKING_DIR=$(dirname "$0")
+source $WORKING_DIR/.env
 
 # 1. Create a borg backup on the local drive
 echo "Local Backup" >> ${MAIL_FILE}

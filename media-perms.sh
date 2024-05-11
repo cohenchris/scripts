@@ -1,6 +1,7 @@
 #!/bin/bash
 
-source $(dirname "$0")/.env
+WORKING_DIR=$(dirname "$0")
+source $WORKING_DIR/.env
 
 sudo chown -R $USER:1000 ${MEDIA_DIR}
 

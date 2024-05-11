@@ -9,7 +9,8 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # Set up environment
-source $(dirname "$0")/.env
+WORKING_DIR=$(dirname "$0")
+source $WORKING_DIR/.env
 
 # Shutdown server
 cd ${SERVER_DIR_TO_BACKUP}

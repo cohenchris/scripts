@@ -12,7 +12,7 @@ fi
 STARTING_DIR=$(pwd)
 echo $STARTING_DIR
 
-SCRIPT_DIRNAME=$(dirname "$(realpath "$0")")
+WORKING_DIR=$(dirname "$0")
 
 # List devices
 fdisk -l
@@ -77,7 +77,7 @@ cp -r /backups/misc/* .
 cd passwords
 
 # Decrypt backup_codes.txt
-BACKUP_CODES_PASSWORD=$(cat $SCRIPT_DIRNAME/backupcodespass)
+BACKUP_CODES_PASSWORD=$(cat $WORKING_DIR/backupcodespass)
 echo -e "${BACKUP_CODES_PASSWORD}\n:X\n\n\n:wq\n" | /usr/bin/vim backup_codes.txt
 unset BACKUP_CODES_PASSWORD
 

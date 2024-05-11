@@ -1,6 +1,7 @@
 #!/bin/bash
 
-source $(dirname "$0")/.env
+WORKING_DIR=$(dirname "$0")
+source $WORKING_DIR/.env
 
 # Query vpn container to get public IP
 PUBLIC_IP=$(curl -s localhost:8001/v1/publicip/ip | jq -r ".public_ip")

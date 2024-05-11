@@ -5,7 +5,8 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
-source $(dirname "$0")/.env
+WORKING_DIR=$(dirname "$0")
+source $WORKING_DIR/.env
 
 
 
