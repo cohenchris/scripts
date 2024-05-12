@@ -9,8 +9,11 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # Set up environment
-WORKING_DIR=$(dirname "$0")
+WORKING_DIR=$(dirname "$(realpath "$0")")
 source $WORKING_DIR/.env
+
+# Stop Lidarr to prevent files changing while backing up
+docker stop lidarr
 
 # 1. Create a borg backup on the local drive
 echo "Local Backup" >> ${MAIL_FILE}
@@ -19,5 +22,8 @@ borg_backup ${MUSIC_DIR_TO_BACKUP} ${MUSIC_LOCAL_BACKUP_DIR}
 # 2. Create a borg backup on the remote backup server
 echo "Remote Backup" >> ${MAIL_FILE}
 borg_backup ${MUSIC_DIR_TO_BACKUP} ${REMOTE_BACKUP_SERVER}:${MUSIC_REMOTE_BACKUP_DIR}
+
+# Resume Lidarr
+docker start lidarr
 
 finish

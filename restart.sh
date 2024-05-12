@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WORKING_DIR=$(dirname "$0")
+WORKING_DIR=$(dirname "$(realpath "$0")")
 source $WORKING_DIR/.env
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin

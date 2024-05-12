@@ -9,7 +9,7 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # Set up environment
-WORKING_DIR=$(dirname "$0")
+WORKING_DIR=$(dirname "$(realpath "$0")")
 source $WORKING_DIR/.env
 
 # Put Nextcloud in maintenance mode to prevent file changes

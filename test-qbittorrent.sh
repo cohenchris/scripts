@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WORKING_DIR=$(dirname "$0")
+WORKING_DIR=$(dirname "$(realpath "$0")")
 source $WORKING_DIR/.env
 
 # Query vpn container to get public IP

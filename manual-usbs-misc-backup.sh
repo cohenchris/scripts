@@ -12,7 +12,7 @@ fi
 STARTING_DIR=$(pwd)
 echo $STARTING_DIR
 
-WORKING_DIR=$(dirname "$0")
+WORKING_DIR=$(dirname "$(realpath "$0")")
 
 # List devices
 fdisk -l
