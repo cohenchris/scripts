@@ -18,14 +18,6 @@
 #### `ha-notify.py <SUBJECT> <BODY>`
 - A python script to easily send a notification to the Home Assistant app on my phone.
 
-#### `manual-usbs-misc-backup.sh`
-- Create a file named 'backupcodespass' containing the encryption password for backup_codes.txt in misc backup
-   ```
-   chmod 600 backupcodespass
-   chown root:root backupcodespass
-   ```
-- As part of my 3-2-1 backup system, I have 2x USB sticks in a fireproof safe with the very basics that I would need to restore backups in a worst-case-scenario.
-
 #### `media-perms.sh`
 - This simple script sets the right file ownership/permissions for all of my media files
 

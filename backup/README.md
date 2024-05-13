@@ -13,5 +13,15 @@
 6. Set up SSMTP to enable email notifications about your backups (/etc/ssmtp/ssmtp.conf)
 
 
+#### `manual-usbs-misc-backup.sh`
+- Create a file named 'backupcodespass' containing the encryption password for backup_codes.txt in misc backup
+   ```
+   chmod 600 backupcodespass
+   chown root:root backupcodespass
+   ```
+- As part of my 3-2-1 backup system, I have 2x USB sticks in a fireproof safe with the very basics that I would need to restore backups in a worst-case-scenario.
+
+
+
 ## Resources:
 - [Backup with Borg](https://jstaf.github.io/2018/03/12/backups-with-borg-rsync.html)
