@@ -2,10 +2,6 @@
 
 **Please fill out `sample.env`, then `mv sample.env .env` for these scripts to work properly**
 
-#### `download-youtube-videos.sh <FILENAME>`
-- Create a file which contains youtube links on separate lines
-- Given the filename as an argument, this script will download each youtube video
-
 #### `drive-health.sh {test | report}`
 - This script is used for the monitoring of drive health via smartctl (list your drives inside the script)
 - There are two different functions
