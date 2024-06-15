@@ -16,14 +16,21 @@ source $WORKING_DIR/.env
 docker stop lidarr
 
 # 1. Create a borg backup on the local drive
-echo "Local Backup" >> ${MAIL_FILE}
+echo "Music Local Backup" >> ${MAIL_FILE}
 borg_backup ${MUSIC_DIR_TO_BACKUP} ${MUSIC_LOCAL_BACKUP_DIR}
 
 # 2. Create a borg backup on the remote backup server
-echo "Remote Backup" >> ${MAIL_FILE}
+echo "Music Remote Backup" >> ${MAIL_FILE}
 borg_backup ${MUSIC_DIR_TO_BACKUP} ${REMOTE_BACKUP_SERVER}:${MUSIC_REMOTE_BACKUP_DIR}
 
 # Resume Lidarr
 docker start lidarr
+
+# Make a backup of music videos on local and remote backup directories
+echo "Music Videos Backup" >> ${MAIL_FILE}
+rsync -r --delete --update --progress ${MUSICVIDEOS_DIR_TO_BACKUP}/ ${MUSICVIDEOS_LOCAL_BACKUP_DIR}
+mail_log "music videos local backup" $?
+rsync -r --delete --update --progress ${MUSICVIDEOS_DIR_TO_BACKUP}/ ${REMOTE_BACKUP_SERVER}:${MUSICVIDEOS_REMOTE_BACKUP_DIR}
+mail_log "music videos remote backup" $?
 
 finish

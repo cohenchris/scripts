@@ -11,8 +11,8 @@
 #### `dynamic-seedbox.sh`
 - Sends the IP of qbittorrent to MyAnonamouse, which requires the correct IP in order to record ratios.
 
-#### `ha-notify.py <SUBJECT> <BODY>`
-- A python script to easily send a notification to the Home Assistant app on my phone.
+#### `ha-notify.sh <SUBJECT> <BODY>`
+- Used to easily send a notification to the Home Assistant app on my phone.
 
 #### `media-perms.sh`
 - This simple script sets the right file ownership/permissions for all of my media files

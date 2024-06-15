@@ -6,7 +6,7 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 WORKING_DIR=$(dirname "$(realpath "$0")")
-source $WORKING_DIR/.env
+source ${WORKING_DIR}/.env
 
 
 
