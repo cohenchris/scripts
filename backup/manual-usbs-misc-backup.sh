@@ -81,10 +81,10 @@ BACKUP_CODES_PASSWORD=$(cat $WORKING_DIR/backupcodespass)
 echo -e "${BACKUP_CODES_PASSWORD}\n:X\n\n\n:wq\n" | /usr/bin/vim backup_codes.txt
 unset BACKUP_CODES_PASSWORD
 
-# Decrypt + extract raivo backup
-ZIPPASS=$(sed -n '5{s/^[[:space:]]*//;s/[[:space:]]*$//;p;q}' backup_codes.txt)
-7z x -p"$ZIPPASS" raivo-otp-export.zip
-unset ZIPPASS
+# Decrypt + extract 2fa backup (get password from backup_codes.txt)
+MFA_BACKUP_PASSWORD=$(sed -n '5{s/^[[:space:]]*//;s/[[:space:]]*$//;p;q}' backup_codes.txt)
+echo -e "${MFA_BACKUP_PASSWORD}\n:X\n\n\n:wq\n" | /usr/bin/vim 2fa_backup.2fas
+unset MFA_BACKUP_PASSWORD
 
 cd /mnt
 
