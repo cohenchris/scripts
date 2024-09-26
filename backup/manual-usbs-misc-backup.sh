@@ -9,75 +9,101 @@ if [[ $(/usr/bin/id -u) -ne 0 ]]; then
   exit
 fi
 
+# Initialize environment
 STARTING_DIR=$(pwd)
-echo $STARTING_DIR
-
-WORKING_DIR=$(dirname "$(realpath "$0")")
+WORKING_DIR=$(dirname "$(realpath "${0}")")
+USB1_MNT_PATH=/mnt/usb1
+USB2_MNT_PATH=/mnt/usb2
 
 # List devices
 fdisk -l
 
+echo
 echo "########################################"
 echo "#           ***WARNING***              #"
 echo "#    MAKE ABSOLUTELY SURE THAT THE     #"
 echo "#  DEVICE NAMES ARE CORRECT, OR YOU    #"
 echo "#     RISK CATASTROPHIC DATA LOSS      #"
 echo "########################################"
-echo
 
 # Ask for USB device name #1
-echo "Enter USB device name #1 (in the format /dev/sdX):"
-read DEV_NAME_1
 echo
+read -p "Enter USB device name #1 (in the format /dev/sdX): " USB1_DEV_NAME
 
 # Ask for USB device name #2
-echo "Enter USB device name #2 (in the format /dev/sdX):"
-read DEV_NAME_2
 echo
+read -p "Enter USB device name #2 (in the format /dev/sdX): " USB2_DEV_NAME
+
+# Confirm choices
+echo
+fdisk -l ${USB1_DEV_NAME}
+echo
+fdisk -l ${USB2_DEV_NAME}
+echo
+
+read -p "Are these devices correct? (y/N) " yn
+
+case $yn in
+  [Yy]* ) ;;
+  *     ) exit;;
+esac
 
 ####################
 #       SETUP      #
 ####################
 # Create temp directories for USBs
-echo "Creating temp directories for USBs"
-if [[ ! -d "/mnt/usb1" ]]; then
-  mkdir /mnt/usb1
+echo
+echo "Creating temporary mount directories for USBs..."
+if [[ ! -d "${USB1_MNT_PATH}" ]]; then
+  mkdir ${USB1_MNT_PATH}
 else
-  echo "ERROR: /mnt/usb1 already exists..."
+  echo "ERROR: ${USB1_MNT_PATH} already exists. Please remove this directory before running this script."
   exit
 fi
 
-if [[ ! -d "/mnt/usb2" ]]; then
-  mkdir /mnt/usb2
+if [[ ! -d "${USB2_MNT_PATH}" ]]; then
+  mkdir ${USB2_MNT_PATH}
 else
-  echo "ERROR: /mnt/usb2 already exists..."
+  echo "ERROR: ${USB2_MNT_PATH} already exists. Please remove this directory before running this script."
   exit
 fi
 
-# Mount provided devices to the /mnt directories
-echo "Mounting $DEV_NAME_1"
-mount $DEV_NAME_1 /mnt/usb1 || exit
+# Mount provided devices to their temporary mount directories
+echo
+echo "Mounting ${USB1_DEV_NAME} to ${USB1_MNT_PATH}..."
+mount ${USB1_DEV_NAME} ${USB1_MNT_PATH}
+if [[ ${?} -ne 0 ]]; then
+  echo "ERROR: Mounting ${USB1_DEV_NAME} to ${USB1_MNT_PATH} failed with error code ${?}..."
+  exit
+fi
 
-echo "Mounting $DEV_NAME_2"
-mount $DEV_NAME_2 /mnt/usb2 || exit
+echo
+echo "Mounting ${USB2_DEV_NAME} to ${USB2_MNT_PATH}..."
+mount ${USB2_DEV_NAME} ${USB2_MNT_PATH}
+if [[ ${?} -ne 0 ]]; then
+  echo "ERROR: Mounting ${USB2_DEV_NAME} to ${USB2_MNT_PATH} failed with error code ${?}..."
+  exit
+fi
 
 # Clear both USBs
-echo "Clearing USBs"
-rm -r /mnt/usb1/*
-rm -r /mnt/usb2/*
+echo
+echo "Clearing USBs..."
+rm -r ${USB1_MNT_PATH}/*
+rm -r ${USB2_MNT_PATH}/*
 
 ####################
 #  COPY + DECRYPT  #
 ####################
 # First, copy base misc backup to usb1
-echo "Copying misc backup to usb1"
-cd /mnt/usb1
+echo
+echo "Copying misc backup to usb1..."
+cd ${USB1_MNT_PATH}
 cp -r /backups/misc/* .
 
 cd passwords
 
 # Decrypt backup_codes.txt
-BACKUP_CODES_PASSWORD=$(cat $WORKING_DIR/backupcodespass)
+BACKUP_CODES_PASSWORD=$(cat ${WORKING_DIR}/backupcodespass)
 echo -e "${BACKUP_CODES_PASSWORD}\n:X\n\n\n:wq\n" | /usr/bin/vim backup_codes.txt
 unset BACKUP_CODES_PASSWORD
 
@@ -92,20 +118,24 @@ cd /mnt
 #       CLONE      #
 ####################
 # Clone final contents of usb1 to usb2
-echo "Cloning contents of usb1 to usb2"
-cp -r /mnt/usb1/* /mnt/usb2/
+echo
+echo "Cloning contents of usb1 to usb2..."
+cp -r ${USB1_MNT_PATH}/* ${USB2_MNT_PATH}/
 
-echo "Contents of USBs:"
-ls -R .
+echo
+echo "Done! Contents of USBs:"
+ls -R ${USB1_MNT_PATH}
+ls -R ${USB2_MNT_PATH}
 
 ####################
 #      CLEANUP     #
 ####################
-echo "Cleaning up"
-umount /mnt/usb1
-umount /mnt/usb2
+echo
+echo "Cleaning up..."
+umount ${USB1_MNT_PATH}
+umount ${USB2_MNT_PATH}
 
-rm -r /mnt/usb1
-rm -r /mnt/usb2
+rm -r ${USB1_MNT_PATH}
+rm -r ${USB2_MNT_PATH}
 
-cd $STARTING_DIR
+cd ${STARTING_DIR}
