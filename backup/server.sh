@@ -16,7 +16,7 @@ source $WORKING_DIR/.env
 cd ${SERVER_DIR_TO_BACKUP}
 docker-compose down
 # Export crontab
-crontab -l -u ${CRON_BACKUP_USER} > crontab.txt
+crontab -l -u ${SCRIPT_USER} > crontab.txt
 crontab -l > sudo_crontab.txt
 cd ${WORKING_DIR}
 

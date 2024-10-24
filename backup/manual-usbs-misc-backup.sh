@@ -127,6 +127,11 @@ echo "Done! Contents of USBs:"
 ls -R ${USB1_MNT_PATH}
 ls -R ${USB2_MNT_PATH}
 
+# iCloud upload assistant
+echo "Upload ~/Downloads/misc.zip to iCloud!"
+cd ${MISC_LOCAL_BACKUP_DIR}/../
+zip -r /home/${SCRIPT_USER}/Downloads/misc.zip misc/
+
 ####################
 #      CLEANUP     #
 ####################
