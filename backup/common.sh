@@ -105,10 +105,10 @@ function borg_backup() {
 
   # Prune archives
   # Archives to keep:
-  #   --keep-within 14d   ->     all created within the past 2 weeks
-  #   --keep-weekly 8     ->     one from each of the 8 previous weeks
+  #   --keep-daily 7      ->     all created within the past week
+  #   --keep-weekly 4     ->     one from each of the 8 previous weeks
   #   --keep-monthly 6    ->     one from each of the 6 previous months
-  borg prune --keep-within 14d --keep-weekly 8 --keep-monthly 6
+  borg prune --keep-daily 7 --keep-weekly 4 --keep-monthly 6
   mail_log "borg prune" $?
 }
 
