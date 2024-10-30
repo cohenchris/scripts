@@ -10,10 +10,13 @@ if [[ $(/usr/bin/id -u) -ne 0 ]]; then
 fi
 
 # Initialize environment
+WORKING_DIR=$(dirname "$(realpath "$0")")
+source ${WORKING_DIR}/.env
 STARTING_DIR=$(pwd)
-WORKING_DIR=$(dirname "$(realpath "${0}")")
 USB1_MNT_PATH=/mnt/usb1
 USB2_MNT_PATH=/mnt/usb2
+
+require MISC_LOCAL_BACKUP_DIR
 
 # List devices
 fdisk -l
@@ -98,7 +101,7 @@ rm -r ${USB2_MNT_PATH}/*
 echo
 echo "Copying misc backup to usb1..."
 cd ${USB1_MNT_PATH}
-cp -r /backups/misc/* .
+cp -r ${MISC_LOCAL_BACKUP_DIR}/* .
 
 cd passwords
 
@@ -126,11 +129,6 @@ echo
 echo "Done! Contents of USBs:"
 ls -R ${USB1_MNT_PATH}
 ls -R ${USB2_MNT_PATH}
-
-# iCloud upload assistant
-echo "Upload ~/Downloads/misc.zip to iCloud!"
-cd ${MISC_LOCAL_BACKUP_DIR}/../
-zip -r /home/${SCRIPT_USER}/Downloads/misc.zip misc/
 
 ####################
 #      CLEANUP     #

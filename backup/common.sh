@@ -1,6 +1,17 @@
-# Start mail file
-echo "---------- TASKS ----------" > ${MAIL_FILE}
+# require(var)
+#   var - variable to check
+#
+# This function will throw an error if the provided variable is not set
+function require() {
+  local var="$1"
 
+  if [[ -z "${!var}" ]]; then
+    # Log variable name and calling function name
+    echo -e "${RED}ERROR - ${var} is not set in ${FUNCNAME[1]:-env}${NC}"
+    status=FAIL
+    finish
+  fi
+}
 
 
 # mail_log(event, code)
@@ -9,17 +20,13 @@ echo "---------- TASKS ----------" > ${MAIL_FILE}
 #
 # Given an event, logs a positive or negative status code to the mail log file
 function mail_log() {
-  event=$1
-  code=$2
+  local event="$1"
+  local code="$2"
 
-  # Sanity check
-  if [[ -z "${event}" || -z "${code}" ]]; then
-    echo -e "${RED}mail_log - invalid arguments${NC}" >> ${MAIL_FILE}
-    STATUS=FAIL
-    return
-  fi
+  require event
+  require code
 
-  if [ ${code} -gt 0 ]; then
+  if [[ ${code} -gt 0 ]]; then
     # Failure
     echo "[✘]    ${event}" >> ${MAIL_FILE}
     STATUS=FAIL
@@ -38,16 +45,14 @@ function mail_log() {
 #
 # Sends an email by polling until success
 function send_email() {
-  email=$1
-  subject=$2
-  body=$3
+  local email="$1"
+  local subject="$2"
+  local body="$3"
+  local MAX_MAIL_ATTEMPTS=50
 
-  # Sanity check
-  if [[ -z "${MAX_MAIL_ATTEMPTS}" || -z "${email}" || -z "${subject}" || -z "${body}" ]]; then
-    echo -e "${RED}send_email - invalid arguments${NC}" >> ${MAIL_FILE}
-    STATUS=FAIL
-    return
-  fi
+  require email
+  require subject
+  require body
 
   # Poll email send
   while ! mail -s "${subject}" ${email} < ${body}
@@ -56,10 +61,9 @@ function send_email() {
 
     # Limit attempts. If it goes infinitely, it could fill up the disk.
     MAX_MAIL_ATTEMPTS=$((MAX_MAIL_ATTEMPTS-1))
-    if [ ${MAX_MAIL_ATTEMPTS} -eq 0 ]; then
-      echo -e "${RED}send_email failed,${NC}" >> ${MAIL_LOG}
-      STATUS=FAIL
-      return
+    if [[ ${MAX_MAIL_ATTEMPTS} -eq 0 ]]; then
+      echo -e "${RED}send_email failed${NC}" >> ${MAIL_FILE}
+      fail
     fi
 
     sleep 5
@@ -76,21 +80,22 @@ function send_email() {
 #
 # Creates a borg backup for the specified directory into the specified borg repository
 function borg_backup() {
-  dir_to_backup=$1
-  backup_dest_borg_repo=$2
+  local dir_to_backup="$1"
+  local backup_dest_borg_repo="$2"
 
-  # Sanity check
-  if [[ -z "${BACKUP_TYPE}" || -z "${BACKUP_NAME}" || -z "${dir_to_backup}" || -z "${backup_dest_borg_repo}" ]]; then
-    echo -e "${RED}borg_backup - invalid arguments${NC}" >> ${MAIL_FILE}
-    STATUS=FAIL
-    return
-  fi
-
-  # Borg requires this to function
+  # Environment variables that Borg requires to function
+  # Location of the borg repository
   export BORG_REPO=${backup_dest_borg_repo}
+  # Password with which we encrypt the borg backup archives
+  export BORG_PASSPHRASE=$(cat ${WORKNG_DIR}/gpgpass)
+
+  require dir_to_backup
+  require backup_dest_borg_repo
+  require BORG_REPO
+  require BORG_PASSPHRASE
 
   # Create archive
-  if [ ${BACKUP_TYPE} == "server" ]; then
+  if [[ ${BACKUP_TYPE} == "server" ]]; then
     borg create \
         --exclude="*/config/nextcloud/data/appdata*/preview" \
         --exclude="*/config/lidarr/MediaCover" \
@@ -101,6 +106,7 @@ function borg_backup() {
   else
     borg create --progress --stats ::${BACKUP_NAME} ${dir_to_backup}
   fi
+
   mail_log "borg backup" $?
 
   # Prune archives
@@ -109,6 +115,7 @@ function borg_backup() {
   #   --keep-weekly 4     ->     one from each of the 8 previous weeks
   #   --keep-monthly 6    ->     one from each of the 6 previous months
   borg prune --keep-daily 7 --keep-weekly 4 --keep-monthly 6
+
   mail_log "borg prune" $?
 }
 
@@ -120,27 +127,32 @@ function borg_backup() {
 #
 # Syncs a given directory to a given bucket on Backblaze
 function backblaze_sync() {
-  dir_to_sync=$1
-  backblaze_bucket=$2
+  local dir_to_sync="$1"
+  local backblaze_bucket="$2"
+  local exclude_regex="$3"
 
-  # Sanity check
-  if [[ -z "${dir_to_sync}" || -z "${backblaze_bucket}" ]]; then
-    echo -e "${RED}backblaze_sync - invalid arguments${NC}" >> ${MAIL_FILE}
-    STATUS=FAIL
-    return
-  fi
+  require dir_to_sync
+  require backblaze_bucket
+  require B2_BIN
 
   # Check B2 auth
-  bbb2 list-buckets > /dev/null 2>&1
-  if [ $? -gt 0 ]; then
-    echo -e "${RED}backblaze_sync - not authorized${NC}" >> ${MAIL_FILE}
-    STATUS=FAIL
-    return
+  ${B2_BIN} get-bucket ${backblaze_bucket} > /dev/null 2>&1
+  if [[ $? -gt 0 ]]; then
+    echo -e "${RED}Backblaze not authorized${NC}" >> ${MAIL_FILE}
+    fail
   fi
 
+  # If exclude_regex was provided, prepend a pipe character to properly format the variable for b2 sync exclude regex
+  [[ -n "${exclude_regex}" ]] && exclude_regex="|${exclude_regex}"
+
+  # Sync directory to Backblaze
+  # Handle user-specified excluded files/directories
+  # Always prevent hidden files from being included
   cd ${dir_to_sync}
-  bbb2 sync --delete --replace-newer . b2://${backblaze_bucket}
+  ${B2_BIN} sync --delete --replaceNewer --excludeRegex "\..*${exclude_regex}" . b2://${backblaze_bucket}
+
   mail_log "backblaze backup" $?
+
   cd ${WORKING_DIR}
 }
 
@@ -150,8 +162,12 @@ function backblaze_sync() {
 #
 # Logs, notifies me via HomeAssistant, emails me the backup status, and cleans up
 function finish() {
+  require LOG_DIR
+  require LOG_FILE
+  require EMAIL
+
   # Log and notify backup status
-  if [ ${STATUS} == "FAIL" ]; then
+  if [[ ${STATUS} == "FAIL" ]]; then
     ${SCRIPTS_DIR}/ha-notify.sh "${BACKUP_TYPE^} Backup" "ERROR - ${BACKUP_NAME} backup failed..."
     echo -e "${RED}Backup failed...${NC}"
   else
@@ -163,8 +179,8 @@ function finish() {
   echo -e "\n\n---------- LOGS ----------\n\n" >> ${MAIL_FILE}
   cat ${LOG_DIR}/${LOG_FILE} >> ${MAIL_FILE}
  
-  subject="${STATUS} - ${BACKUP_TYPE} backup ${DATE}"
-  send_email ${ADMIN_EMAIL} "${subject}" ${MAIL_FILE}
+  local subject="${STATUS} - ${BACKUP_TYPE} backup ${DATE}"
+  send_email ${EMAIL} "${subject}" ${MAIL_FILE}
 
   # Clean up
   rm ${MAIL_FILE}
@@ -173,4 +189,7 @@ function finish() {
   unset LOG_DIR
   unset LOG_FILE
   unset MAIL_FILE
+
+  # If failed, exit immediately
+  [[ ${STATUS} == "FAIL" ]] && exit 1
 }
