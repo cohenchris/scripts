@@ -105,9 +105,10 @@ function borg_backup() {
         --exclude="*/config/plex/Library/Application Support/Plex Media Server/Metadata" \
         --exclude="*/config/plex/Library/Application Support/Plex Media Server/Cache" \
         --exclude="*/config/plex/Library/Application Support/Plex Media Server/Media" \
-        --progress --stats ::${BACKUP_NAME} ${dir_to_backup}
+        --exclude="*/config/ai/ollama/models" \
+        --log-json --progress --stats ::${BACKUP_NAME} ${dir_to_backup}
   else
-    borg create --progress --stats ::${BACKUP_NAME} ${dir_to_backup}
+    borg create --log-json --progress --stats ::${BACKUP_NAME} ${dir_to_backup}
   fi
 
   mail_log "borg backup" $?
@@ -117,7 +118,7 @@ function borg_backup() {
   #   --keep-daily 7      ->     all created within the past week
   #   --keep-weekly 4     ->     one from each of the 8 previous weeks
   #   --keep-monthly 6    ->     one from each of the 6 previous months
-  borg prune --keep-daily 7 --keep-weekly 4 --keep-monthly 6
+  borg prune --log-json --keep-daily 7 --keep-weekly 4 --keep-monthly 6
 
   mail_log "borg prune" $?
 }
