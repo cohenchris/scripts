@@ -3,11 +3,6 @@
 # To restore: borg extract /backups/server::<backup_name>
 #   note: execute this where you would like the 'server' folder to be placed
 
-if [[ "$(id -u)" -ne 0 ]]; then
-    echo "This script must be run as root" 
-    exit 1
-fi
-
 # Set up environment
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source ${WORKING_DIR}/.env
@@ -29,11 +24,11 @@ crontab -l -u ${SCRIPT_USER} > crontab.txt
 crontab -l > sudo_crontab.txt
 cd ${WORKING_DIR}
 
-# 1. Create a borg backup on the local drive
+# Create a borg backup on the local drive
 echo "Local Backup" >> ${MAIL_FILE}
 borg_backup ${SERVER_DIR} ${SERVER_LOCAL_BACKUP_DIR}
 
-# 2. Create a borg backup on the remote backup server
+# Create a borg backup on the remote backup server
 echo "Remote Backup" >> ${MAIL_FILE}
 borg_backup ${SERVER_DIR} ${REMOTE_BACKUP_SERVER}:${SERVER_REMOTE_BACKUP_DIR}
 

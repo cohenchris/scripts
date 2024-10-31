@@ -3,15 +3,11 @@
 ####################
 #    DECLARATION   #
 ####################
-# Require sudo
-if [[ $(/usr/bin/id -u) -ne 0 ]]; then
-  echo "ERROR: This script must be run as root."
-  exit
-fi
 
 # Initialize environment
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source ${WORKING_DIR}/.env
+
 STARTING_DIR=$(pwd)
 USB1_MNT_PATH=/mnt/usb1
 USB2_MNT_PATH=/mnt/usb2
@@ -57,24 +53,27 @@ esac
 # Create temp directories for USBs
 echo
 echo "Creating temporary mount directories for USBs..."
+
 if [[ ! -d "${USB1_MNT_PATH}" ]]; then
   mkdir ${USB1_MNT_PATH}
 else
   echo "ERROR: ${USB1_MNT_PATH} already exists. Please remove this directory before running this script."
-  exit
+  exit 1
 fi
 
 if [[ ! -d "${USB2_MNT_PATH}" ]]; then
   mkdir ${USB2_MNT_PATH}
 else
   echo "ERROR: ${USB2_MNT_PATH} already exists. Please remove this directory before running this script."
-  exit
+  exit 1
 fi
 
 # Mount provided devices to their temporary mount directories
 echo
 echo "Mounting ${USB1_DEV_NAME} to ${USB1_MNT_PATH}..."
+
 mount ${USB1_DEV_NAME} ${USB1_MNT_PATH}
+
 if [[ ${?} -ne 0 ]]; then
   echo "ERROR: Mounting ${USB1_DEV_NAME} to ${USB1_MNT_PATH} failed with error code ${?}..."
   exit

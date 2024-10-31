@@ -3,11 +3,6 @@
 # To restore: borg extract /backups/music::<backup_name>
 #   note: execute this where you would like the 'music' folder to be placed
 
-if [[ "$(id -u)" -ne 0 ]]; then
-    echo "This script must be run as root" 
-    exit 1
-fi
-
 # Set up environment
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source ${WORKING_DIR}/.env
@@ -24,11 +19,11 @@ require MUSICVIDEOS_REMOTE_BACKUP_DIR
 # Stop Lidarr to prevent files changing while backing up
 docker stop lidarr
 
-# 1. Create a borg backup on the local drive
+# Create a borg backup on the local drive
 echo "Music Local Backup" >> ${MAIL_FILE}
 borg_backup ${MUSIC_DIR} ${MUSIC_LOCAL_BACKUP_DIR}
 
-# 2. Create a borg backup on the remote backup server
+# Create a borg backup on the remote backup server
 echo "Music Remote Backup" >> ${MAIL_FILE}
 borg_backup ${MUSIC_DIR} ${REMOTE_BACKUP_SERVER}:${MUSIC_REMOTE_BACKUP_DIR}
 
