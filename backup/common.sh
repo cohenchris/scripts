@@ -38,24 +38,27 @@ function mail_log() {
 
 
 
-# send_email(email, subject, body)
+# send_email(email, subject, body, logfile)
 #   email   - destination email address
 #   subject - subject of outgoing email address
 #   body    - body of outgoing email address
+#   logfile - path to log file which will be sent as an attachment
 #
 # Sends an email by polling until success
 function send_email() {
   local email="$1"
   local subject="$2"
   local body="$3"
+  local logfile="$4"
   local MAX_MAIL_ATTEMPTS=50
 
   require email
   require subject
   require body
+  require logfile
 
   # Poll email send
-  while ! mail -s "${subject}" ${email} < ${body}
+  while ! mail -s "${subject}" -a ${logfile} ${email} < ${body}
   do
     echo -e "${RED}email failed, trying again...${NC}"
 
@@ -171,12 +174,9 @@ function finish() {
     echo -e "${GREEN}Backup succeeded!...${NC}"
   fi
 
-  # Email backup status
-  echo -e "\n\n---------- LOGS ----------\n\n" >> ${MAIL_FILE}
-  cat ${LOG_DIR}/${LOG_FILE} >> ${MAIL_FILE}
  
   local subject="${STATUS} - ${BACKUP_TYPE} backup ${DATE}"
-  send_email ${EMAIL} "${subject}" ${MAIL_FILE}
+  send_email "${EMAIL}" "${subject}" "${MAIL_FILE}" "${LOG_DIR}/${LOG_FILE}"
 
   # Clean up
   rm ${MAIL_FILE}
