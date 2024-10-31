@@ -87,7 +87,7 @@ function borg_backup() {
   # Location of the borg repository
   export BORG_REPO=${backup_dest_borg_repo}
   # Password with which we encrypt the borg backup archives
-  export BORG_PASSPHRASE=$(cat ${WORKNG_DIR}/gpgpass)
+  export BORG_PASSPHRASE=$(cat ${WORKING_DIR}/gpgpass)
 
   require dir_to_backup
   require backup_dest_borg_repo
@@ -162,10 +162,6 @@ function backblaze_sync() {
 #
 # Logs, notifies me via HomeAssistant, emails me the backup status, and cleans up
 function finish() {
-  require LOG_DIR
-  require LOG_FILE
-  require EMAIL
-
   # Log and notify backup status
   if [[ ${STATUS} == "FAIL" ]]; then
     ${SCRIPTS_DIR}/ha-notify.sh "${BACKUP_TYPE^} Backup" "ERROR - ${BACKUP_NAME} backup failed..."

@@ -21,9 +21,9 @@ require SCRIPTS_DIR
 ########################################
 #      Backup Bitwarden database       #
 ########################################
-local bw_backup_dir="${MISC_LOCAL_BACKUP_DIR}/passwords/bw"
-local bw_backup_file="bw-backup-${DATE}.json"
-local bw_pass_file=${WORKING_DIR}/bwpass
+bw_backup_dir="${MISC_LOCAL_BACKUP_DIR}/passwords/bw"
+bw_backup_file="bw-backup-${DATE}.json"
+bw_pass_file=${WORKING_DIR}/bwpass
 
 # Login + save credentials (used by BW binary)
 export BW_SESSION=$(bw unlock --raw --passwordfile ${bw_pass_file})
