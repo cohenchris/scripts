@@ -23,13 +23,13 @@ thirty_days_ago=$(date -d "-30 days" +%Y-%m-%dT%H:%M:%SZ)
 
 # Filter albums with a release date within the last 30 days and monitored artists
 # If an album has been released in the last 30 days, the artist is monitored, and it's not a single, select it for updating
-nextAlbums=$(echo "${response}" | jq --arg date "${thirty_days_ago}" '.[] | select(.releaseDate > $date and .artist.monitored == true and .albumType != "Single")')
+next_albums=$(echo "${response}" | jq --arg date "${thirty_days_ago}" '.[] | select(.releaseDate > $date and .artist.monitored == true and .albumType != "Single")')
 
 # URL to update album monitoring status
-updateAlbumUrl="${lidarr_api_url}/album/monitor?apikey=${LIDARR_API_KEY}"
+update_album_url="${lidarr_api_url}/album/monitor?apikey=${LIDARR_API_KEY}"
 
 # Loop through each album and update its monitoring status if the artist is monitored
-jq -c '{id: .id, artistName: .artist.artistName, title: .title}' <<< "${nextAlbums}" | while read -r album_json; do
+jq -c '{id: .id, artistName: .artist.artistName, title: .title}' <<< "${next_albums}" | while read -r album_json; do
     # Extract the album ID, artist name, and album title
     album_id=$(echo "${album_json}" | jq -r '.id')
     artist_name=$(echo "${album_json}" | jq -r '.artistName')
@@ -39,8 +39,8 @@ jq -c '{id: .id, artistName: .artist.artistName, title: .title}' <<< "${nextAlbu
     echo "Monitoring ${album_name} by ${artist_name}..."
 
     # Prepare JSON data for the monitoring update
-    albumUpdateJson=$(jq -n --argjson id "${album_id}" '{albumIds: [$id], monitored: true}')
+    album_update_json=$(jq -n --argjson id "${album_id}" '{albumIds: [$id], monitored: true}')
 
     # Update monitoring status
-    curl -s -o /dev/null -X PUT "${updateAlbumUrl}" -H "Content-Type: application/json" -d "${albumUpdateJson}"
+    curl -s -o /dev/null -X PUT "${update_album_url}" -H "Content-Type: application/json" -d "${album_update_json}"
 done
