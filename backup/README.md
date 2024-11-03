@@ -12,7 +12,7 @@
 5. Set up a cron job to execute files.sh, server.sh, music.sh, and misc.sh when desired.
     - Make sure to stagger to prevent backup corruption. For example, I execute misc.sh at 2am, music.sh at 3am, files.sh at 4am, and server.sh at 5am.
 6. Set up SSMTP to enable email notifications about your backups (/etc/ssmtp/ssmtp.conf)
-    - Make sure to install 'mailutils'
+    - Make sure to install 'neomutt'
 
 
 ## Manual Double USB Cold Backups

@@ -58,7 +58,7 @@ function send_email() {
   require logfile
 
   # Poll email send
-  while ! mail -s "${subject}" -a ${logfile} ${email} < ${body}
+  while ! neomutt -s "${subject}" -a ${logfile} -- ${email} < ${body}
   do
     echo -e "${RED}email failed, trying again...${NC}"
 
