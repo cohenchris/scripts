@@ -16,14 +16,14 @@ There are two different functions
 Used to easily send a notification to the Home Assistant app on my phone.
 
 ## Set Proper Permissions on Media Files
-`media-perms.sh`
+`scan-media-files.sh`
 
 This simple script sets the right file ownership/permissions for all of my media files
 
 ## Restart Docker Container Stack
 `restart.sh`
 
-This script restarts all running docker containers, installs packages that Nextcloud needs to provide video file previews, and updates the MyAnonamouse seedbox IP address (see `dynamic-seedbox.sh` section)
+This script restarts all running docker containers and installs packages that Nextcloud needs to provide video file previews.
 
 ## Set Proper Permissions + Scan Nextcloud Files
 `scan-nextcloud-files.sh`
@@ -32,13 +32,6 @@ This script sets all file permissions and ownerships for my Nextcloud files. Thi
 
 ## Test QBittorrent Connectivity
 `test-qbittorrent.sh`
-
-This script checks to see if qBittorrent is connectable. If it is not, it will restart the program.
-## Dynamic Seedbox Update
-`dynamic-seedbox.sh`
-
-Sends the IP of qbittorrent to MyAnonamouse, which requires the correct IP in order to record ratios.
-
 
 ## Monitor Newly Released Albums on Lidarr
 `lidarr_monitor_new_albums.sh`

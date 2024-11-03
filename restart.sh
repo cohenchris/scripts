@@ -14,5 +14,3 @@ cd
 
 # Fix nextcloud warnings
 ${WORKING_DIR}/nextcloud-install-ffmpeg.sh
-
-$WORKING_DIR/dynamic-seedbox.sh
