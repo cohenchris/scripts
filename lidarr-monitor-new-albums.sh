@@ -18,7 +18,7 @@ lidarr_api_url="${LIDARR_URL}:8686/api/v1"
 albums_url="${lidarr_api_url}/album?apikey=${LIDARR_API_KEY}"
 response=$(curl -s -X GET "${albums_url}")
 
-# Calculate the date 60 days ago in the format required
+# Calculate the date 30 days ago in the format required
 thirty_days_ago=$(date -d "-30 days" +%Y-%m-%dT%H:%M:%SZ)
 
 # Filter albums with a release date within the last 30 days and monitored artists
