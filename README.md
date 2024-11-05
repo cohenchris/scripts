@@ -1,6 +1,9 @@
 # Scripts
 
-**Please fill out `sample.env`, then `mv sample.env .env` for these scripts to work properly**
+## Requirements
+1. Fill out `sample.env`, then `mv sample.env .env` for these scripts to work properly
+2. Configure SSMTP and neomutt per instructions in `backups/README.md`, which will enable email notifications
+
 
 #### `drive-health.sh {test | report}`
 This script is used for the monitoring of drive health via smartctl (list your drives inside the script)
