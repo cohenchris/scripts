@@ -106,6 +106,8 @@ function borg_backup() {
         --exclude="*/config/plex/Library/Application Support/Plex Media Server/Cache" \
         --exclude="*/config/plex/Library/Application Support/Plex Media Server/Media" \
         --exclude="*/config/ai/ollama/models" \
+        --exclude="*/cache" \
+        --exclude="*/logs" \
         --log-json --progress --stats ::${BACKUP_NAME} ${dir_to_backup}
   else
     borg create --log-json --progress --stats ::${BACKUP_NAME} ${dir_to_backup}
