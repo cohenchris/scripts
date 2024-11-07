@@ -7,10 +7,10 @@
 ## Drive Health Monitoring + Notifications
 `drive-health.sh {test | report}`
 
-This script is used for the monitoring of drive health via smartctl (list your drives inside the script)
+This script is used for the monitoring of drive health using smartctl and built-in ZFS monitoring
 There are two different functions
-1. `test` - run a full smartctl test on the declared drives
-2. `report` - email a comprehensive report on the last executed smartctl job
+1. `test` - full smartctl test, ZFS trim, and ZFS scrub for each drive
+2. `report` - email a smartctl and ZFS report for each drive
 
 ## Send Notifications to Phone via HomeAssistant
 `ha-notify.sh <SUBJECT> <BODY>`
