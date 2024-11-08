@@ -5,8 +5,12 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
+# Initialize environment
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source ${WORKING_DIR}/.env
+DATE=$(date +"%Y%m%d")
+STATUS="SUCCESS"
+BODY=/tmp/body
 
 
 # require(var)
@@ -29,7 +33,7 @@ function require() {
 # Run full smartctl and ZFS tests on the defined drives
 function test_drives() {
   # Smartctl long test
-  for drive in ${DRIVES[@]}; do
+  for drive in ${SMART_DRIVES[@]}; do
     smartctl -t long ${drive} >/dev/null 2>&1
   done
 
@@ -44,12 +48,33 @@ function test_drives() {
 # report_health()
 #
 # Send smartctl and ZFS reports via email
-function report_health() {
-  DATE=$(date +"%Y%m%d")
-  STATUS="SUCCESS"
-  BODY=/tmp/body
+function report_health()
+{
   rm -f ${BODY}
 
+  # If there are S.M.A.R.T. devices detected, report on them
+  if [[ ${#SMART_DRIVES[@]} -gt 0 ]]; then
+    smart_summarize
+  fi
+
+  # If there are ZFS pools detected, report on them
+  if [[ ${#ZFS_POOLS[@]} -gt 0 ]]; then
+    zfs_summarize
+  fi
+
+
+  # Send the summary email
+  SUBJECT="${STATUS} - Drive Health Report ${DATE}"
+  send_email "${EMAIL}" "${SUBJECT}" "${BODY}"
+  rm ${BODY}
+}
+
+
+# smart_summarize()
+#
+# Print out full S.M.A.R.T. summary
+function smart_summarize()
+{
   echo >> ${BODY}
   echo "-----------------------------------------------------------------------" >> ${BODY}
   echo "------------------------- SMARTCTL MONITORING -------------------------" >> ${BODY}
@@ -57,21 +82,35 @@ function report_health() {
   echo >> ${BODY}
 
   # Summarize each declared smartctl drive
-  for drive in ${DRIVES[@]}; do
+  for drive in ${SMART_DRIVES[@]}; do
     echo "############################## ${drive} ##############################" >> ${BODY}
 
-    if [[ $(smartctl -H ${drive}) == *"PASSED" ]]; then
+    local smartctl_output_short=$(smartctl -H ${drive})
+
+    if [[ ${smartctl_output_short} == *"PASSED"* ]]; then
       # Print short-form health that basically only shows "PASSED"
-      smartctl -H ${drive} >> ${BODY}
+      echo ${smartctl_output_short} >> ${BODY}
+    elif [[ ${smartctl_output_short} == *"Unable to detect device type"* ]]; then
+      echo "${drive} is not S.M.A.R.T. capable, skipping..." >> ${BODY}
     else
       # There's something wrong, print a more comprehensive summary
+      local smartctl_output_long=$(smartctl -a ${drive})
 
-      smartctl -a ${drive} >> ${BODY}
+      echo ${smartctl_output_long} >> ${BODY}
       STATUS="FAIL"
     fi
 
-  done
+    echo >> ${BODY}
 
+  done
+}
+
+
+# zfs_summarize()
+#
+# Print out full ZFS pool summary
+function zfs_summarize()
+{
   echo >> ${BODY}
   echo "-----------------------------------------------------------------------" >> ${BODY}
   echo "---------------------------- ZFS MONITORING ---------------------------" >> ${BODY}
@@ -91,11 +130,6 @@ function report_health() {
     echo >> ${BODY}
 
   done
-
-  # Send the summary email
-  SUBJECT="${STATUS} - Drive Health Report ${DATE}"
-  send_email "${EMAIL}" "${SUBJECT}" "${BODY}"
-  rm ${BODY}
 }
 
 
@@ -136,7 +170,7 @@ function send_email() {
 
 
 # Create array of all drives
-DRIVES=($(lsblk -nd -o name | sed 's/^/\/dev\//'))
+SMART_DRIVES=($(lsblk -nd -o name | sed 's/^/\/dev\//'))
 
 # Create array of all ZFS pools
 ZFS_POOLS=($(zpool list -H -o name))
