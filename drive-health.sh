@@ -29,7 +29,7 @@ function require() {
 # Run full smartctl and ZFS tests on the defined drives
 function test_drives() {
   # Smartctl long test
-  for drive in ${DRIVES_TO_SCAN[@]}; do
+  for drive in ${DRIVES[@]}; do
     smartctl -t long ${drive} >/dev/null 2>&1
   done
 
@@ -57,7 +57,7 @@ function report_health() {
   echo >> ${BODY}
 
   # Summarize each declared smartctl drive
-  for drive in ${DRIVES_TO_SCAN[@]}; do
+  for drive in ${DRIVES[@]}; do
     echo "############################## ${drive} ##############################" >> ${BODY}
 
     if [[ $(smartctl -H ${drive}) == *"PASSED" ]]; then
@@ -134,7 +134,14 @@ function send_email() {
 }
 
 
-# Parse arguments
+
+# Create array of all drives
+DRIVES=($(lsblk -nd -o name | sed 's/^/\/dev\//'))
+
+# Create array of all ZFS pools
+ZFS_POOLS=($(zpool list -H -o name))
+
+# Parse and handle arguments
 if [ "$1" == "test" ]; then
   test_drives
 elif [ "$1" == "report" ]; then
