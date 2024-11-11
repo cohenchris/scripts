@@ -11,7 +11,7 @@ body=$2
 
 # Sanity check
 if [[ -z "${HA_NOTIFY_WEBHOOK_ENDPOINT}" || -z "${title}" || -z "${body}" ]]; then
-  echo -e "${RED}ERROR: Please provide title and body as arguments to this script, and fill in all fields in .env${NC}"
+  echo -e "ERROR: Please provide title and body as arguments to this script, and fill in all fields in .env"
   exit 1
 fi
 

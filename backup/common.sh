@@ -7,7 +7,7 @@ function require() {
 
   if [[ -z "${!var}" ]]; then
     # Log variable name and calling function name
-    echo -e "${RED}ERROR - ${var} is not set in ${FUNCNAME[1]:-env}${NC}"
+    echo -e "ERROR - ${var} is not set in ${FUNCNAME[1]:-env}"
     status=FAIL
     finish
   fi
@@ -68,19 +68,19 @@ function send_email() {
   # Poll email send
   while ! neomutt -s "${subject}" -a ${logfile} -- ${email} < ${body}
   do
-    echo -e "${RED}email failed, trying again...${NC}"
+    echo -e "email failed, trying again..."
 
     # Limit attempts. If it goes infinitely, it could fill up the disk.
     MAX_MAIL_ATTEMPTS=$((MAX_MAIL_ATTEMPTS-1))
     if [[ ${MAX_MAIL_ATTEMPTS} -eq 0 ]]; then
-      echo -e "${RED}send_email failed${NC}"
+      echo -e "send_email failed"
       status=FAIL
     fi
 
     sleep 5
   done
 
-  echo -e "${GREEN}email sent!${NC}"
+  echo -e "email sent!"
 }
 
 
@@ -152,7 +152,7 @@ function backblaze_sync() {
   # Check B2 auth
   ${B2_BIN} get-bucket ${backblaze_bucket} > /dev/null 2>&1
   if [[ $? -gt 0 ]]; then
-    mail_log plain "${RED}Backblaze not authorized${NC}"
+    mail_log plain "Backblaze not authorized"
     STATUS=FAIL
     finish
   fi
@@ -180,10 +180,10 @@ function finish() {
   # Log and notify backup status
   if [[ ${STATUS} == "FAIL" ]]; then
     ${SCRIPTS_DIR}/ha-notify.sh "${BACKUP_TYPE^} Backup" "ERROR - ${BACKUP_NAME} backup failed..."
-    echo -e "${RED}Backup failed...${NC}"
+    echo -e "Backup failed..."
   else
     ${SCRIPTS_DIR}/ha-notify.sh "${BACKUP_TYPE^} Backup" "SUCCESS - ${BACKUP_NAME} backup succeeded!"
-    echo -e "${GREEN}Backup succeeded!...${NC}"
+    echo -e "Backup succeeded!..."
   fi
 
  
