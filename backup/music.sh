@@ -7,7 +7,6 @@
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source ${WORKING_DIR}/.env
 
-require MAIL_FILE
 require MUSIC_DIR
 require MUSIC_LOCAL_BACKUP_DIR
 require REMOTE_BACKUP_SERVER
@@ -20,21 +19,21 @@ require MUSICVIDEOS_REMOTE_BACKUP_DIR
 docker stop lidarr
 
 # Create a borg backup on the local drive
-echo "Music Local Backup" >> ${MAIL_FILE}
+mail_log plain "Music Local Backup"
 borg_backup ${MUSIC_DIR} ${MUSIC_LOCAL_BACKUP_DIR}
 
 # Create a borg backup on the remote backup server
-echo "Music Remote Backup" >> ${MAIL_FILE}
+mail_log plain "Music Remote Backup"
 borg_backup ${MUSIC_DIR} ${REMOTE_BACKUP_SERVER}:${MUSIC_REMOTE_BACKUP_DIR}
 
 # Resume Lidarr
 docker start lidarr
 
 # Make a backup of music videos on local and remote backup directories
-echo "Music Videos Backup" >> ${MAIL_FILE}
+mail_log plain "Music Videos Backup"
 rsync -r --delete --update --progress ${MUSICVIDEOS_DIR}/ ${MUSICVIDEOS_LOCAL_BACKUP_DIR}
-mail_log "music videos local backup" $?
+mail_log check "music videos local backup" $?
 rsync -r --delete --update --progress ${MUSICVIDEOS_DIR}/ ${REMOTE_BACKUP_SERVER}:${MUSICVIDEOS_REMOTE_BACKUP_DIR}
-mail_log "music videos remote backup" $?
+mail_log check "music videos remote backup" $?
 
 finish

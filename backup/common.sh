@@ -14,25 +14,33 @@ function require() {
 }
 
 
-# mail_log(event, code)
-#   event - event to log for
-#   code  - error code for the event
+# mail_log(log_type, message, code)
+#   log_type - whether to log as plaintext or checkmark
+#   message - message to log
+#   code  - OPTIONAL - error code to check if log_type == "check"
 #
 # Given an event, logs a positive or negative status code to the mail log file
 function mail_log() {
-  local event="$1"
-  local code="$2"
+  local log_type="$1"
+  local message="$2"
+  local code="$3"
 
-  require event
-  require code
+  require log_type
+  require message
 
-  if [[ ${code} -gt 0 ]]; then
-    # Failure
-    echo "[✘]    ${event}" >> ${MAIL_FILE}
-    STATUS=FAIL
+  if [[ ${log_type} == "check" ]]; then
+    require code
+
+    if [[ ${code} -gt 0 ]]; then
+      # Failure
+      echo -e "[✘]    ${message}" >> ${MAIL_FILE}
+      STATUS=FAIL
+    else
+      # Success
+      echo -e "[✔]    ${message}" >> ${MAIL_FILE}
+    fi
   else
-    # Success
-    echo "[✔]    ${event}" >> ${MAIL_FILE}
+    echo -e "${message}" >> ${MAIL_FILE}
   fi
 }
 
@@ -65,8 +73,8 @@ function send_email() {
     # Limit attempts. If it goes infinitely, it could fill up the disk.
     MAX_MAIL_ATTEMPTS=$((MAX_MAIL_ATTEMPTS-1))
     if [[ ${MAX_MAIL_ATTEMPTS} -eq 0 ]]; then
-      echo -e "${RED}send_email failed${NC}" >> ${MAIL_FILE}
-      fail
+      echo -e "${RED}send_email failed${NC}"
+      status=FAIL
     fi
 
     sleep 5
@@ -113,7 +121,7 @@ function borg_backup() {
     borg create --log-json --progress --stats ::${BACKUP_NAME} ${dir_to_backup}
   fi
 
-  mail_log "borg backup" $?
+  mail_log check "borg backup" $?
 
   # Prune archives
   # Archives to keep:
@@ -122,7 +130,7 @@ function borg_backup() {
   #   --keep-monthly 6    ->     one from each of the 6 previous months
   borg prune --log-json --keep-daily 7 --keep-weekly 4 --keep-monthly 6
 
-  mail_log "borg prune" $?
+  mail_log check "borg prune" $?
 }
 
 
@@ -144,8 +152,9 @@ function backblaze_sync() {
   # Check B2 auth
   ${B2_BIN} get-bucket ${backblaze_bucket} > /dev/null 2>&1
   if [[ $? -gt 0 ]]; then
-    echo -e "${RED}Backblaze not authorized${NC}" >> ${MAIL_FILE}
-    fail
+    mail_log plain "${RED}Backblaze not authorized${NC}"
+    STATUS=FAIL
+    finish
   fi
 
   # If exclude_regex was provided, prepend a pipe character to properly format the variable for b2 sync exclude regex
@@ -157,7 +166,7 @@ function backblaze_sync() {
   cd ${dir_to_sync}
   ${B2_BIN} sync --delete --replaceNewer --excludeRegex "\..*${exclude_regex}" . b2://${backblaze_bucket}
 
-  mail_log "backblaze backup" $?
+  mail_log check "backblaze backup" $?
 
   cd ${WORKING_DIR}
 }

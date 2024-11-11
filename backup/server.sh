@@ -10,7 +10,6 @@ source ${WORKING_DIR}/.env
 require SERVER_DIR
 require SCRIPT_USER
 require WORKING_DIR
-require MAIL_FILE
 require SERVER_DIR
 require SERVER_LOCAL_BACKUP_DIR
 require REMOTE_BACKUP_SERVER
@@ -25,11 +24,11 @@ crontab -l > sudo_crontab.txt
 cd ${WORKING_DIR}
 
 # Create a borg backup on the local drive
-echo "Local Backup" >> ${MAIL_FILE}
+mail_log plain "Local Backup"
 borg_backup ${SERVER_DIR} ${SERVER_LOCAL_BACKUP_DIR}
 
 # Create a borg backup on the remote backup server
-echo "Remote Backup" >> ${MAIL_FILE}
+mail_log plain "Remote Backup"
 borg_backup ${SERVER_DIR} ${REMOTE_BACKUP_SERVER}:${SERVER_REMOTE_BACKUP_DIR}
 
 # Start services back up

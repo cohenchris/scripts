@@ -28,7 +28,7 @@ cd ${bw_backup_dir}
 # Backup to local drive
 bw sync
 bw export --raw --session ${BW_SESSION} --format encrypted_json --password $(cat ${bw_pass_file}) > ${bw_backup_dir}/${bw_backup_file}
-mail_log "bitwarden export" $?
+mail_log check "bitwarden export" $?
 
 # Prune BW backups, keep last 30 days
 find ${bw_backup_dir} -type f -name "*.json" -mtime +30 -delete
@@ -45,7 +45,7 @@ rsync -r --delete --update --progress ${MISC_LOCAL_BACKUP_DIR}/ ${REMOTE_BACKUP_
 
 # Backup /etc/backups/misc to Nextcloud
 rsync -r --delete --update --progress ${MISC_LOCAL_BACKUP_DIR}/ ${FILES_DIR}/etc/backups/misc
-mail_log "nextcloud backup" $?
+mail_log check "nextcloud backup" $?
 ${SCRIPTS_DIR}/scan-nextcloud-files.sh
 
 finish

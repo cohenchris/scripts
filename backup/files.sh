@@ -7,7 +7,6 @@
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source ${WORKING_DIR}/.env
 
-require MAIL_FILE
 require FILES_DIR
 require FILES_LOCAL_BACKUP_DIR
 require REMOTE_BACKUP_SERVER
@@ -17,11 +16,11 @@ require FILES_REMOTE_BACKUP_DIR
 docker exec -it -u www-data nextcloud php occ maintenance:mode --on
 
 # Create a borg backup on the local drive
-echo "Local Backup" >> ${MAIL_FILE}
+mail_log plain "Local Backup"
 borg_backup ${FILES_DIR} ${FILES_LOCAL_BACKUP_DIR}
 
 # Create a borg backup on the remote backup server
-echo "Remote Backup" >> ${MAIL_FILE}
+mail_log plain "Remote Backup"
 borg_backup ${FILES_DIR} ${REMOTE_BACKUP_SERVER}:${FILES_REMOTE_BACKUP_DIR}
 
 # Take Nextcloud out of maintenance mode
