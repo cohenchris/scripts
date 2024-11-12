@@ -18,6 +18,7 @@ require SERVER_REMOTE_BACKUP_DIR
 # Shutdown server
 cd ${SERVER_DIR}
 docker-compose down
+mail_log check "docker-compose down" $?
 # Export crontab
 crontab -l -u ${SCRIPT_USER} > crontab.txt
 crontab -l > sudo_crontab.txt
@@ -35,6 +36,7 @@ borg_backup ${SERVER_DIR} ${REMOTE_BACKUP_SERVER}:${SERVER_REMOTE_BACKUP_DIR}
 cd ${SERVER_DIR}
 rm crontab.txt sudo_crontab.txt
 docker-compose up -d
+mail_log check "docker-compose up" $?
 cd ${WORKING_DIR}
 
 finish

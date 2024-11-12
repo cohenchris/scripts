@@ -165,7 +165,6 @@ function backblaze_sync() {
   # Always prevent hidden files from being included
   cd ${dir_to_sync}
   ${B2_BIN} sync --delete --replaceNewer --excludeRegex "\..*${exclude_regex}" . b2://${backblaze_bucket}
-
   mail_log check "backblaze backup" $?
 
   cd ${WORKING_DIR}
@@ -185,7 +184,6 @@ function finish() {
     ${SCRIPTS_DIR}/ha-notify.sh "${BACKUP_TYPE^} Backup" "SUCCESS - ${BACKUP_NAME} backup succeeded!"
     echo -e "Backup succeeded!..."
   fi
-
  
   local subject="${STATUS} - ${BACKUP_TYPE} backup ${DATE}"
   send_email "${EMAIL}" "${subject}" "${MAIL_FILE}" "${LOG_DIR}/${LOG_FILE}"

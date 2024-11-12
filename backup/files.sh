@@ -14,6 +14,7 @@ require FILES_REMOTE_BACKUP_DIR
 
 # Put Nextcloud in maintenance mode to prevent file changes
 docker exec -it -u www-data nextcloud php occ maintenance:mode --on
+mail_log check "nextcloud maintenance on" $?
 
 # Create a borg backup on the local drive
 mail_log plain "Local Backup"
@@ -25,5 +26,6 @@ borg_backup ${FILES_DIR} ${REMOTE_BACKUP_SERVER}:${FILES_REMOTE_BACKUP_DIR}
 
 # Take Nextcloud out of maintenance mode
 docker exec -it -u www-data nextcloud php occ maintenance:mode --off
+mail_log check "nextcloud maintenance off" $?
 
 finish

@@ -32,6 +32,7 @@ mail_log check "bitwarden export" $?
 
 # Prune BW backups, keep last 30 days
 find ${bw_backup_dir} -type f -name "*.json" -mtime +30 -delete
+mail_log check "bitwarden prune" $?
 
 # Deinitialize
 unset BW_SESSION
@@ -42,6 +43,7 @@ bw lock
 ##############################################
 # Create a backup on the remote backup server
 rsync -r --delete --update --progress ${MISC_LOCAL_BACKUP_DIR}/ ${REMOTE_BACKUP_SERVER}:${MISC_REMOTE_BACKUP_DIR}
+mail_log check "sync to backup server" $?
 
 # Backup /etc/backups/misc to Nextcloud
 rsync -r --delete --update --progress ${MISC_LOCAL_BACKUP_DIR}/ ${FILES_DIR}/etc/backups/misc

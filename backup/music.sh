@@ -17,6 +17,7 @@ require MUSICVIDEOS_REMOTE_BACKUP_DIR
 
 # Stop Lidarr to prevent files changing while backing up
 docker stop lidarr
+mail_log check "lidarr stop" $?
 
 # Create a borg backup on the local drive
 mail_log plain "Music Local Backup"
@@ -28,6 +29,7 @@ borg_backup ${MUSIC_DIR} ${REMOTE_BACKUP_SERVER}:${MUSIC_REMOTE_BACKUP_DIR}
 
 # Resume Lidarr
 docker start lidarr
+mail_log check "lidarr start" $?
 
 # Make a backup of music videos on local and remote backup directories
 mail_log plain "Music Videos Backup"

@@ -10,7 +10,6 @@ require OFFSITE_BACKBLAZE_BUCKET
 require MAIN_BACKUP_EXCLUDE_REGEX
 
 # Sync backups directory to Backblaze
-mail_log plain "Remote Backblaze Backup"
 backblaze_sync ${MAIN_BACKUPS_DIR} ${OFFSITE_BACKBLAZE_BUCKET} ${MAIN_BACKUP_EXCLUDE_REGEX}
 
 finish
