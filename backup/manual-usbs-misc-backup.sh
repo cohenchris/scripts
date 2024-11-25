@@ -5,14 +5,11 @@
 ####################
 
 # Initialize environment
-WORKING_DIR=$(dirname "$(realpath "$0")")
-source ${WORKING_DIR}/.env
-
 STARTING_DIR=$(pwd)
+WORKING_DIR=$(dirname "$(realpath "$0")")
 USB1_MNT_PATH=/mnt/usb1
 USB2_MNT_PATH=/mnt/usb2
-
-require MISC_LOCAL_BACKUP_DIR
+MISC_LOCAL_BACKUP_DIR=/backups/misc
 
 # List devices
 fdisk -l
