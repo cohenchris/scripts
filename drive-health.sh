@@ -12,6 +12,8 @@ DATE=$(date +"%Y%m%d")
 STATUS="SUCCESS"
 BODY=/tmp/body
 
+# On some systems, smartctl is installed in /usr/sbin
+export PATH="/usr/sbin:${PATH}"
 
 # require(var)
 #   var - variable to check
