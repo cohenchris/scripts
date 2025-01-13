@@ -44,3 +44,21 @@ This script monitors albums if:
 3. The album is not a single
 
 This functionality is built into Lidarr, but has been broken for a while
+
+## Nextcloud AI Task Processing
+`nextcloud-ai-taskprocessing.sh`
+
+https://docs.nextcloud.com/server/latest/admin_manual/ai/overview.html#systemd-service
+
+This script improves Nextcloud Assistant's AI task pickup speed responsiveness. By default, an assistant query will be processed as a background job, which is run every 5 minutes. This script, along with `nextcloud-ai-worker@.service`, processes AI tasks as soon as they are scheduled, rather than the user having to wait up to 5 minutes.
+
+To use this script, first modify the script path present in `nextcloud-ai-worker@.service` and move it to the systemd services folder:
+`mv nextcloud-ai-worker@.service /etc/systemd/system`
+
+Then, enable and start the service 4 or more times:
+`for i in {1..4}; do systemctl enable --now nextcloud-ai-worker@$i.service; done`
+
+Check the status for success and ensure the workers have been deployed:
+`systemctl status nextcloud-ai-worker@1.service`
+`systemctl list-units --type=service | grep nextcloud-ai-worker`
+
