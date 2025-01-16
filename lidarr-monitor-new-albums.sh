@@ -2,10 +2,20 @@
 
 # This script monitors albums if:
 # 1. The artist is monitored
-# 2. The album has been released in the last 30 days
+# 2. The album has been released in the NUM_DAYS_TO_MONITOR days
 # 3. The album is not a single
 #
 # This functionality is built into Lidarr, but has been broken for a while
+
+NUM_DAYS_TO_MONITOR=${1}
+
+if [ -z "${NUM_DAYS_TO_MONITOR}" ]; then
+  echo "Please specify the number of days to monitor"
+  exit 1
+elif [ "${NUM_DAYS_TO_MONITOR}" -eq 0 ]; then
+  echo "Please specify a number of days greater than 0"
+  exit 1
+fi
 
 # Initialize environment
 WORKING_DIR=$(dirname "$(realpath "$0")")
@@ -18,12 +28,12 @@ lidarr_api_url="${LIDARR_URL}:8686/api/v1"
 albums_url="${lidarr_api_url}/album?apikey=${LIDARR_API_KEY}"
 response=$(curl -s -X GET "${albums_url}")
 
-# Calculate the date 30 days ago in the format required
-thirty_days_ago=$(date -d "-30 days" +%Y-%m-%dT%H:%M:%SZ)
+# Calculate the date NUM_DAYS_TO_MONITOR days ago in the format required
+monitoring_period=$(date -d "-${NUM_DAYS_TO_MONITOR} days" +%Y-%m-%dT%H:%M:%SZ)
 
 # Filter albums with a release date within the last 30 days and monitored artists
 # If an album has been released in the last 30 days, the artist is monitored, and it's not a single, select it for updating
-next_albums=$(echo "${response}" | jq --arg date "${thirty_days_ago}" '.[] | select(.releaseDate > $date and .artist.monitored == true and .albumType != "Single")')
+next_albums=$(echo "${response}" | jq --arg date "${monitoring_period}" '.[] | select(.releaseDate > $date and .artist.monitored == true and .albumType != "Single")')
 
 # URL to update album monitoring status
 update_album_url="${lidarr_api_url}/album/monitor?apikey=${LIDARR_API_KEY}"
