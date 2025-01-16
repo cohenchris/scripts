@@ -11,7 +11,9 @@
    ```
 5. Set up a cron job to execute files.sh, server.sh, music.sh, and misc.sh when desired.
     - Make sure to stagger to prevent backup corruption. For example, I execute misc.sh and music.sh at 3am, files.sh at 4am, and server.sh at 5am.
-6. Set up SSMTP and neofetch to enable email notifications about your backups (/etc/ssmtp/ssmtp.conf)
+6. On the local backup server, set up a cron job to execute batocera.sh when desired
+    - Batocera is a firmware image and cannot be modified (no installing new packages). Therefore, the backup must be triggered by the backup server, rather than Batocera itself.
+7. Set up SSMTP and neofetch to enable email notifications about your backups (/etc/ssmtp/ssmtp.conf)
     - Install `ssmtp` and `neomutt`
     - `echo 'set sendmail="/usr/sbin/ssmtp"' > ~/.config/neomutt/neomuttrc`
 
