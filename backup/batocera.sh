@@ -28,10 +28,7 @@ curl -s -k -H "Content-Type: application/json" \
      -u ${OPNSENSE_WOL_API_USER}:${OPNSENSE_WOL_API_KEY} \
      https://${OPNSENSE_URL}/api/wol/wol/set
 
-# Wait for batocera to come up
-sleep 30
-
-# Check that batocera is up
+# Check that batocera is up (this command will wait long enough for the device to boot)
 ssh ${BATOCERA_HOST} "ls"
 batocera_host_up=$?
 mail_log check "batocera host up check" ${batocera_host_up}
@@ -49,10 +46,10 @@ if [[ "${batocera_host_up}" -eq 0 ]]; then
   mail_log plain "Batocera Remote Backup"
   rsync -r --delete --update --progress ${BATOCERA_HOST}:${BATOCERA_DIR}/ ${BATOCERA_REMOTE_BACKUP_DIR}
   mail_log check "batocera remote backup" $?
-fi
 
-# Power console off
-ssh ${BATOCERA_HOST} "poweroff"
-mail_log check "batocera host shutdown" $?
+  # Power console off
+  ssh ${BATOCERA_HOST} "poweroff"
+  mail_log check "batocera host shutdown" $?
+fi
 
 finish
