@@ -13,20 +13,13 @@ WORKING_DIR=$(dirname "$(realpath "$0")")
 source ${WORKING_DIR}/.env
 
 require BATOCERA_HOST
-require BATOCERA_OPNSENSE_VLAN_INTERFACE
 require BATOCERA_MAC
-require OPNSENSE_URL
-require OPNSENSE_WOL_API_USER
-require OPNSENSE_WOL_API_KEY
 require BATOCERA_DIR
 require BATOCERA_LOCAL_BACKUP_DIR
 require BATOCERA_REMOTE_BACKUP_DIR
 
-# Attempt to wake batocera using OPNSense's WOL API
-curl -s -k -H "Content-Type: application/json" \
-     -d '{"wake":{"interface": "'${BATOCERA_OPNSENSE_VLAN_INTERFACE}'","mac": "'${BATOCERA_MAC}'"}}' \
-     -u ${OPNSENSE_WOL_API_USER}:${OPNSENSE_WOL_API_KEY} \
-     https://${OPNSENSE_URL}/api/wol/wol/set
+# Attempt to wake batocera using Wake-On-LAN
+wakeonlan ${BATOCERA_MAC}
 
 # Check that batocera is up (this command will wait long enough for the device to boot)
 ssh ${BATOCERA_HOST} "ls"
