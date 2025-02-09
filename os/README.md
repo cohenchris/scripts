@@ -3,9 +3,20 @@
 ## Install Arch on ZFS
 `arch-install.sh`
 
+This is an all-in-one script to install Arch on a mirrored ZFS root pool.
+It will:
+- Partition both drives for ZFS root pool
+- Create root pool and datasets
+- Configure auto-mounting of root pool, datasets, and EFI boot partition using systemd.mount (no fstab!)
+- Set up basic fresh Arch install things (e.g. users, hostname, NTP, sudo management, locale, etc.)
+- Install base packages for bare minimum functionality
+- Install AUR helper
+- Configure bootctl bootloader
+- Sync EFI partition on both ZFS mirrored root drives to allow booting from either drive
 
 ### Sync Mirrored EFI Partitions
 `boot-mirror.sh`
+
 This keeps a mirrored ZFS root pool's EFI partitions in sync.
 For this to work, one partition must be mounted at /boot, and the other must be unmounted.
 
