@@ -22,6 +22,8 @@ For this to work, one partition must be mounted at /boot, and the other must be 
 
 This is designed to be set up in a cron job or systemd hook.
 
+To set this up to be run whenever systemd is upgraded, run `boot-mirror-setup.sh`.
+
 ### Replace/Resilver a Drive in ZFS Root Pool
 `root-resilver.sh`
 
