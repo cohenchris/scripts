@@ -1,8 +1,5 @@
 #!/bin/bash
 
-dirname "$(realpath "$0")"
-exit
-
 # User must run as root
 if [[ "$(id -u)" -ne 0 ]]; then
     echo "This script must be run as root" 
@@ -28,6 +25,9 @@ esac
 
 # Get this script's directory
 OS_SCRIPTS_DIR=$(dirname "$(realpath "$0")")
+
+echo
+echo "Creating new pacman systemd hook..."
 
 mkdir -p /etc/pacman.d/hooks/
 cat <<EOF > /etc/pacman.d/hooks/100-systemd-boot.hook
