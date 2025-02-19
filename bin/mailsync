@@ -1,0 +1,80 @@
+#!/bin/bash
+
+MAIL_DIR="${XDG_DATA_HOME}/mail"
+[ ! -d "$MAIL_DIR" ] && mkdir -p "$MAIL_DIR"
+
+notify()
+{
+  urgency="$1"
+  message1="$2"
+  message2="$3"
+
+  if [ -n "$DISPLAY" ]; then
+    # There is a display - use notify-send
+    if [ "$urgency" = "urgent" ]; then
+      # Notify with critical urgency
+      notify-send --urgency critical "$message1" "$message2"
+    else
+      # Notify normally
+      notify-send "$message1" "$message2"
+    fi
+  else
+    # There is no display - print on terminal
+    if [ "$urgency" = "urgent" ]; then
+      # Print in red
+      echo -e "\e[31m$message1\e[0m"
+      echo -e "\e[31m$message2\e[0m"
+    else
+      # Print normally
+      echo "$message1"
+      echo "$message2"
+    fi
+  fi
+}
+
+
+notify noturgent "Checking email..."
+
+[[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && exec /usr/bin/hyprland
+
+# Sync all emails 
+mbsync -c ~/.config/isync/mbsyncrc mail
+if ! [[ $? -eq 0 ]]; then
+  notify urgent "Email syncing error" "mbsync failed"
+  exit
+fi
+
+# Index new emails
+notmuch new
+if ! [[ $? -eq 0 ]]; then
+  notify urgent "Email syncing error" "notmuch new failed"
+  exit
+fi
+
+# Notifications for any new emails
+notifymuch
+if ! [[ $? -eq 0 ]]; then
+  notify urgent "Email syncing error" "notifymuch failed"
+  exit
+fi
+
+# Sync contacts
+vdirsyncer sync
+if ! [[ $? -eq 0 ]]; then
+  # Maybe contacts aren't initialized, try discover
+  vdirsyncer discover nextcloud_contacts
+  if ! [[ $? -eq 0 ]]; then
+    notify urgent "Email syncing error" "vdirsyncer failed"
+    exit
+  fi
+
+  # Try sync again
+  vdirsyncer sync
+  if ! [[ $? -eq 0 ]]; then
+    notify urgent "Email syncing error" "vdirsyncer failed"
+    exit
+  fi
+fi
+
+notify noturgent "Email checked successfully"
+

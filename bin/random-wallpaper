@@ -1,0 +1,14 @@
+#!/bin/bash
+
+cd ~/.local/wallpapers
+
+WALLPAPER=$(find $(pwd) -type f | grep -v '.git' | shuf -n 1)
+WALLPAPER=$(readlink -f ${WALLPAPER})
+
+MONITOR=$(hyprctl monitors | grep "Monitor" | awk '{print $2}')
+
+# Preload wallpaper file
+hyprctl hyprpaper preload "${WALLPAPER}"
+
+# Display wallpaper
+hyprctl hyprpaper wallpaper "${MONITOR},${WALLPAPER}"

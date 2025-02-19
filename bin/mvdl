@@ -1,0 +1,304 @@
+#!/bin/bash
+
+
+# This script takes a file of youtube URLs, separated by newlines, as input
+# It will first download each video
+# Then, it will attempt to find a matching track file
+# If a match is found, the music video will be renamed to match the track,
+#   which will cause the music video to show up in Plex for that track
+
+
+# Log with pretty colors
+function LOG()
+{
+  log_level="$1"
+  message="$2"
+
+  # Sanity check
+  if [[ -z "${log_level}" || -z "${message}" ]]; then
+    exit
+  fi
+
+  GREEN="\e[32m"
+  RED="\e[31m"
+  BLUE="\e[94m"
+  YELLOW="\e[93m"
+  NC="\e[0m"
+
+  case "$log_level" in
+    SUCCESS)
+      COLOR=${GREEN}
+      ;;
+    WARN)
+      COLOR=${YELLOW}
+      ;;
+    ERROR)
+      COLOR=${RED}
+      ;;
+    INFO)
+      COLOR=${BLUE}
+      ;;
+    *)
+      exit
+      ;;
+  esac
+
+  echo -ne "${COLOR}${message}${NC}"
+}
+
+
+# Clean music video titles
+#
+# Youtube music video titles are obviously not standardized, so this just does its best
+# I attempt to handle two different title formats:
+#   1. "Artist Name - Track Title [trackHashGeneratedByYTDL].extension"
+#   2. "Artist Name - Track Title (feat. Second Artist) [trackHashGeneratedByYTDL].extension"
+#
+# This function tries to extract the title by taking the string after the '-'. and before either the first '[' or '('
+function clean_music_video_title()
+{
+  name_to_clean="$1"
+
+  # Sanity check
+  if [[ -z "${name_to_clean}" ]]; then
+    exit
+  fi
+
+  # Take an educated guess where the track name starts, and cut out everything before it
+  if [[ "${name_to_clean}" == *-* ]]; then
+    # If there's a '-', cut out a substring after that.
+    cleaned="${name_to_clean#*-}"
+  elif [[ "${name_to_clean}" == *\"* ]]; then
+    # Else, if there's a double quote, cut out a substring after that
+    cleaned="${name_to_clean#*\"}"
+  elif [[ "${name_to_clean}" == *\＂* ]]; then
+    # Another type of double quote
+    cleaned="${name_to_clean#*\＂}"
+  elif [[ "${name_to_clean}" == *\'* ]]; then
+    # Else, if there's a single quote, cut out a substring after that
+    cleaned="${name_to_clean#*\'}"
+  else
+    # The rest of the cleaning relies on the 'cleaned' variable, so make sure it's set
+    cleaned="${name_to_clean}"
+  fi
+
+  # Take an educated guess where the track ends by truncating after either the first '(' or '['
+  cleaned=${cleaned%%\(*}
+  cleaned=${cleaned%%\[*}
+
+  # Remove "Official Music Video" or "Official Video"
+  cleaned=$(echo "$cleaned" | sed -E 's/official music video|official video//I')
+
+  # Remove leading and trailing whitespace
+  cleaned="${cleaned#"${cleaned%%[![:space:]]*}"}"
+  cleaned="${cleaned%"${cleaned##*[![:space:]]}"}"
+
+  # Remove special characters
+  cleaned="${cleaned//[^a-zA-Z0-9[:space:]]/}"
+
+  # To lowercase
+  cleaned=$(echo "$cleaned" | tr '[:upper:]' '[:lower:]')
+
+  echo "${cleaned}"
+}
+
+
+# Clean music track file name
+#
+# Plex music files should be standardized in the following formats:
+#   "Artist Name - Album Name - TrackNum - Title.extension"
+#   "Artist Name - Album Name - TrackNum - Title (feat. Second Artist).extension"
+#
+# This function extracts the title for the track file name
+function clean_track_file()
+{
+  track_file_to_clean="$1"
+
+  # Sanity check
+  if [[ -z "${track_file_to_clean}" ]]; then
+    exit
+  fi
+
+  # Remove extension
+  cleaned="${track_file_to_clean%.*}"
+
+  # Remove everything before the last hyphen
+  cleaned="$(echo "$cleaned" | awk -F ' - ' '{print $NF}')"
+  
+  # Remove everything after the last opening parenthesis, if present
+  cleaned="${cleaned%% (*}"
+
+  # Remove special characters
+  cleaned="${cleaned//[^a-zA-Z0-9[:space:]]/}"
+
+  # To lowercase
+  cleaned=$(echo "$cleaned" | tr '[:upper:]' '[:lower:]')
+
+  echo "${cleaned}"
+}
+
+
+# Extract music file track names
+#
+# Plex music files should be standardized in the following formats:
+#   "Artist Name - Album Name - TrackNum - Title.extension"
+#   "Artist Name - Album Name - TrackNum - Title (feat. Second Artist).extension"
+#
+# This function expects the full path to a track as input, and will extract the title string without file extension
+function extract_track_name()
+{
+  track_path="$1"
+
+  # Sanity check
+  if [[ -z "${track_path}" ]]; then
+    exit
+  fi
+
+  # Extract just the file name
+  track_name=$(basename "${track_path}")
+
+  # Remove the extension from the filename
+  track_name_no_extension="${track_name%.*}"
+
+  echo "${track_name_no_extension}"
+}
+
+
+# In dir_to_search, attempt to find a file whose name matches track_to_find
+function find_match()
+{
+  dir_to_search="$1"
+  track_to_find="$2"
+
+  # Sanity check
+  if [[ -z "${dir_to_search}" || -z "${track_to_find}" ]]; then
+    exit
+  fi
+
+  num_matches=0
+  match=""
+  declare -a ignored_extensions=(
+    jpeg
+    jpg
+    JPG
+    nfo
+    png
+    PNG
+    txt
+  )
+
+  # Search directory and tally up number of results
+  while IFS= read -r track_file; do
+    # Skip files with an ignored extension
+    if [[ "${ignored_extensions[@]}" =~ "${track_file##*.}" ]]; then
+      continue
+    fi
+
+    # Clean the track file, then check if the track_to_find matches
+    cleaned_track_title=$(clean_track_file "${track_file}")
+
+    if [[ "${track_to_find}" == *"${cleaned_track_title}"* || *"${track_to_find}"* == "${cleaned_track_title}" ]]; then
+      match="${track_file}"
+      ((num_matches++))
+    fi
+  done < <(find "${dir_to_search}" -type f)
+
+  # We only succeed if there's one result
+  if [[ ${num_matches} -eq 1 ]]; then
+    # One result returned - search suceeded
+    echo $(extract_track_name "${match}")
+  fi
+}
+
+
+#################### MAIN ####################
+
+if [[ -z $1 ]]; then
+  LOG ERROR "This script requires you to pass the name of a text file containing newline-separated youtube links to music videos"
+  exit
+fi
+
+ARTIST_MUSICVIDEOS_DIR="${PWD}"                                                       # Artist's music video directory (script should be called there)
+ARTIST_NAME="$(basename "${ARTIST_MUSICVIDEOS_DIR}")"                                 # Name of the artist we're working with
+ARTIST_MUSIC_DIR=$(realpath "${ARTIST_MUSICVIDEOS_DIR}/../../music/${ARTIST_NAME}")   # Artist's music files directory
+
+# Confirm that these are right. If not, quit
+LOG INFO "Artist music videos location:   "
+echo "${ARTIST_MUSICVIDEOS_DIR}"
+LOG INFO "Artist music files location:    "
+echo "${ARTIST_MUSIC_DIR}"
+
+echo
+
+LOG WARN "Are these settings correct? (y/N) "
+read yn
+case $yn in
+  [Yy]*)
+    LOG SUCCESS "Great! Continuing...\n"
+    ;;
+  *)
+    # Take in manual paths
+    LOG ERROR "Sorry about that! You will have to manually enter your information.\n\n"
+
+    LOG INFO "Full path to the directory containing your artist's music videos: "
+    read ARTIST_MUSICVIDEOS_DIR
+    echo
+
+    LOG INFO "Full path to the directory containing your artist's music files: "
+    read ARTIST_MUSIC_DIR
+    echo
+
+    # Restate what they've entered
+    LOG INFO "NEW Artist music videos location:   "
+    echo "${ARTIST_MUSICVIDEOS_DIR}"
+    LOG INFO "NEW Artist music files location:    "
+    echo "${ARTIST_MUSIC_DIR}"
+    ;;
+esac
+
+echo
+
+# Download each video
+while IFS= read -r line; do
+  LOG INFO "Downloading ${line}...\n"
+  yt-dlp "$line" >/dev/null 2>&1
+
+  if [[ $? -ne 0 ]]; then
+    LOG ERROR "Invalid YouTube URL: ${$line}\n"
+    exit
+  fi
+done < $1
+
+rm $1
+
+echo
+
+# For each downloaded video, look for matches in the ARTIST_MUSIC_DIR
+for VIDEO_PATH in "${ARTIST_MUSICVIDEOS_DIR}"/*; do
+
+  VIDEO_TITLE=$(basename "${VIDEO_PATH}")
+  VIDEO_EXTENSION="${VIDEO_TITLE##*.}"
+
+  LOG INFO "Trying to find a match for \"${VIDEO_TITLE}\"...\n"
+
+  # Normalize input video file name
+  CLEAN_VIDEO_TITLE=$(clean_music_video_title "${VIDEO_TITLE}")
+
+  # Attempt to find a match
+  MATCH_NAME=$(find_match "${ARTIST_MUSIC_DIR}" "${CLEAN_VIDEO_TITLE}")
+
+  if [[ -z "${MATCH_NAME}" ]]; then
+    # No match found... Rename in a generic manner
+    LOG ERROR "Match not found :(\n"
+    mv "${VIDEO_PATH}" "${CLEAN_VIDEO_TITLE}.${VIDEO_EXTENSION}"
+  else
+    # Match found! Rename the video to mirror the match
+    LOG SUCCESS "Successful match with \"${MATCH_NAME}\"\n"
+    mv "${VIDEO_PATH}" "${MATCH_NAME}.${VIDEO_EXTENSION}"
+  fi
+
+  echo
+
+done
+
+echo -e "Don't forget to refresh the Plex artist page!\n"

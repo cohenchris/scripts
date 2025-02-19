@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# Location of temperature storage file
+REDSHIFT_FILE="$XDG_CONFIG_HOME/.redshift_temp"
+
+# Max/min/default temperatures
+MAX=5000
+MIN=1000
+DEFAULT=2500
+
+# Current temperature
+CURRENT=$(cat $REDSHIFT_FILE)
+CURRENT=${CURRENT:-DEFAULT}
+
+# Amount to decrease/increase per invocation
+STEP=75
+
+
+# Increase screen temperature (more blue)
+function temp_up() {
+  new=$(( $CURRENT + $STEP ))
+
+  if [[ $new -gt $MAX ]]; then
+    # upper boundary check
+    notify-send "redshift already at highest value"
+  else
+    # update new redshift value to file
+    echo $new > $REDSHIFT_FILE
+    redshift -PO $new
+  fi
+
+}
+
+
+# Decrease screen temperature (more red)
+function temp_down () {
+  new=$(( $CURRENT - $STEP ))
+
+  if [[ $new -lt $MIN ]]; then
+    # lower boundary check
+    notify-send "redshift already at lowest value"
+  else
+    # update new redshift value to file
+    echo $new > $REDSHIFT_FILE
+    redshift -PO $new
+  fi
+}
+
+
+# main()
+case $1 in
+  up)
+    temp_up 
+    ;;
+  down)
+    temp_down
+    ;;
+  off)
+    rm $REDSHIFT_FILE
+    redshift -x
+    ;;
+  *)
+    # Invalid argument
+    exit
+esac

@@ -1,0 +1,34 @@
+#!/bin/bash
+
+BATOCERA_MOUNT_DIR="/userdata"
+BATOCERA_HOST="root@console.lan"
+
+function batocera_mount()
+{
+  if [ -d "batocera" ]; then
+    echo "ERROR: directory $(pwd)/batocera already exists"
+  else
+    echo "Mounting ${BATOCERA_HOST}:${BATOCERA_MOUNT_DIR} at $(pwd)/batocera"
+    mkdir batocera
+    sshfs ${BATOCERA_HOST}:${BATOCERA_MOUNT_DIR} batocera
+  fi
+}
+
+function batocera_unmount()
+{
+  if [ -d "batocera" ]; then
+    echo "Unmounting/removing directory $(pwd)/batocera"
+    umount ./batocera
+    rm -r ./batocera
+  else
+    echo "Directory $(pwd)/batocera doesn't exist, skipping umount"
+  fi
+}
+
+if [ "$1" == "mount" ]; then
+  batocera_mount
+elif [ "$1" == "unmount" ]; then
+  batocera_unmount
+else
+  echo "Invalid argument - choose one of [mount, unmount]"
+fi
