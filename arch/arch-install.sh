@@ -264,6 +264,11 @@ function post_chroot_setup() {
   echo "Enabling bluetooth..."
   systemctl enable bluetooth
 
+  # Enable cron
+  echo
+  echo "Enabling cron..."
+  systemctl enable cronie
+
   # Install paru AUR helper
   echo
   echo "Installing paru AUR helper..."
@@ -294,20 +299,20 @@ function post_chroot_setup() {
   ############################
   # Create systemd.mount file for boot partition on main drive
   BOOT_DRIVE_UUID=$(findmnt -no UUID /boot)
-  cat <<EOF > /etc/systemd/system/boot.mount
-  [Unit]
-  Description=Mount Boot Partition
-  Wants=local-fs-pre.target
-  Before=local-fs.target
+cat <<EOF > /etc/systemd/system/boot.mount
+[Unit]
+Description=Mount Boot Partition
+Wants=local-fs-pre.target
+Before=local-fs.target
 
-  [Mount]
-  What=UUID=${BOOT_DRIVE_UUID}
-  Where=/boot
-  Type=vfat
-  Options=defaults,noatime
+[Mount]
+What=UUID=${BOOT_DRIVE_UUID}
+Where=/boot
+Type=vfat
+Options=defaults,noatime
 
-  [Install]
-  WantedBy=multi-user.target
+[Install]
+WantedBy=multi-user.target
 EOF
   
   # Enable systemd auto-mounting for boot drive by default
@@ -327,26 +332,26 @@ EOF
 
   # Bootloader - set default entry selection and menu timeout
   cat <<EOF > /boot/loader/loader.conf
-  default arch
-  timeout 5
+default arch
+timeout 5
 EOF
 
   # Create bootloader entry for Arch Linux main kernel
   cat <<EOF > /boot/loader/entries/arch.conf
-  title Arch Linux
-  linux /vmlinuz-linux-lts
-  initrd /intel-ucode.img
-  initrd /initramfs-linux-lts.img
-  options zfs=zroot/ROOT/arch rw
+title Arch Linux
+linux /vmlinuz-linux-lts
+initrd /intel-ucode.img
+initrd /initramfs-linux-lts.img
+options zfs=zroot/ROOT/arch rw
 EOF
 
   # Create bootloader entry for Arch Linux fallback kernel
   cat <<EOF > /boot/loader/entries/arch-fallback.conf
-  title Arch Linux (Fallback)
-  linux /vmlinuz-linux-lts
-  initrd /intel-ucode.img
-  initrd /initramfs-linux-lts-fallback.img
-  options zfs=zroot/ROOT/arch rw
+title Arch Linux (Fallback)
+linux /vmlinuz-linux-lts
+initrd /intel-ucode.img
+initrd /initramfs-linux-lts-fallback.img
+options zfs=zroot/ROOT/arch rw
 EOF
 
   # Pacman hook to update bootctl when systemd is updated
@@ -355,15 +360,15 @@ EOF
   #   - ensures the bootloader is installed correctly
   mkdir -p /etc/pacman.d/hooks/
   cat <<EOF > /etc/pacman.d/hooks/100-systemd-boot.hook
-  [Trigger]
-  Type = Package
-  Operation = Upgrade
-  Target = systemd
+[Trigger]
+Type = Package
+Operation = Upgrade
+Target = systemd
 
-  [Action]
-  Description = update systemd-boot
-  When = PostTransaction
-  Exec = /usr/bin/bootctl update
+[Action]
+Description = update systemd-boot
+When = PostTransaction
+Exec = /usr/bin/bootctl update
 EOF
 }
 

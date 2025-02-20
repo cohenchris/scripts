@@ -4,11 +4,11 @@
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source ${WORKING_DIR}/.env
 
-require MISC_LOCAL_BACKUP_DIR
+require CRITICAL_DATA_LOCAL_BACKUP_DIR
 require DATE
 require WORKING_DIR
 require REMOTE_BACKUP_SERVER
-require MISC_REMOTE_BACKUP_DIR
+require CRITICAL_DATA_REMOTE_BACKUP_DIR
 require FILES_DIR
 require FILES_DIR
 require SCRIPTS_DIR
@@ -16,7 +16,7 @@ require SCRIPTS_DIR
 ########################################
 #      Backup Bitwarden database       #
 ########################################
-bw_backup_dir="${MISC_LOCAL_BACKUP_DIR}/passwords/bw"
+bw_backup_dir="${CRITICAL_DATA_LOCAL_BACKUP_DIR}/passwords/bw"
 bw_backup_file="bw-backup-${DATE}.json"
 bw_pass_file="${WORKING_DIR}/bwpass"
 
@@ -42,12 +42,12 @@ bw lock
 #   Propagate to backup server + Nextcloud   #
 ##############################################
 # Create a backup on the remote backup server
-rsync -r --delete --update --progress ${MISC_LOCAL_BACKUP_DIR}/ ${REMOTE_BACKUP_SERVER}:${MISC_REMOTE_BACKUP_DIR}
+rsync -r --delete --update --progress ${CRITICAL_DATA_LOCAL_BACKUP_DIR}/ ${REMOTE_BACKUP_SERVER}:${CRITICAL_DATA_REMOTE_BACKUP_DIR}
 mail_log check "sync to backup server" $?
 
-# Backup /etc/backups/misc to Nextcloud
-rsync -r --delete --update --progress ${MISC_LOCAL_BACKUP_DIR}/ ${FILES_DIR}/etc/backups/misc
+# Backup /etc/backups/critical-data to Nextcloud
+rsync -r --delete --update --progress ${CRITICAL_DATA_LOCAL_BACKUP_DIR}/ ${FILES_DIR}/etc/backups/critical-data
 mail_log check "nextcloud backup" $?
-${SCRIPTS_DIR}/scan-nextcloud-files.sh
+${SCRIPTS_DIR}/server/nextcloud/scan-nextcloud-files.sh
 
 finish

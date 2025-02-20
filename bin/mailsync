@@ -32,10 +32,9 @@ notify()
   fi
 }
 
+! [[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && echo "No display found, exiting..." && exit 1
 
 notify noturgent "Checking email..."
-
-[[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && exec /usr/bin/hyprland
 
 # Sync all emails 
 mbsync -c ~/.config/isync/mbsyncrc mail

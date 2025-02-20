@@ -19,7 +19,7 @@ fi
 
 # Initialize environment
 WORKING_DIR=$(dirname "$(realpath "$0")")
-source ${WORKING_DIR}/.env
+source ${WORKING_DIR}/../.env
 
 # Define constants
 lidarr_api_url="${LIDARR_URL}:8686/api/v1"

@@ -3,6 +3,10 @@
 BATOCERA_MOUNT_DIR="/userdata"
 BATOCERA_HOST="root@console.lan"
 
+if ! command -v sshfs &> /dev/null; then
+  paru -Syu --noconfirm sshfs
+fi
+
 function batocera_mount()
 {
   if [ -d "batocera" ]; then

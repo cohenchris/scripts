@@ -4,7 +4,7 @@ MAX_NOTIFICATION_ATTEMPTS=100
 
 # Load environment variables
 WORKING_DIR=$(dirname "$(realpath "$0")")
-source ${WORKING_DIR}/.env
+source ${WORKING_DIR}/../.env
 
 title=$1
 body=$2

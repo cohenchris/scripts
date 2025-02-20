@@ -3,7 +3,7 @@ Description=Nextcloud AI worker %i
 After=network.target
 
 [Service]
-ExecStart=/home/phrog/scripts/nextcloud-ai-taskprocessing.sh %i
+ExecStart=<scriptsdir>/system/server/nextcloud/nextcloud-ai-taskprocessing.sh %i
 Restart=always
 StartLimitInterval=15
 StartLimitBurst=10

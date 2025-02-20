@@ -98,7 +98,7 @@ function borg_backup() {
   # Location of the borg repository
   export BORG_REPO=${backup_dest_borg_repo}
   # Password with which we encrypt the borg backup archives
-  export BORG_PASSPHRASE=$(cat ${WORKING_DIR}/gpgpass)
+  export BORG_PASSPHRASE=$(pass backup/borg)
 
   require dir_to_backup
   require backup_dest_borg_repo
@@ -178,10 +178,10 @@ function backblaze_sync() {
 function finish() {
   # Log and notify backup status
   if [[ ${STATUS} == "FAIL" ]]; then
-    ${SCRIPTS_DIR}/ha-notify.sh "${BACKUP_TYPE^} Backup" "ERROR - ${BACKUP_NAME} backup failed..."
+    ${SCRIPTS_DIR}/server/ha-notify.sh "${BACKUP_TYPE^} Backup" "ERROR - ${BACKUP_NAME} backup failed..."
     echo -e "Backup failed..."
   else
-    ${SCRIPTS_DIR}/ha-notify.sh "${BACKUP_TYPE^} Backup" "SUCCESS - ${BACKUP_NAME} backup succeeded!"
+    ${SCRIPTS_DIR}/server/ha-notify.sh "${BACKUP_TYPE^} Backup" "SUCCESS - ${BACKUP_NAME} backup succeeded!"
     echo -e "Backup succeeded!..."
   fi
  

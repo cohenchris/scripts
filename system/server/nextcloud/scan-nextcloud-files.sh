@@ -1,7 +1,7 @@
 #!/bin/bash
 
 WORKING_DIR=$(dirname "$(realpath "$0")")
-source ${WORKING_DIR}/.env
+source ${WORKING_DIR}/../../.env
 
 echo "Working on ${NEXTCLOUD_FILES_DIR}"
 

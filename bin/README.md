@@ -1,6 +1,6 @@
 # Custom System Scripts
 
-This is a collection of scripts that I have written which automate certain day-to-day tasks on my machine.
+This is a collection of scripts that I have written which automate certain day-to-day tasks on my machine. They require no external dependencies or defines that cannot be passed through as command line arguments.
 
 
 ## Basic System Functionality
