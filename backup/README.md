@@ -1,4 +1,4 @@
-# System Backup Scripts
+# Backups
 
 ## Setup
 1. Fill in all fields in env file

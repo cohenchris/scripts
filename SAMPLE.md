@@ -13,14 +13,8 @@ Description of requirements here, if necessary...
 
 Description about script 1 here...
 
-### Requirements/Prereqs
+### Prerequisites
 Requirements here...
 
-### Setup
+### Setup and Use
 Setup instructions here...
-
-
-## Script 2 Title
-`script2.sh`
-
-Description about script 2 here...

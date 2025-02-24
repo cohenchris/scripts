@@ -7,7 +7,7 @@ This is a collection of various custom systemd services that I have created.
 ## Network UPS Tools
 `nut/*`
 
-This is a collection of configuration files which configure the "Network UPS Tools" driver to communicate with your UPS.
+This is a collection of configuration files which configure the "Network UPS Tools" systemd service and driver, which communicate with your UPS.
 
 The default username is `upsmon` and password is `password`.
 

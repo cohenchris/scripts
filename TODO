@@ -1,9 +1,14 @@
+create README.md in the same format for each subdirectory
+- backup
+- system
+
+- scripts/arch/services/ssmtp.conf.example
+
+
+
+requirements section for directories that have sample.env or other
 documentation about password files and permissions
-
-each README.md should give information about EVERYTHING in the current directory, including other directories (but not anything IN that directory)
-
+make function headers for each function
 
 change nsxiv instructions
 clean LF config files
-make function headers for each function
-decide on a single set format for README.md
