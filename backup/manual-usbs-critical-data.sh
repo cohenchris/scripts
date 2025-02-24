@@ -106,8 +106,6 @@ echo "Copying critical data backup to usb1..."
 cd ${USB1_MNT_PATH}
 cp -r ${CRITICAL_DATA_LOCAL_BACKUP_DIR}/* .
 
-cd passwords
-
 # Decrypt backup_codes.txt
 BACKUP_CODES_PASSWORD=$(cat ${BACKUP_CODES_PASS_FILE})
 echo -e "${BACKUP_CODES_PASSWORD}\n:X\n\n\n:wq\n" | /usr/bin/vim backup_codes.txt

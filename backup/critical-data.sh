@@ -18,12 +18,13 @@ require file ${BW_PASS_FILE}
 ########################################
 #      Backup Bitwarden database       #
 ########################################
-bw_backup_dir="${CRITICAL_DATA_LOCAL_BACKUP_DIR}/passwords/bw"
+bw_backup_dir="${CRITICAL_DATA_LOCAL_BACKUP_DIR}/bitwarden"
 bw_backup_file="bw-backup-${DATE}.json"
 
 # Login + save credentials (used by BW binary)
 export BW_SESSION=$(bw unlock --raw --passwordfile ${BW_PASS_FILE})
 
+[ ! -d ${bw_backup_dir} ] && mkdir -p ${bw_backup_dir}
 cd ${bw_backup_dir}
 
 # Backup to local drive
