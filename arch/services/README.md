@@ -106,7 +106,9 @@ Then, enable and start the service 4 or more times:
 
 Check the status for success and ensure the workers have been deployed:
 
-`systemctl status nextcloud-ai-worker@1.service`
-`systemctl list-units --type=service | grep nextcloud-ai-worker`
+```sh
+systemctl status nextcloud-ai-worker@1.service
+systemctl list-units --type=service | grep nextcloud-ai-worker
+```
 
 2. Automated setup using `import-services.sh`
