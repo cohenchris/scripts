@@ -7,10 +7,10 @@
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source ${WORKING_DIR}/.env
 
-require FILES_DIR
-require FILES_LOCAL_BACKUP_DIR
-require REMOTE_BACKUP_SERVER
-require FILES_REMOTE_BACKUP_DIR
+require var FILES_DIR
+require var FILES_LOCAL_BACKUP_DIR
+require var REMOTE_BACKUP_SERVER
+require var FILES_REMOTE_BACKUP_DIR
 
 # Put Nextcloud in maintenance mode to prevent file changes
 docker exec -u www-data nextcloud php occ maintenance:mode --on

@@ -7,13 +7,13 @@
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source ${WORKING_DIR}/.env
 
-require MUSIC_DIR
-require MUSIC_LOCAL_BACKUP_DIR
-require REMOTE_BACKUP_SERVER
-require MUSIC_REMOTE_BACKUP_DIR
-require MUSICVIDEOS_DIR
-require MUSICVIDEOS_LOCAL_BACKUP_DIR
-require MUSICVIDEOS_REMOTE_BACKUP_DIR
+require var MUSIC_DIR
+require var MUSIC_LOCAL_BACKUP_DIR
+require var REMOTE_BACKUP_SERVER
+require var MUSIC_REMOTE_BACKUP_DIR
+require var MUSICVIDEOS_DIR
+require var MUSICVIDEOS_LOCAL_BACKUP_DIR
+require var MUSICVIDEOS_REMOTE_BACKUP_DIR
 
 # Stop Lidarr to prevent files changing while backing up
 docker stop lidarr

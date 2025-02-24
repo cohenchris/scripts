@@ -1,16 +1,35 @@
-# require(var)
-#   var - variable to check
+# require(type, name)
+#   type - type of check ("var" or "file")
+#   name - name of variable or file to check
 #
 # This function will throw an error if the provided variable is not set
 function require() {
-  local var="$1"
+  local type="$1"
+  local name="$2"
 
-  if [[ -z "${!var}" ]]; then
-    # Log variable name and calling function name
-    echo -e "ERROR - ${var} is not set in ${FUNCNAME[1]:-env}"
-    status=FAIL
-    finish
+  if [ "${type}" == "var" ]; then
+    # Variable type - check if this exists in the env
+    if [ -z "${!name}" ]; then
+      # Log variable name and calling function name
+      echo -e "ERROR - variable \"${name}\" is not set - required by ${FUNCNAME[1]:-env}"
+      status=FAIL
+      finish
+    fi
+
+  elif [ "${type}" == "file" ]; then
+    # File type - check if this file path exists
+    if ! [ -f ${name} ]; then
+      # Log variable name and calling function name
+      echo -e "ERROR - file \"${name}\" does not exist - required by ${FUNCNAME[1]:-env}"
+      status=FAIL
+      finish
+    fi
+
+  else
+    # Invalid type provided
+    echo "Invalid type passed to ${FUNCNAME[1]:-env} - \"${type}\""
   fi
+
 }
 
 
@@ -25,11 +44,11 @@ function mail_log() {
   local message="$2"
   local code="$3"
 
-  require log_type
-  require message
+  require var log_type
+  require var message
 
   if [[ ${log_type} == "check" ]]; then
-    require code
+    require var code
 
     if [[ ${code} -gt 0 ]]; then
       # Failure
@@ -58,12 +77,12 @@ function send_email() {
   local subject="$2"
   local body="$3"
   local logfile="$4"
-  local MAX_MAIL_ATTEMPTS=50
+  local max_mail_attempts=50
 
-  require email
-  require subject
-  require body
-  require logfile
+  require var email
+  require var subject
+  require var body
+  require var logfile
 
   # Poll email send
   while ! neomutt -s "${subject}" -a ${logfile} -- ${email} < ${body}
@@ -71,8 +90,8 @@ function send_email() {
     echo -e "email failed, trying again..."
 
     # Limit attempts. If it goes infinitely, it could fill up the disk.
-    MAX_MAIL_ATTEMPTS=$((MAX_MAIL_ATTEMPTS-1))
-    if [[ ${MAX_MAIL_ATTEMPTS} -eq 0 ]]; then
+    max_mail_attempts=$((max_mail_attempts-1))
+    if [[ ${max_mail_attempts} -eq 0 ]]; then
       echo -e "send_email failed"
       status=FAIL
     fi
@@ -94,16 +113,16 @@ function borg_backup() {
   local dir_to_backup="$1"
   local backup_dest_borg_repo="$2"
 
+  require var dir_to_backup
+  require var backup_dest_borg_repo
+  require var BORG_PASS_FILE
+  require file ${BORG_PASS_FILE}
+
   # Environment variables that Borg requires to function
   # Location of the borg repository
   export BORG_REPO=${backup_dest_borg_repo}
   # Password with which we encrypt the borg backup archives
-  export BORG_PASSPHRASE=$(pass backup/borg)
-
-  require dir_to_backup
-  require backup_dest_borg_repo
-  require BORG_REPO
-  require BORG_PASSPHRASE
+  export BORG_PASSPHRASE=$(cat ${BORG_PASS_FILE})
 
   # Create archive
   if [[ ${BACKUP_TYPE} == "server" ]]; then
@@ -135,53 +154,16 @@ function borg_backup() {
 
 
 
-# backblaze_sync(dir_to_sync, backblaze_bucket)
-#   dir_to_sync      - backup directory to sync to backblaze
-#   backblaze_bucket - backblaze destination bucket
-#
-# Syncs a given directory to a given bucket on Backblaze
-function backblaze_sync() {
-  local dir_to_sync="$1"
-  local backblaze_bucket="$2"
-  local exclude_regex="$3"
-
-  require dir_to_sync
-  require backblaze_bucket
-  require B2_BIN
-
-  # Check B2 auth
-  ${B2_BIN} get-bucket ${backblaze_bucket} > /dev/null 2>&1
-  if [[ $? -gt 0 ]]; then
-    mail_log plain "Backblaze not authorized"
-    STATUS=FAIL
-    finish
-  fi
-
-  # If exclude_regex was provided, prepend a pipe character to properly format the variable for b2 sync exclude regex
-  [[ -n "${exclude_regex}" ]] && exclude_regex="|${exclude_regex}"
-
-  # Sync directory to Backblaze
-  # Handle user-specified excluded files/directories
-  # Always prevent hidden files from being included
-  cd ${dir_to_sync}
-  ${B2_BIN} sync --delete --replaceNewer --excludeRegex "\..*${exclude_regex}" . b2://${backblaze_bucket}
-  mail_log check "backblaze backup" $?
-
-  cd ${WORKING_DIR}
-}
-
-
-
 # finish()
 #
 # Logs, notifies me via HomeAssistant, emails me the backup status, and cleans up
 function finish() {
   # Log and notify backup status
   if [[ ${STATUS} == "FAIL" ]]; then
-    ${SCRIPTS_DIR}/server/ha-notify.sh "${BACKUP_TYPE^} Backup" "ERROR - ${BACKUP_NAME} backup failed..."
+    ${SCRIPTS_DIR}/system/server/ha-notify.sh "${BACKUP_TYPE^} Backup" "ERROR - ${BACKUP_NAME} backup failed..."
     echo -e "Backup failed..."
   else
-    ${SCRIPTS_DIR}/server/ha-notify.sh "${BACKUP_TYPE^} Backup" "SUCCESS - ${BACKUP_NAME} backup succeeded!"
+    ${SCRIPTS_DIR}/system/server/ha-notify.sh "${BACKUP_TYPE^} Backup" "SUCCESS - ${BACKUP_NAME} backup succeeded!"
     echo -e "Backup succeeded!..."
   fi
  

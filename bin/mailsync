@@ -32,8 +32,6 @@ notify()
   fi
 }
 
-! [[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && echo "No display found, exiting..." && exit 1
-
 notify noturgent "Checking email..."
 
 # Sync all emails 
@@ -50,11 +48,13 @@ if ! [[ $? -eq 0 ]]; then
   exit
 fi
 
-# Notifications for any new emails
-notifymuch
-if ! [[ $? -eq 0 ]]; then
-  notify urgent "Email syncing error" "notifymuch failed"
-  exit
+# Notifications for any new emails (only if in a graphical environment)
+if ! [ -z ${DISPLAY} ]; then
+  notifymuch
+  if ! [[ $? -eq 0 ]]; then
+    notify urgent "Email syncing error" "notifymuch failed"
+    exit
+  fi
 fi
 
 # Sync contacts

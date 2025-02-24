@@ -12,11 +12,11 @@
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source ${WORKING_DIR}/.env
 
-require BATOCERA_HOST
-require BATOCERA_MAC
-require BATOCERA_DIR
-require BATOCERA_LOCAL_BACKUP_DIR
-require BATOCERA_REMOTE_BACKUP_DIR
+require var BATOCERA_HOST
+require var BATOCERA_MAC
+require var BATOCERA_DIR
+require var BATOCERA_LOCAL_BACKUP_DIR
+require var BATOCERA_REMOTE_BACKUP_DIR
 
 # Attempt to wake batocera using Wake-On-LAN
 wakeonlan ${BATOCERA_MAC}

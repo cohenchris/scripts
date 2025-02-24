@@ -37,10 +37,12 @@ echo
 fdisk -l ${USB2_DEV_NAME}
 echo
 
-require USB1_DEV_NAME
-require USB2_DEV_NAME
-require CRITICAL_DATA_LOCAL_BACKUP_DIR
-require WORKING_DIR
+require var USB1_DEV_NAME
+require var USB2_DEV_NAME
+require var CRITICAL_DATA_LOCAL_BACKUP_DIR
+require var WORKING_DIR
+require var BACKUP_CODES_PASS_FILE
+require file ${BACKUP_CODES_PASS_FILE}
 
 read -p "Are these devices correct? (y/N) " yn
 
@@ -107,7 +109,7 @@ cp -r ${CRITICAL_DATA_LOCAL_BACKUP_DIR}/* .
 cd passwords
 
 # Decrypt backup_codes.txt
-BACKUP_CODES_PASSWORD=$(pass backup/backupcodes)
+BACKUP_CODES_PASSWORD=$(cat ${BACKUP_CODES_PASS_FILE})
 echo -e "${BACKUP_CODES_PASSWORD}\n:X\n\n\n:wq\n" | /usr/bin/vim backup_codes.txt
 unset BACKUP_CODES_PASSWORD
 

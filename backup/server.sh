@@ -7,20 +7,20 @@
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source ${WORKING_DIR}/.env
 
-require SERVER_DIR
-require SCRIPT_USER
-require WORKING_DIR
-require SERVER_DIR
-require SERVER_LOCAL_BACKUP_DIR
-require REMOTE_BACKUP_SERVER
-require SERVER_REMOTE_BACKUP_DIR
+require var SERVER_DIR
+require var SERVER_USER
+require var WORKING_DIR
+require var SERVER_DIR
+require var SERVER_LOCAL_BACKUP_DIR
+require var REMOTE_BACKUP_SERVER
+require var SERVER_REMOTE_BACKUP_DIR
 
 # Shutdown server
 cd ${SERVER_DIR}
 docker-compose down
 mail_log check "docker-compose down" $?
 # Export crontab
-crontab -l -u ${SCRIPT_USER} > crontab.txt
+crontab -l -u ${SERVER_USER} > crontab.txt
 crontab -l > sudo_crontab.txt
 cd ${WORKING_DIR}
 

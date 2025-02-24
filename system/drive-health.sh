@@ -145,7 +145,7 @@ function send_email() {
   local email="$1"
   local subject="$2"
   local body="$3"
-  local MAX_MAIL_ATTEMPTS=50
+  local max_mail_attempts=50
 
   require email
   require subject
@@ -157,8 +157,8 @@ function send_email() {
     echo -e "${RED}email failed, trying again...${NC}"
 
     # Limit attempts. If it goes infinitely, it could fill up the disk.
-    MAX_MAIL_ATTEMPTS=$((MAX_MAIL_ATTEMPTS-1))
-    if [[ ${MAX_MAIL_ATTEMPTS} -eq 0 ]]; then
+    max_mail_attempts=$((max_mail_attempts-1))
+    if [[ ${max_mail_attempts} -eq 0 ]]; then
       echo -e "${RED}send_email failed${NC}"
       fail
     fi

@@ -13,4 +13,4 @@ docker-compose up -d --remove-orphans
 cd
 
 # Fix nextcloud warnings
-${WORKING_DIR}/nextcloud-install-ffmpeg.sh
+${WORKING_DIR}/server/nextcloud/nextcloud-install-ffmpeg.sh
