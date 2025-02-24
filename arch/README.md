@@ -1,4 +1,4 @@
-# OS Management Scripts
+# OS Management
 
 These are one-time use scripts intended to help manage various OS-level components, including a fresh Arch install, ZFS pool management, and system services.
 Some of these may have CATASTROPHIC effects on your system, so please make sure you fully understand a script before running.
