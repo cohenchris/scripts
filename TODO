@@ -2,6 +2,8 @@ create README.md in the same format for each subdirectory
 - backup
 - system
 
+move scripts present only on backup server to this repo
+
 
 
 requirements section for directories that have sample.env or other

@@ -4,6 +4,12 @@ Scripts to seamlessly backup different parts of the system.
 These scripts are heavily driven by the .env file, but they all generally assume a backup system which includes 1 local backup on the local machine, 1 remote backup on a remote backup server (whether this be another computer on your network or a remote Backblaze storage bucket).
 These scripts should not have any destructive capabilities, but please read about them before using.
 
+
+
+![Diagram of Backup Flow](backup-diagram.png)
+
+
+
 ---
 
 ## Backblaze Remote Backup
