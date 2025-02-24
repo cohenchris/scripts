@@ -98,11 +98,15 @@ Two options are available for setup:
 
 Modify the script path present in `nextcloud-ai-worker@.service` and move it to the systemd services folder:
 
-`mv nextcloud-ai-worker@.service /etc/systemd/system`
+```sh
+mv nextcloud-ai-worker@.service /etc/systemd/system
+```
 
 Then, enable and start the service 4 or more times:
 
-`for i in {1..4}; do systemctl enable --now nextcloud-ai-worker@$i.service; done`
+```sh
+for i in {1..4}; do systemctl enable --now nextcloud-ai-worker@$i.service; done
+```
 
 Check the status for success and ensure the workers have been deployed:
 
