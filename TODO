@@ -1,7 +1,6 @@
 create README.md in the same format for each subdirectory
 - backup
 - system
-
 - scripts/arch/services/ssmtp.conf.example
 
 

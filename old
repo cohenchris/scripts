@@ -1,5 +1,0 @@
-# Homelab Scripts
-
-## Requirements
-1. Fill out `sample.env`, then `mv sample.env .env` for these scripts to work properly
-2. Configure SSMTP and neomutt per instructions in `backups/README.md`, which will enable email notifications
