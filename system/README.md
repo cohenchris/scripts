@@ -1,7 +1,10 @@
 # System Automation
 
-System scripts with dependencies (must fill out .env file) which help manage and interact with the system.
-Rather than dealing with generic system operations, these typically deal with services that the user has explicitly set up.
+System scripts with dependencies (must fill out .env file) which help manage and interact with the host system.
+
+These focus on automations which can be quite system-specific.
+Think of these as scripts that would require a solid amount of effort to port to another system.
+For example, one of the scripts in here nukes a Docker container stack, cleans things up, and restarts them all - obviously, not all systems will be running a Docker container stack, so this is not immediately portable across different systems.
 
 ---
 

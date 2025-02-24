@@ -1,9 +1,10 @@
 # Standalone Helpers
 
-This is a collection of scripts that I have written which automate certain day-to-day tasks on my machine.
-They are completely standalone and require no externally-managed environment variables.
+Dependency-free system scripts which are added to the PATH and can be run from the command line.
 
-This directory is intended to be appended to the system $PATH.
+These focus on generic everyday automations.
+Think of these as scripts that can be easily moved from system to system with zero effort (assuming the correct packages are installed).
+For example, one of the scripts in here is a file extraction wrapper which uses different programs depending on the file extension - this can be dropped on any system that supports bash.
 
 ---
 

@@ -21,11 +21,17 @@ They are heavily driven by the .env file, but all generally assume a backup syst
 `bin/`
 
 Dependency-free system scripts which are added to the PATH and can be run from the command line.
-Rather than dealing with services that the user has explicitly set up, these typically deal with more generic system operations.
+
+These focus on generic everyday automations.
+Think of these as scripts that can be easily moved from system to system with zero effort (assuming the correct packages are installed).
+For example, one of the scripts in here is a file extraction wrapper which uses different programs depending on the file extension - this can be dropped on any system that supports bash.
 
 
 ## System Automation
 `system/`
 
-System scripts with dependencies (must fill out .env file) which help manage and interact with the system.
-Rather than dealing with generic system operations, these typically deal with services that the user has explicitly set up.
+System scripts with dependencies (must fill out .env file) which help manage and interact with the host system.
+
+These focus on automations which can be quite system-specific.
+Think of these as scripts that would require a solid amount of effort to port to another system.
+For example, one of the scripts in here nukes a Docker container stack, cleans things up, and restarts them all - obviously, not all systems will be running a Docker container stack, so this is not immediately portable across different systems.
