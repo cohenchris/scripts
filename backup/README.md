@@ -1,5 +1,114 @@
 # Backups
 
+Scripts to seamlessly backup different parts of the system.
+These scripts are heavily driven by the .env file, but they all generally assume a backup system which includes 1 local backup on the local machine, 1 remote backup on a remote backup server (whether this be another computer on your network or a remote Backblaze storage bucket).
+These scripts should not have any destructive capabilities, but please read about them before using.
+
+---
+
+## Backblaze Remote Backup
+`backblaze.sh`
+
+...
+
+### Prerequisites
+...
+
+### Use
+...
+
+
+## Batocera Console Backup
+`batocera.sh`
+
+...
+
+### Prerequisites
+...
+
+### Use
+...
+
+
+## Common Backup Functions
+`common.sh`
+
+...
+
+### Prerequisites
+...
+
+### Use
+...
+
+
+## Critical Data Backup
+`critical-data.sh`
+
+...
+
+### Prerequisites
+...
+
+### Use
+...
+
+
+## "Cloud" Files Backup
+`files.sh`
+
+...
+
+### Prerequisites
+...
+
+### Use
+...
+
+
+## Critical Data Backup - 2x Manual USB Cold Backup
+`manual-usbs-critical-data.sh`
+
+...
+
+### Prerequisites
+...
+
+### Use
+...
+
+
+## Music Backup
+`music.sh`
+
+...
+
+### Prerequisites
+...
+
+### Use
+...
+
+
+## Server Backup
+`server.sh`
+
+...
+
+### Prerequisites
+...
+
+### Use
+...
+
+
+
+
+
+
+
+
+
 ## Setup
 1. Fill in all fields in env file
 2. Add the following entries to `pass`

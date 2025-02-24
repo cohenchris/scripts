@@ -37,6 +37,18 @@ This script assumes that:
 You may either run this script manually or with a scheduled cron job.
 
 
+## Broadcast Plex Shutdown Message
+`plex-server-maintenance-broadcast.py <plex URL> <plex token>`
+
+Shuts down every active Plex playback session, shows each use a server maintenance message.
+
+### Prerequisites
+There are no prerequisites for this script. If the user passes a valid URL and token, it will work as intended.
+
+### Use
+To provide a smoother experience for users of your Plex server, it is recommended to run this when shutting down your server for scheduled maintenance.
+
+
 ## Restart Docker Container Stack
 `restart.sh`
 

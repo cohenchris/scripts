@@ -14,6 +14,12 @@ require var SERVER_DIR
 require var SERVER_LOCAL_BACKUP_DIR
 require var REMOTE_BACKUP_SERVER
 require var SERVER_REMOTE_BACKUP_DIR
+require var PLEX_URL
+require var PLEX_TOKEN
+
+# Stop all Plex playback sessions with an informational message
+${SCRIPTS_DIR}/system/server/plex-server-maintenance-broadcast.py ${PLEX_URL} ${PLEX_TOKEN}
+sleep 30
 
 # Shutdown server
 cd ${SERVER_DIR}
