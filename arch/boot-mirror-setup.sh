@@ -24,7 +24,7 @@ case $yn in
 esac
 
 # Get this script's directory
-OS_SCRIPTS_DIR=$(dirname "$(realpath "$0")")
+ARCH_SCRIPTS_DIR=$(dirname "$(realpath "$0")")
 
 echo
 echo "Creating new pacman systemd hook..."
@@ -39,7 +39,7 @@ Target = systemd
 [Action]
 Description = update systemd-boot
 When = PostTransaction
-Exec = ${OS_SCRIPTS_DIR}/boot-mirror.sh ${ZFS_ROOT_POOL_NAME}
+Exec = ${ARCH_SCRIPTS_DIR}/boot-mirror.sh ${ZFS_ROOT_POOL_NAME}
 EOF
 
 echo

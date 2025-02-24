@@ -2,17 +2,17 @@
 
 # This script monitors albums if:
 # 1. The artist is monitored
-# 2. The album has been released in the NUM_DAYS_TO_MONITOR days
+# 2. The album has been released in the num_days_to_monitor days
 # 3. The album is not a single
 #
 # This functionality is built into Lidarr, but has been broken for a while
 
-NUM_DAYS_TO_MONITOR=${1}
+num_days_to_monitor=${1}
 
-if [ -z "${NUM_DAYS_TO_MONITOR}" ]; then
+if [ -z "${num_days_to_monitor}" ]; then
   echo "Please specify the number of days to monitor"
   exit 1
-elif [ "${NUM_DAYS_TO_MONITOR}" -eq 0 ]; then
+elif [ "${num_days_to_monitor}" -eq 0 ]; then
   echo "Please specify a number of days greater than 0"
   exit 1
 fi
@@ -21,6 +21,9 @@ fi
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source ${WORKING_DIR}/../.env
 
+require var LIDARR_URL
+require var LIDARR_API_KEY
+
 # Define constants
 lidarr_api_url="${LIDARR_URL}:8686/api/v1"
 
@@ -28,8 +31,8 @@ lidarr_api_url="${LIDARR_URL}:8686/api/v1"
 albums_url="${lidarr_api_url}/album?apikey=${LIDARR_API_KEY}"
 response=$(curl -s -X GET "${albums_url}")
 
-# Calculate the date NUM_DAYS_TO_MONITOR days ago in the format required
-monitoring_period=$(date -d "-${NUM_DAYS_TO_MONITOR} days" +%Y-%m-%dT%H:%M:%SZ)
+# Calculate the date num_days_to_monitor days ago in the format required
+monitoring_period=$(date -d "-${num_days_to_monitor} days" +%Y-%m-%dT%H:%M:%SZ)
 
 # Filter albums with a release date within the last 30 days and monitored artists
 # If an album has been released in the last 30 days, the artist is monitored, and it's not a single, select it for updating

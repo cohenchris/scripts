@@ -1,6 +1,8 @@
 # Custom System Scripts
+This is a collection of scripts that I have written which automate certain day-to-day tasks on my machine.
+They are completely standalone and require no externally-managed environment variables.
+This directory is intended to be appended to the system $PATH.
 
-This is a collection of scripts that I have written which automate certain day-to-day tasks on my machine. They require no external dependencies or defines that cannot be passed through as command line arguments.
 
 
 ## Basic System Functionality
@@ -32,6 +34,7 @@ It will loop through each argument and use the correct extraction program based 
 
 Synced email may be viewed with a local client such as `neomutt`.
 
+
 ### `rotdir`
 Helper script for the `nsxiv` image-viewing program.
 When I open an image using this program, this script allows me to press next/previous keys to scroll through all images in the current directory.
@@ -46,16 +49,32 @@ This is a wrapper script for lf that allows it to create image previews with ueb
 
 This script was pulled directly from Luke Smith's dotfiles [here](https://github.com/LukeSmithxyz/voidrice/blob/master/.local/bin/lfub)
 
-## Media
-### `batocera [mount, unmount]`
 
+### `mytex [compile, create, edit] [FILENAME]`
+This script helps automate common LaTeX commands that I use.
+The user will pass a filename as an argument.
+
+Behavior differs depending on the subcommand:
+`compile`
+  - This script will compile the source file into a PDF.
+`create`
+  - This script will spit out a file (name provided as an argument) which contains a very simple LaTeX template.
+`edit`
+  - This script will compile that source file into a PDF, display the PDF, and open the source file in vim.
+
+
+
+## Media
+
+### `batocera [mount, unmount]`
 I have an Intel NUC [Batocera](https://batocera.org/) emulation station in my living room.
 From their website, "Batocera.linux is an open-source and completely free retro-gaming distribution that can be copied to a USB stick or an SD card with the aim of turning any computer/nano computer into a gaming console during a game or permanently."
 It's a pain to manually import games from a USB stick, so this script allows mounting/unmounting of Batocera's `/userdata` directory.
 
-`batocera mount` mounts Batocera's `/userdata` directory to a the `./batocera` directory in the user's current location.
+`batocera mount` mounts Batocera's `/userdata` directory to a newly created `./batocera` directory in the current working directory.
 
 `batocera unmount` unmounts and removes the local `./batocera` directory.
+
 
 ## `mvdl [FILE]`
 This script takes in a file of newline-separated music video youtube URLs.
@@ -70,29 +89,8 @@ If there is a match, it will rename the downloaded music video according to the 
 If there is no match, it will rename the downloaded music video to a cleaner, more readable version.
 
 
+
 ## Display
-### `bluelightfilter [temp_up, temp_down, off]`
-Provides a user-friendly interface to toggle and adjust the display's blue light filter using `redshift`.
 
- `redshift temp_up` will increase the filter temperature. If redshift is not already enabled, the filter will be set to its default value.
- `redshift temp_down` will decrease the filter temperature. If redshift is not already enabled, the filter will be set to its default value.
- `redshift off` will turn off the filter.
-
- 
 ### `random-wallpaper`
-Selects and random image from the local wallpapers directory and sets it as the user's wallpaper.
-
-
-## LaTeX
-### `texcompile` [FILE]
-The user will pass a LaTeX source file as an argument.
-This script will compile the source file into a PDF.
-
-
-### `texcreate [filename]`
-This script will spit out a file (name provided as an argument) which contains a very simple LaTeX template.
-
-
-### `texedit [FILE]`
-The user will pass a LaTeX source file as an argument.
-This script will compile that source file into a PDF, display the PDF, and open the source file in vim.
+Selects and random image from the `${XDG_DATA_HOME}/wallpapers` directory and sets it as the user's wallpaper.

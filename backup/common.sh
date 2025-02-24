@@ -7,22 +7,38 @@ function require() {
   local type="$1"
   local name="$2"
 
-  if [ "${type}" == "var" ]; then
+  if [[ "${type}" == "var" ]]; then
     # Variable type - check if this exists in the env
-    if [ -z "${!name}" ]; then
+    if [[ -z "${!name}" ]]; then
       # Log variable name and calling function name
       echo -e "ERROR - variable \"${name}\" is not set - required by ${FUNCNAME[1]:-env}"
       status=FAIL
       finish
     fi
 
-  elif [ "${type}" == "file" ]; then
+  elif [[ "${type}" == "file" ]]; then
     # File type - check if this file path exists
-    if ! [ -f ${name} ]; then
+    if ! [[ -f ${name} ]]; then
       # Log variable name and calling function name
       echo -e "ERROR - file \"${name}\" does not exist - required by ${FUNCNAME[1]:-env}"
       status=FAIL
       finish
+
+    # Check permissions on password files
+    elif [[ ${name} == *"pass"* ]]; then
+
+      # Check ownership
+      if [[ $(stat -c "%U:%G" "${name}") != "root:root" ]]; then
+        echo "WARNING: Unsafe permissions are set on password file \"${name}\"."
+        echo "Recommended to run 'chown root:root ${name}'"
+      fi
+
+      # Check permission bits
+      if [[ $(stat -c "%a" "${name}") -ne 400 ]]; then
+        echo "WARNING: Unsafe permissions are set on password file \"${name}\"."
+        echo "Recommended to run 'chmod 400 ${name}'"
+      fi
+
     fi
 
   else

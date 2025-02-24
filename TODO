@@ -3,3 +3,7 @@ documentation about password files and permissions
 each README.md should give information about EVERYTHING in the current directory, including other directories (but not anything IN that directory)
 
 
+change nsxiv instructions
+clean LF config files
+make function headers for each function
+decide on a single set format for README.md

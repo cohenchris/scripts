@@ -9,7 +9,7 @@ notify()
   message1="$2"
   message2="$3"
 
-  if [ -n "$DISPLAY" ]; then
+  if [ -z "$DISPLAY" ]; then
     # There is a display - use notify-send
     if [ "$urgency" = "urgent" ]; then
       # Notify with critical urgency
@@ -34,21 +34,21 @@ notify()
 
 notify noturgent "Checking email..."
 
-# Sync all emails 
+# Sync from remote store to local store
 mbsync -c ~/.config/isync/mbsyncrc mail
 if ! [[ $? -eq 0 ]]; then
   notify urgent "Email syncing error" "mbsync failed"
   exit
 fi
 
-# Index new emails
+# Index all new mail
 notmuch new
 if ! [[ $? -eq 0 ]]; then
   notify urgent "Email syncing error" "notmuch new failed"
   exit
 fi
 
-# Notifications for any new emails (only if in a graphical environment)
+# If in a graphical environment, notify about any unread mail
 if ! [ -z ${DISPLAY} ]; then
   notifymuch
   if ! [[ $? -eq 0 ]]; then
@@ -57,7 +57,7 @@ if ! [ -z ${DISPLAY} ]; then
   fi
 fi
 
-# Sync contacts
+# Sync contacts from Nextcloud
 vdirsyncer sync
 if ! [[ $? -eq 0 ]]; then
   # Maybe contacts aren't initialized, try discover
@@ -76,4 +76,3 @@ if ! [[ $? -eq 0 ]]; then
 fi
 
 notify noturgent "Email checked successfully"
-

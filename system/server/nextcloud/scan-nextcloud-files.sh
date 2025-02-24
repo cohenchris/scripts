@@ -3,6 +3,8 @@
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source ${WORKING_DIR}/../../.env
 
+require var NEXTCLOUD_FILES_DIR
+
 echo "Working on ${NEXTCLOUD_FILES_DIR}"
 
 echo "Changing ownership of all files to http:http..."

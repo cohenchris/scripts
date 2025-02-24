@@ -1,0 +1,108 @@
+#!/bin/bash
+
+function mytex_compile()
+{
+  if [[ $1 == *".tex" ]]
+  then
+    tex_filename=$1
+  elif [[ $1 == *"." ]]
+  then
+    tex_filename=$1"tex"
+  else
+    tex_filename=$1".tex"
+  fi
+
+  biber_filename=${tex_filename%.*}
+
+  xelatex=$(grep fontspec $tex_filename | wc -l)
+
+  if [[ $xelatex -ne 0 ]]; then
+    xelatex $tex_filename
+    biber $biber_filename
+    xelatex $tex_filename
+  else
+    pdflatex $tex_filename
+    biber $biber_filename
+    pdflatex $tex_filename
+  fi
+
+  # Removes all extraneous files from compilation
+  rm *.out *.aux *.blg *.bbl *.log *.bcf *.run.xml > /dev/null 2>&1
+}
+
+
+function mytex_create()
+{
+  echo "\documentclass[12pt]{article}
+
+  \usepackage[backend=biber]{biblatex}
+  \addbibresource{BIBRESOURCE PATH GOES HERE}
+
+  \usepackage[margin=1in]{geometry}
+  \usepackage{times}
+  \usepackage{titling}
+
+  \usepackage{setspace}
+  \doublespacing
+
+  \author{Chris Cohen}
+  \title{TITLE GOES HERE}
+  \date{\today}
+
+
+  \renewcommand\maketitle{
+    \begin{flushleft}
+    \textbf{\theauthor}\\\\
+    \textbf{\thedate}\\\\
+    \textbf{ASSIGNMENT NAME GOES HERE}\\\\
+    \end{flushleft}
+
+    \begin{center}
+    \Large{\textbf{\thetitle}}
+    \end{center}
+  }
+
+  \begin{document}
+  \maketitle
+
+  \newpage
+  \printbibliography
+  \end{document}" >> $1
+}
+
+
+function mytex_edit()
+{
+  #files=$(ls *.tex | wc -l)
+  #if [ $files -ne 1 ]; then
+  #  echo "ERROR: There needs to be only 1 valid LaTeX file to edit..."
+  #  exit
+  #fi
+
+  if [ $# -ne 1 ]; then
+    echo "ERROR: There needs to be 1 argument (the filename to edit)"
+    exit
+  fi
+
+  FILENAME=$1
+
+  pdf=$(ls | grep *.pdf | wc -l)
+  if [ $pdf -ne 1 ]; then
+    mytex_compile $FILENAME >> /dev/null
+    exit
+  fi
+
+  zathura *.pdf &
+  nvim $FILENAME
+}
+
+
+if [ "$1" == "compile" ]; then
+  mytex_compile $2
+elif [ "$1" == "create" ]; then
+  mytex_create $2
+elif [ "$1" == "edit" ]; then
+  mytex_edit $2
+else
+  echo "Invalid argument - choose one of [compile, create, edit]"
+fi
