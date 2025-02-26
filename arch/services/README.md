@@ -79,7 +79,7 @@ systemctl start glances.service
 
 
 ## Nextcloud AI Task Processing
-[`nextcloud-ai-taskprocessing.sh`](nextcloud-ai-taskprocessing.sh)
+[`nextcloud-ai-worker@.service`](nextcloud-ai-worker@.service)
 
 https://docs.nextcloud.com/server/latest/admin_manual/ai/overview.html#systemd-service
 

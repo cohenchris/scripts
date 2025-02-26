@@ -12,7 +12,7 @@ Some ma have CATASTROPHIC consequences if used incorrectly, so they should be re
 
 
 ## Backups
-[`backup/`](backups/)
+[`backup/`](backup/)
 
 Scripts to seamlessly backup different parts of the system.
 They are heavily driven by the .env file, but all generally assume a backup system which includes 1 backup on the local machine and 1 backup on a remote backup server (whether this be another computer on your network or a remote Backblaze storage bucket).

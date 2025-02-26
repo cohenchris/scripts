@@ -13,7 +13,7 @@ These scripts should not have any destructive capabilities, but please read abou
 ---
 
 ## Backblaze Remote Backup
-`backblaze.sh`
+[`backblaze.sh`](backblaze.sh)
 
 ...
 
@@ -25,7 +25,7 @@ These scripts should not have any destructive capabilities, but please read abou
 
 
 ## Batocera Console Backup
-`batocera.sh`
+[`batocera.sh`](batocera.sh)
 
 ...
 
@@ -37,7 +37,7 @@ These scripts should not have any destructive capabilities, but please read abou
 
 
 ## Common Backup Functions
-`common.sh`
+[`common.sh`](common.sh)
 
 ...
 
@@ -49,7 +49,7 @@ These scripts should not have any destructive capabilities, but please read abou
 
 
 ## Critical Data Backup
-`critical-data.sh`
+[`critical-data.sh`](critical-data.sh)
 
 ...
 
@@ -61,7 +61,7 @@ These scripts should not have any destructive capabilities, but please read abou
 
 
 ## "Cloud" Files Backup
-`files.sh`
+[`files.sh`](files.sh)
 
 ...
 
@@ -73,7 +73,7 @@ These scripts should not have any destructive capabilities, but please read abou
 
 
 ## Critical Data Backup - 2x Manual USB Cold Backup
-`manual-usbs-critical-data.sh`
+[`manual-usbs-critical-data.sh`](manual-usbs-critical-data.sh)
 
 ...
 
@@ -85,7 +85,7 @@ These scripts should not have any destructive capabilities, but please read abou
 
 
 ## Music Backup
-`music.sh`
+[`music.sh`](music.sh)
 
 ...
 
@@ -97,7 +97,7 @@ These scripts should not have any destructive capabilities, but please read abou
 
 
 ## Server Backup
-`server.sh`
+[`server.sh`](server.sh)
 
 ...
 
