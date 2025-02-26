@@ -14,3 +14,5 @@ sysupgrade -v -b ${OPENWRT_LOCAL_BACKUP_DIR}/${BACKUP_NAME}.tar.gz
 
 # Copy to backup server
 scp ${OPENWRT_LOCAL_BACKUP_DIR}/${BACKUP_NAME}.tar.gz ${REMOTE_BACKUP_SERVER}:${OPENWRT_REMOTE_BACKUP_DIR}
+
+finish

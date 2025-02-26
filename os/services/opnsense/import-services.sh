@@ -21,3 +21,5 @@ cp ./actions_restartglances.conf /usr/local/opnsense/service/conf/actions.d
 echo
 echo "Restarting config to index new OPNSense actions..."
 service configd restart
+
+echo "Import complete! Please schedule cron jobs for your new actions from the OPNSense web UI."

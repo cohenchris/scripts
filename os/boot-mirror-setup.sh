@@ -35,6 +35,7 @@ cat <<EOF > /etc/pacman.d/hooks/100-systemd-boot.hook
 Type = Package
 Operation = Upgrade
 Target = systemd
+Target = linux-lts
 
 [Action]
 Description = update systemd-boot
@@ -43,4 +44,4 @@ Exec = ${ARCH_SCRIPTS_DIR}/boot-mirror.sh ${ZFS_ROOT_POOL_NAME}
 EOF
 
 echo
-echo "EFI boot partitions will now be synced when systemd is updated!"
+echo "EFI boot partitions will now be synced when systemd or linux-lts is updated!"
