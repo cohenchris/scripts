@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# When I open an image from the file manager in nsxiv (the image viewer), I want
+# When I open an image from the file manager in my image viewer, I want
 # to be able to press the next/previous keys to key through the rest of the
 # images in the same directory. This script "rotates" the content of a
 # directory based on the first chosen file, so that if I open the 15th image,

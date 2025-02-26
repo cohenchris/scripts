@@ -1,16 +1,18 @@
 #!/bin/bash
 
-BATOCERA_MOUNT_DIR="/userdata"
-BATOCERA_HOST="root@console.lan"
+WORKING_DIR=$(dirname "$(realpath "$0")"
+source ${WORKING_DIR}/.env
+
+require var BATOCERA_HOST
 
 function batocera_mount()
 {
   if [ -d "batocera" ]; then
     echo "ERROR: directory $(pwd)/batocera already exists"
   else
-    echo "Mounting ${BATOCERA_HOST}:${BATOCERA_MOUNT_DIR} at $(pwd)/batocera"
+    echo "Mounting ${BATOCERA_HOST}:/userdata at $(pwd)/batocera"
     mkdir batocera
-    sshfs ${BATOCERA_HOST}:${BATOCERA_MOUNT_DIR} batocera
+    sshfs ${BATOCERA_HOST}:/userdata batocera
   fi
 }
 

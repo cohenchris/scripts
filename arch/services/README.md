@@ -5,7 +5,7 @@ This is a collection of various custom systemd services that I have created.
 ---
 
 ## Network UPS Tools
-`nut/*`
+[`nut/*`](nut/)
 
 This is a collection of configuration files which configure the "Network UPS Tools" systemd service and driver, which communicate with your UPS.
 
@@ -28,11 +28,11 @@ chmod 640 /etc/nut/*
 sudo systemctl enable nut.service
 sudo systemctl start nut.service
 ```
-2. Automated setup using `import-services.sh`
+2. Automated setup using [`import-services.sh`](import-services.sh)
 
 
 ## Nvidia GPU Power Savings
-`nvidia-gpu-power-savings.service`
+[`nvidia-gpu-power-savings.service`](nvidia-gpu-power-savings.service)
 
 This is a systemd service file which will lower the idle power consumption of your Nvidia GPU.
 
@@ -52,11 +52,11 @@ systemctl daemon-reload
 systemctl enable nvidia-gpu-power-savings.service
 systemctl start nvidia-gpu-power-savings.service
 ```
-2. Automated setup using `import-services.sh`
+2. Automated setup using [`import-services.sh`](import-services.sh)
 
 
 ## Glances
-`glances.service`
+[`glances.service`](glances.service)
 
 This is a systemd service file which will start a glances webserver.
 
@@ -75,11 +75,11 @@ systemctl daemon-reload
 systemctl enable glances.service
 systemctl start glances.service
 ```
-2. Automated setup using `import-services.sh`
+2. Automated setup using [`import-services.sh`](import-services.sh)
 
 
 ## Nextcloud AI Task Processing
-`nextcloud-ai-taskprocessing.sh`
+[`nextcloud-ai-taskprocessing.sh`](nextcloud-ai-taskprocessing.sh)
 
 https://docs.nextcloud.com/server/latest/admin_manual/ai/overview.html#systemd-service
 
@@ -115,11 +115,11 @@ systemctl status nextcloud-ai-worker@1.service
 systemctl list-units --type=service | grep nextcloud-ai-worker
 ```
 
-2. Automated setup using `import-services.sh`
+2. Automated setup using [`import-services.sh`](import-services.sh)
 
 
 ## System Mail Transfer Agent
-`ssmtp.conf`
+[`ssmtp.conf`](ssmtp.conf)
 
 Once filled in, this configuration file will enable mail notifications from this system via `ssmtp`.
 

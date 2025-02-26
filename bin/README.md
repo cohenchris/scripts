@@ -37,7 +37,7 @@ Synced email may be viewed with a local client such as `neomutt`.
 
 
 ## `rotdir`
-Helper script for the `nsxiv` image-viewing program.
+Helper script for image viewing in 'lf' file manager.
 When I open an image using this program, this script allows me to press next/previous keys to scroll through all images in the current directory.
 This script "rotates" the content of a directory based on the first chosen file.
 For example, if I open the 15th image, pressing next will show me the 16th image.
@@ -62,16 +62,6 @@ Behavior differs depending on the subcommand:
   - This script will spit out a file (name provided as an argument) which contains a very simple LaTeX template.
 `edit`
   - This script will compile that source file into a PDF, display the PDF, and open the source file in vim.
-
-
-## `batocera [mount, unmount]`
-I have an Intel NUC [Batocera](https://batocera.org/) emulation station in my living room.
-From their website, "Batocera.linux is an open-source and completely free retro-gaming distribution that can be copied to a USB stick or an SD card with the aim of turning any computer/nano computer into a gaming console during a game or permanently."
-It's a pain to manually import games from a USB stick, so this script allows mounting/unmounting of Batocera's `/userdata` directory.
-
-`batocera mount` mounts Batocera's `/userdata` directory to a newly created `./batocera` directory in the current working directory.
-
-`batocera unmount` unmounts and removes the local `./batocera` directory.
 
 
 ## `mvdl [FILE]`

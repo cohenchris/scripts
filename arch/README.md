@@ -6,7 +6,7 @@ Some of these may have CATASTROPHIC effects on your system, so please make sure 
 ---
 
 ## Install Arch on ZFS
-`arch-install.sh`
+[`arch-install.sh`](arch-install.sh)
 
 This is an all-in-one script to install Arch on 2 drives as a a mirrored ZFS root pool.
 
@@ -33,7 +33,7 @@ Please pay attention, as the script will ask you various questions throughout it
 When the script is done, you should reboot, remove the live USB, and boot into your new Arch Linux installation!
 
 ## Sync Mirrored EFI Partitions
-`boot-mirror.sh`
+[`boot-mirror.sh`](boot-mirror.sh)
 
 This keeps a mirrored ZFS root pool's EFI partitions in sync.
 For this to work, one partition must be mounted at /boot, and the other must be unmounted.
@@ -54,7 +54,7 @@ To set this up, please run `boot-mirror-setup.sh`.
 
 
 ## Replace/Resilver a Drive in ZFS Root Pool
-`root-resilver.sh`
+[`root-resilver.sh`](root-resilver.sh)
 
 In case of a drive failure, on your mirrored ZFS root pool, this script assists in seamlessly resilvering a replacement drive.
 It will resilver the ZFS partition, clone the EFI boot partition to the new drive, AND update the systemd.mount service which auto-mounts the EFI boot partition.
@@ -72,6 +72,6 @@ This script is intended to be used when directly booted from the surviving drive
 
 
 ## Systemd Services
-`services/`
+[`services/`](services/)
 
 A collection of various custom systemd services.
