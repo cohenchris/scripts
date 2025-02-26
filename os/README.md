@@ -1,6 +1,6 @@
 # OS Management
 
-These are one-time use scripts intended to help manage various OS-level components, including a fresh Arch install, ZFS pool management, and system services.
+These are one-time use scripts intended to help manage various OS-level components, including a fresh Arch install, ZFS pool management, and services for various systems.
 Some of these may have CATASTROPHIC effects on your system, so please make sure you fully understand a script before running.
 
 ---
@@ -71,7 +71,7 @@ To use this script, simply boot from the surviving drive in your ZFS root pool.
 This script is intended to be used when directly booted from the surviving drive, but may work fine if you need to rescue the system by chrooting from a live USB.
 
 
-## Systemd Services
+## System Services
 [`services/`](services/)
 
-A collection of various custom systemd services.
+A collection of various custom system services.

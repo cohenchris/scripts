@@ -24,6 +24,17 @@ These scripts should not have any destructive capabilities, but please read abou
 ...
 
 
+## Switch Backup
+[`backup-switch.cmd`](backup-switch.cmd)
+
+...
+
+### Prerequisites
+...
+
+### Use
+...
+
 ## Batocera Console Backup
 [`batocera.sh`](batocera.sh)
 
@@ -96,8 +107,8 @@ These scripts should not have any destructive capabilities, but please read abou
 ...
 
 
-## Server Backup
-[`server.sh`](server.sh)
+## OpenWRT Backup
+[`openwrt.sh`](openwrt.sh)
 
 ...
 
@@ -108,6 +119,28 @@ These scripts should not have any destructive capabilities, but please read abou
 ...
 
 
+## OPNSense + AdGuard Backup
+[`opnsense.sh`](opnsense.sh)
+
+...
+
+### Prerequisites
+...
+
+### Use
+...
+
+
+## Server Backup
+[`server.sh`](server.sh)
+
+...
+
+### Prerequisites
+...
+
+### Use
+...
 
 
 

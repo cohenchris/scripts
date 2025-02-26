@@ -4,13 +4,6 @@ This is a collection of scripts that I have written over the course of my homela
 
 ---
 
-## OS Management
-[`arch/`](arch/)
-
-One-time use scripts intended to help manage various OS-level components, including a fresh Arch install, ZFS pool management, and system services.
-Some ma have CATASTROPHIC consequences if used incorrectly, so they should be read and fully understood before use.
-
-
 ## Backups
 [`backup/`](backup/)
 
@@ -25,6 +18,13 @@ Dependency-free system scripts which are added to the PATH and can be run from t
 These focus on generic everyday automations.
 Think of these as scripts that can be easily moved from system to system with zero effort (assuming the correct packages are installed).
 For example, one of the scripts in here is a file extraction wrapper which uses different programs depending on the file extension - this can be dropped on any system that supports bash.
+
+
+## OS Management
+[`os/`](os/)
+
+One-time use scripts intended to help manage various OS-level components, including a fresh Arch install, ZFS pool management, and services for various systems.
+Some may have CATASTROPHIC consequences if used incorrectly, so they should be read and fully understood before use.
 
 
 ## System Automation
