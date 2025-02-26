@@ -9,12 +9,13 @@ For example, one of the scripts in here nukes a Docker container stack, cleans t
 ---
 
 ## Backblaze Bucket Quick Mount + Unmount via RClone
-`b2-fuse.sh [mount, unmount]`
+[`b2-fuse.sh [mount, unmount]`](b2-fuse.sh)
 
 ...
 
 ## Batocera Quick Mount + Unmount via SSHFS
-`batocera [mount, unmount]`
+[`batocera.sh [mount, unmount]`](batocera.sh)
+
 I have an Intel NUC [Batocera](https://batocera.org/) emulation station in my living room.
 From their website, "Batocera.linux is an open-source and completely free retro-gaming distribution that can be copied to a USB stick or an SD card with the aim of turning any computer/nano computer into a gaming console during a game or permanently."
 It's a pain to manually import games from a USB stick, so this script allows mounting/unmounting of Batocera's `/userdata` directory.
@@ -25,7 +26,7 @@ It's a pain to manually import games from a USB stick, so this script allows mou
 
 
 ## Drive Health Monitoring + Notifications
-`drive-health.sh {test | report}`
+[`drive-health.sh {test | report}`](drive-health.sh)
 
 This script is used for the monitoring of drive health using smartctl and built-in ZFS monitoring
 There are two different functions:
@@ -43,7 +44,7 @@ If running ZFS, please be wary of excessive trim/scrub commands - I personally r
 
 
 ## Set Proper Permissions on Media Files
-`scan-media-files.sh`
+[`scan-media-files.sh`](scan-media-files.sh)
 
 This simple script sets correct file ownership/permissions for all of my media files
 
@@ -57,6 +58,6 @@ While not required for most day-to-day use, you should run this manually wheneve
 
 
 ## Server Automation
-`server/`
+[`server/`](server/)
 
 A collection of scripts relating to server services running on the host machine.

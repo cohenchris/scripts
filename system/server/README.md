@@ -5,7 +5,7 @@ A collection of automation scripts related to homelab services running on the ho
 ---
 
 ## Send Notifications to Phone via HomeAssistant
-`ha-notify.sh <SUBJECT> <BODY>`
+[`ha-notify.sh <SUBJECT> <BODY>`](ha-notify.sh)
 
 Used to easily send a notification to the Home Assistant app on my phone.
 
@@ -18,7 +18,7 @@ This script may be called manually at any time to send notifications to the devi
 
 
 ## Monitor Newly Released Albums on Lidarr
-`lidarr-monitor-new-albums.sh`
+[`lidarr-monitor-new-albums.sh`](lidarr-monitor-new-albums.sh)
 
 This script monitors albums if:
 1. The artist is monitored
@@ -38,7 +38,7 @@ You may either run this script manually or with a scheduled cron job.
 
 
 ## Broadcast Plex Shutdown Message
-`plex-server-maintenance-broadcast.py <plex URL> <plex token>`
+[`plex-server-maintenance-broadcast.py <plex URL> <plex token>`](plex-server-maintenance-broadcast.py)
 
 Shuts down every active Plex playback session, shows each use a server maintenance message.
 
@@ -50,7 +50,7 @@ To provide a smoother experience for users of your Plex server, it is recommende
 
 
 ## Restart Docker Container Stack
-`restart.sh`
+[`restart.sh`](restart.sh)
 
 This script restarts all running docker containers and installs packages that Nextcloud needs to provide video file previews.
 
@@ -62,7 +62,7 @@ This script may be called manually at any time to cleanly restart your Docker co
 
 
 ## Test QBittorrent Connectivity
-`test-qbittorrent.sh`
+[`test-qbittorrent.sh`](test-qbittorrent.sh)
 
 From time to time, qBittorrent running through a VPN stops being connectable from the external VPN IP.
 This issue requires manual restart of both qBittorrent and VPN services.
@@ -84,6 +84,6 @@ It is recommended to run this script as a scheduled cron job.
 
 
 ## Nextcloud
-`nextcloud/`
+[`nextcloud/`](nextcloud/)
 
 A collection of Nextcloud-related scripts.

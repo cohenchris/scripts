@@ -5,7 +5,7 @@ A collection of Nextcloud-related helper scripts.
 ---
 
 ## Nextcloud AI Task Processing
-`nextcloud/nextcloud-ai-taskprocessing.sh`
+[`nextcloud/nextcloud-ai-taskprocessing.sh`](nextcloud-ai-taskprocessing.sh)
 
 https://docs.nextcloud.com/server/latest/admin_manual/ai/overview.html#systemd-service
 
@@ -27,7 +27,7 @@ This script should not be run manually.
 
 
 ## Nextcloud ffmpeg Installation
-`nextcloud-install-ffmpeg.sh`
+[`nextcloud-install-ffmpeg.sh`](nextcloud-install-ffmpeg.sh)
 
 ffmpeg is a dependency which is not included by default in Nextcloud's docker image.
 This is required for various operations, the most important one being the ability to create preview thumbnails for video files.
@@ -43,7 +43,7 @@ I highly recommend either running this with a cron job or manually calling it fr
 
 
 ## Set Proper Permissions + Scan Nextcloud Files
-`scan-nextcloud-files.sh`
+[`nextcloud-scan-files.sh`](nextcloud-scan-files.sh)
 
 This script sets all file permissions and ownerships for my Nextcloud files. This ensures proper access controls for the Nextcloud web UI. Afterwards, it has Nextcloud scan all files, ensuring that the web UI is aware of and displays all present files.
 

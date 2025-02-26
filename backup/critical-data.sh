@@ -50,6 +50,6 @@ mail_log check "sync to backup server" $?
 # Backup /etc/backups/critical-data to Nextcloud
 rsync -r --delete --update --progress ${CRITICAL_DATA_LOCAL_BACKUP_DIR}/ ${FILES_DIR}/etc/backups/critical-data
 mail_log check "nextcloud backup" $?
-${SCRIPTS_DIR}/system/server/nextcloud/scan-nextcloud-files.sh
+${SCRIPTS_DIR}/system/server/nextcloud/nextcloud-scan-files.sh
 
 finish
