@@ -24,7 +24,7 @@ case $yn in
 esac
 
 # Get this script's directory
-ARCH_SCRIPTS_DIR=$(dirname "$(realpath "$0")")
+OS_SCRIPTS_DIR=$(dirname "$(realpath "$0")")
 
 echo
 echo "Creating new pacman systemd hook..."
@@ -34,14 +34,17 @@ cat <<EOF > /etc/pacman.d/hooks/100-systemd-boot.hook
 [Trigger]
 Type = Package
 Operation = Upgrade
-Target = systemd
 Target = linux-lts
+Target = mkinitcpio
+Target = systemd
+Target = intel-ucode
+Target = efibootmgr
 
 [Action]
-Description = update systemd-boot
+Description = Sync boot partitions when /boot/ is updated
 When = PostTransaction
-Exec = ${ARCH_SCRIPTS_DIR}/boot-mirror.sh ${ZFS_ROOT_POOL_NAME}
+Exec = ${OS_SCRIPTS_DIR}/boot-mirror.sh ${ZFS_ROOT_POOL_NAME}
 EOF
 
 echo
-echo "EFI boot partitions will now be synced when systemd or linux-lts is updated!"
+echo "EFI boot partitions will now be synced when /boot/ partition is updated!"

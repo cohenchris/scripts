@@ -1,5 +1,7 @@
 #!/bin/bash
 
+SCRIPTS_BASE_DIR="$(dirname "$(realpath "$0")")/../../../"
+
 # Install Glances webserver FreeBSD service
 echo "Installing Glances webserver FreeBSD service..."
 cp ./glances /usr/local/etc/rc.d
@@ -9,13 +11,15 @@ service glances start
 
 # Install OPNSense backup action
 echo
-echo "Installing OPNSense backup OPNSense action..."
+echo "Installing and configuring OPNSense backup OPNSense action..."
 cp ./actions_backupopnsense.conf /usr/local/opnsense/service/conf/actions.d
+sudo sed -i "s|<scriptsdir>|${SCRIPTS_BASE_DIR}|g" /usr/local/opnsense/service/conf/actions.d/actions_backupopnsense.conf
 
 # Install Glances auto-restart action
 echo
-echo "Installing Glances auto-restart OPNSense action..."
+echo "Installing and configuring Glances auto-restart OPNSense action..."
 cp ./actions_restartglances.conf /usr/local/opnsense/service/conf/actions.d
+sudo sed -i "s|<scriptsdir>|${SCRIPTS_BASE_DIR}|g" /usr/local/opnsense/service/conf/actions.d/actions_restartglances.conf
 
 # Restart configd to index new OPNSense actions
 echo

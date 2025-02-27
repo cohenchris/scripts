@@ -1,18 +1,24 @@
-#!/bin/sh 
+#!/bin/sh
 
 # This is a FreeBSD service file which runs glances in webserver mode
 
-. /etc/rc.subr 
+. /etc/rc.subr
 
-name="glances" 
-start_cmd="${name}_start" 
-stop_cmd=":" 
+name="glances"
+start_cmd="${name}_start"
+stop_cmd="${name}_stop"
 
-glances_start() 
+glances_start()
 {
   echo "Starting glances webserver"
-  /usr/local/bin/glances -w -B 10.24.0.1 -p 61208 &
+  /usr/local/bin/glances -w -B 0.0.0.0 -p 61208 &
 }
 
-load_rc_config $name 
-run_rc_command "$1" 
+glances_stop()
+{
+  echo "Stopping glances webserver"
+  pkill -f "/usr/local/bin/glances -w -B 0.0.0.0 -p 61208"
+}
+
+load_rc_config $name
+run_rc_command "$1"

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+SCRIPTS_BASE_DIR="$(dirname "$(realpath "$0")")/../../../"
+
 # Install glances dependencies and service
 echo "Installing Glance webserver service..."
 paru -Sy --noconfirm python-fastapi uvicorn python-jinja-time
@@ -22,7 +24,6 @@ sudo chmod 640 /etc/nut/*
 # Edit and install nextcloud AI task processing service
 echo
 echo "Installing and configuring Nextcloud AI Task Processing Workers..."
-SCRIPTS_BASE_DIR="$(dirname "$(realpath "$0")")/../.."
 sudo cp ./nextcloud-ai-worker@.service /etc/systemd/system
 sudo sed -i "s|<scriptsdir>|${SCRIPTS_BASE_DIR}|g" /etc/systemd/system/nextcloud-ai-worker@.service
 
