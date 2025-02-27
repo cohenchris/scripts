@@ -28,7 +28,7 @@ chmod 640 /etc/nut/*
 sudo systemctl enable nut.service
 sudo systemctl start nut.service
 ```
-2. Automated setup using [`import-services.sh`](import-services.sh)
+2. Automated setup using [`IMPORT.sh`](IMPORT.sh)
 
 
 ## Nvidia GPU Power Savings
@@ -52,7 +52,7 @@ systemctl daemon-reload
 systemctl enable nvidia-gpu-power-savings.service
 systemctl start nvidia-gpu-power-savings.service
 ```
-2. Automated setup using [`import-services.sh`](import-services.sh)
+2. Automated setup using [`IMPORT.sh`](IMPORT.sh)
 
 
 ## Glances
@@ -75,7 +75,7 @@ systemctl daemon-reload
 systemctl enable glances.service
 systemctl start glances.service
 ```
-2. Automated setup using [`import-services.sh`](import-services.sh)
+2. Automated setup using [`IMPORT.sh`](IMPORT.sh)
 
 
 ## Nextcloud AI Task Processing
@@ -115,7 +115,7 @@ systemctl status nextcloud-ai-worker@1.service
 systemctl list-units --type=service | grep nextcloud-ai-worker
 ```
 
-2. Automated setup using [`import-services.sh`](import-services.sh)
+2. Automated setup using [`IMPORT.sh`](IMPORT.sh)
 
 
 ## System Mail Transfer Agent
