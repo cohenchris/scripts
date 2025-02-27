@@ -9,7 +9,7 @@ A collection of Nextcloud-related helper scripts.
 
 https://docs.nextcloud.com/server/latest/admin_manual/ai/overview.html#systemd-service
 
-This script improves Nextcloud Assistant's AI task pickup speed responsiveness. By default, an assistant query will be processed as a background job, which is run every 5 minutes. This script, along with `nextcloud-ai-worker@.service`, processes AI tasks as soon as they are scheduled, rather than the user having to wait up to 5 minutes.
+This script improves Nextcloud Assistant's AI task pickup speed responsiveness. By default, an assistant query will be processed as a background job, which is run every 5 minutes. This script, along with [`nextcloud-ai-worker@.service`](../../../os/services/arch/nextcloud-ai-worker@.service), processes AI tasks as soon as they are scheduled, rather than the user having to wait up to 5 minutes.
 
 ### Prerequisites
 This script assumes that:
@@ -22,8 +22,8 @@ This script is used as a executable for systemd worker services.
 These workers will run in the background and check every few seconds for queued AI queries.
 If a new query is detected, the worker will immediately process the query.
 
-Systemd service files and documentation is present in `arch/services`, please consult that directory for setup.
-This script should not be run manually.
+Systemd service files and documentation are present in [`os/services/arch`](../../../os/services/arch/), please consult that directory for setup.
+This script should **not** be run manually.
 
 
 ## Nextcloud ffmpeg Installation
