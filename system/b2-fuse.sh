@@ -29,7 +29,8 @@ function b2_mount()
 
   mkdir -p ${BACKBLAZE_B2_MOUNT_DIR}
 
-  rclone mount backblaze:${BACKBLAZE_BUCKET} ${BACKBLAZE_B2_MOUNT_DIR} --daemon --allow-other --allow-root --vfs-cache-mode full
+  echo "Mounting Backblaze bucket ${BACKBLAZE_BUCKET}..."
+  rclone mount backblaze:${BACKBLAZE_BUCKET} ${BACKBLAZE_B2_MOUNT_DIR} --daemon --vfs-cache-mode full
 }
 
 
