@@ -17,6 +17,8 @@ Used to easily send a notification to the Home Assistant app on my phone.
 This script may be called manually at any time to send notifications to the devices which have been configured to receive notifications in HomeAssistant.
 
 
+
+
 ## Monitor Newly Released Albums on Lidarr
 [`lidarr-monitor-new-albums.sh`](lidarr-monitor-new-albums.sh)
 
@@ -37,6 +39,8 @@ This script assumes that:
 You may either run this script manually or with a scheduled cron job.
 
 
+
+
 ## Broadcast Plex Shutdown Message
 [`plex-server-maintenance-broadcast.py <plex URL> <plex token>`](plex-server-maintenance-broadcast.py)
 
@@ -49,6 +53,8 @@ There are no prerequisites for this script. If the user passes a valid URL and t
 To provide a smoother experience for users of your Plex server, it is recommended to run this when shutting down your server for scheduled maintenance.
 
 
+
+
 ## Restart Docker Container Stack
 [`restart.sh`](restart.sh)
 
@@ -59,6 +65,8 @@ This script restarts all running docker containers and installs packages that Ne
 
 ### Use
 This script may be called manually at any time to cleanly restart your Docker container stack.
+
+
 
 
 ## Test QBittorrent Connectivity
@@ -81,6 +89,8 @@ This script assumes that:
 
 ### Use
 It is recommended to run this script as a scheduled cron job.
+
+
 
 
 ## Nextcloud

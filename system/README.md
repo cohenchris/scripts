@@ -11,7 +11,27 @@ For example, one of the scripts in here nukes a Docker container stack, cleans t
 ## Backblaze Bucket Quick Mount + Unmount via RClone
 [`b2-fuse.sh [mount, unmount]`](b2-fuse.sh)
 
-...
+I store all of my remote backups (the "1" in 3-2-1 backups) in a Backblaze B2 buckets.
+Sometimes, it's useful to navigate this bucket manually to check out its contents.
+RClone is a fantastic tool that allows mounting of a Backblaze B2 bucket to your local machine, and this script streamlines the rclone mount/unmount process.
+
+### Prerequisites
+This scripts assumes that:
+- `rclone` is installed on your machine
+- There is an rclone remote configured which is named `backblaze`
+- You have populated the [`.env`](sample.env) file
+
+### Use
+`b2-fuse.sh mount <dirname>`
+
+Mounts the Backblaze bucket at the location specified by <dirname>.
+
+`b2-fuse.sh unmount <dirname>`
+
+Unmounts the Backblaze bucket at the location specified by <dirname>.
+
+
+
 
 ## Batocera Quick Mount + Unmount via SSHFS
 [`batocera.sh [mount, unmount]`](batocera.sh)
@@ -20,9 +40,23 @@ I have an Intel NUC [Batocera](https://batocera.org/) emulation station in my li
 From their website, "Batocera.linux is an open-source and completely free retro-gaming distribution that can be copied to a USB stick or an SD card with the aim of turning any computer/nano computer into a gaming console during a game or permanently."
 It's a pain to manually import games from a USB stick, so this script allows mounting/unmounting of Batocera's `/userdata` directory.
 
-`batocera.sh mount` mounts Batocera's `/userdata` directory to a newly created `./batocera` directory in the current working directory.
+### Prerequisites
+This scripts assumes that:
+- You have a machine running Batocera
+- Batocera is accessible from this computer
+- You have filled out the [`.env`](sample.env) file
 
-`batocera.sh unmount` unmounts and removes the local `./batocera` directory.
+### Use
+`batocera.sh mount`
+
+Mounts Batocera's `/userdata` directory to a newly created `./batocera` directory in the current working directory.
+
+
+`batocera.sh unmount`
+
+Unmounts and removes the local `./batocera` directory.
+
+
 
 
 ## Drive Health Monitoring + Notifications
@@ -43,6 +77,31 @@ It is highly recommmended to run this script with an automated cron job.
 If running ZFS, please be wary of excessive trim/scrub commands - I personally run this script once per month.
 
 
+
+
+## Restart Glances Webserver
+[`restart-glances.sh`](restart-glances.sh)
+
+This script checks if the Glances system monitoring service has crashed.
+If it has, it will restart the service.
+
+Both FreeBSD and Linux systems are supported.
+
+This is really intended to be run on FreeBSD, as there is a known issue with Glances crashing when using the sensor monitoring function.
+
+### Prerequisites
+This script assumes that:
+- `glances` package is installed
+- Glances is running in webserver mode
+- Glances webserver is running on port 61208
+
+
+### Use
+While it can be run manually, I highly recommend running this script as a scheduled cron job.
+
+
+
+
 ## Set Proper Permissions on Media Files
 [`scan-media-files.sh`](scan-media-files.sh)
 
@@ -55,6 +114,8 @@ This script assumes that:
 
 ### Use
 While not required for most day-to-day use, you should run this manually whenever you have manually modified anything on your media drive.
+
+
 
 
 ## Server Automation
