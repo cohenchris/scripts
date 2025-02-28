@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ "$(id -u)" -ne 0 ]]; then
+    echo "This script must be run as root" 
+    exit 1
+fi
+
 SCRIPTS_BASE_DIR="$(dirname "$(realpath "$0")")/../../../"
 
 # Install glances dependencies and service

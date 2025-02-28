@@ -24,6 +24,8 @@ These scripts should not have any destructive capabilities, but please read abou
 ...
 
 
+
+
 ## Switch Backup
 [`backup-switch.cmd`](backup-switch.cmd)
 
@@ -35,6 +37,9 @@ These scripts should not have any destructive capabilities, but please read abou
 ### Use
 ...
 
+
+
+
 ## Batocera Console Backup
 [`batocera.sh`](batocera.sh)
 
@@ -45,6 +50,8 @@ These scripts should not have any destructive capabilities, but please read abou
 
 ### Use
 ...
+
+
 
 
 ## Common Backup Functions
@@ -59,6 +66,8 @@ These scripts should not have any destructive capabilities, but please read abou
 ...
 
 
+
+
 ## Critical Data Backup
 [`critical-data.sh`](critical-data.sh)
 
@@ -69,6 +78,8 @@ These scripts should not have any destructive capabilities, but please read abou
 
 ### Use
 ...
+
+
 
 
 ## "Cloud" Files Backup
@@ -83,6 +94,8 @@ These scripts should not have any destructive capabilities, but please read abou
 ...
 
 
+
+
 ## Critical Data Backup - 2x Manual USB Cold Backup
 [`manual-usbs-critical-data.sh`](manual-usbs-critical-data.sh)
 
@@ -93,6 +106,8 @@ These scripts should not have any destructive capabilities, but please read abou
 
 ### Use
 ...
+
+
 
 
 ## Music Backup
@@ -107,6 +122,8 @@ These scripts should not have any destructive capabilities, but please read abou
 ...
 
 
+
+
 ## OpenWRT Backup
 [`openwrt.sh`](openwrt.sh)
 
@@ -119,6 +136,8 @@ These scripts should not have any destructive capabilities, but please read abou
 ...
 
 
+
+
 ## OPNSense + AdGuard Backup
 [`opnsense.sh`](opnsense.sh)
 
@@ -129,6 +148,8 @@ These scripts should not have any destructive capabilities, but please read abou
 
 ### Use
 ...
+
+
 
 
 ## Server Backup

@@ -1,6 +1,6 @@
 # Homelab Scripts
 
-This is a collection of scripts that I have written over the course of my homelab journey.
+Scripts that I have written over the course of my homelab journey.
 
 ---
 
@@ -9,6 +9,9 @@ This is a collection of scripts that I have written over the course of my homela
 
 Scripts to seamlessly backup different parts of the system.
 They are heavily driven by the .env file, but all generally assume a backup system which includes 1 backup on the local machine and 1 backup on a remote backup server (whether this be another computer on your network or a remote Backblaze storage bucket).
+
+
+
 
 ## Standalone Helpers
 [`bin/`](bin/)
@@ -20,11 +23,15 @@ Think of these as scripts that can be easily moved from system to system with ze
 For example, one of the scripts in here is a file extraction wrapper which uses different programs depending on the file extension - this can be dropped on any system that supports bash.
 
 
+
+
 ## OS Management
 [`os/`](os/)
 
 One-time use scripts intended to help manage various OS-level components, including a fresh Arch install, ZFS pool management, and services for various systems.
 Some may have CATASTROPHIC consequences if used incorrectly, so they should be read and fully understood before use.
+
+
 
 
 ## System Automation

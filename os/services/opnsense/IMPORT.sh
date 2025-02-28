@@ -1,9 +1,16 @@
 #!/bin/bash
 
+if [[ "$(id -u)" -ne 0 ]]; then
+    echo "This script must be run as root" 
+    exit 1
+fi
+
 SCRIPTS_BASE_DIR="$(dirname "$(realpath "$0")")/../../../"
 
 # Install Glances webserver FreeBSD service
 echo "Installing Glances webserver FreeBSD service..."
+pkg update
+pkg install py311-glances
 cp ./glances /usr/local/etc/rc.d
 echo 'glances_enable="YES"' >> /etc/rc.conf
 service glances enable

@@ -1,13 +1,14 @@
-# Systemd Services
+# Linux Services
 
-This is a collection of various custom systemd services that I have created.
+Custom services and configuration files for a typical Linux machine.
+The import script is tailored towards Arch Linux, but these services should work on any systemd-based Linux distribution.
 
 ---
 
 ## Network UPS Tools
 [`nut/*`](nut/)
 
-This is a collection of configuration files which configure the "Network UPS Tools" systemd service and driver, which communicate with your UPS.
+Configuration files for the "Network UPS Tools" driver, which communicate with your UPS.
 
 The default username is `upsmon` and password is `password`.
 
@@ -16,7 +17,7 @@ This script assumes:
 - There is a UPS connected to your computer via USB
 - The UPS uses driver `usbhid-ups`
 
-### Setup
+### Use
 Two options are available for setup:
 
 1. Manual setup
@@ -31,6 +32,8 @@ sudo systemctl start nut.service
 2. Automated setup using [`IMPORT.sh`](IMPORT.sh)
 
 
+
+
 ## Nvidia GPU Power Savings
 [`nvidia-gpu-power-savings.service`](nvidia-gpu-power-savings.service)
 
@@ -42,7 +45,7 @@ This script assumes:
 - You have proper Nvidia drivers installed
 - Your Nvidia GPU is visible on nvidia-smi
 
-### Setup
+### Use
 Two options are available for setup:
 
 1. Manual setup
@@ -55,6 +58,8 @@ systemctl start nvidia-gpu-power-savings.service
 2. Automated setup using [`IMPORT.sh`](IMPORT.sh)
 
 
+
+
 ## Glances
 [`glances.service`](glances.service)
 
@@ -65,7 +70,7 @@ This script assumes:
 - Glances and all relevant dependencies are installed
 - Nothing is running on port 61208 (the default webserver port for glances)
 
-### Setup
+### Use
 Two options are available for setup:
 
 1. Manual setup
@@ -76,6 +81,8 @@ systemctl enable glances.service
 systemctl start glances.service
 ```
 2. Automated setup using [`IMPORT.sh`](IMPORT.sh)
+
+
 
 
 ## Nextcloud AI Task Processing
@@ -91,31 +98,23 @@ This script assumes:
 - The Docker container name is 'nextcloud'
 - A working Artificial Intelligence provider is configured
 
-### Setup
+### Use
 Two options are available for setup:
 
 1. Manual setup
 
-Modify the script path present in `nextcloud-ai-worker@.service` and move it to the systemd services folder:
+Modify the script path present in `nextcloud-ai-worker@.service`.
+
+Then, run the following:
 
 ```sh
 mv nextcloud-ai-worker@.service /etc/systemd/system
-```
-
-Then, enable and start the service 4 or more times:
-
-```sh
-for i in {1..4}; do systemctl enable --now nextcloud-ai-worker@$i.service; done
-```
-
-Check the status for success and ensure the workers have been deployed:
-
-```sh
-systemctl status nextcloud-ai-worker@1.service
-systemctl list-units --type=service | grep nextcloud-ai-worker
+for i in {1..4}; do systemctl enable --now nextcloud-ai-worker@$i.service; done # Modify loop counter for however many workers you desire
 ```
 
 2. Automated setup using [`IMPORT.sh`](IMPORT.sh)
+
+
 
 
 ## System Mail Transfer Agent
@@ -128,7 +127,7 @@ Before use, please:
 - Install `ssmtp`
 - Fill out credentials in `ssmtp.conf` file as the user with whom you would like to send mail
 
-### Setup
+### Use
 ```sh
 cp ssmtp.conf /etc/ssmtp
 chmod 600 /etc/ssmtp/ssmtp.conf

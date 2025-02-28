@@ -25,12 +25,16 @@ Utilizes `nmcli` to scan for available networks and presents them in a friendly 
 The user may then navigate this list using arrow keys or vim directional bindings (h/j/k/l) and select the desired network by pressing Enter.
 
 
+
+
 ## Archive Extraction
 [`extract [FILE...]`](extract)
 
 There are many different types of compressed files, each of which requires a different extraction program.
 This script allows an unlimited number of arguments to be passed.
 It will loop through each argument and use the correct extraction program based on the file extension.
+
+
 
 
 ## Local E-Mail Sync
@@ -44,6 +48,8 @@ It will loop through each argument and use the correct extraction program based 
 Synced email may be viewed with a local client such as `neomutt`.
 
 
+
+
 ## LF File Manager Image Navigation
 [`rotdir`](rotdir)
 
@@ -55,12 +61,16 @@ For example, if I open the 15th image, pressing next will show me the 16th image
 This script was pulled directly from Luke Smith's dotfiles [here](https://github.com/LukeSmithxyz/voidrice/blob/master/.local/bin/rotdir).
 
 
+
+
 ## LF File Manager Wrapper for Image Viewing
 [`lfub`](lfub)
 
 This is a wrapper script for lf that allows it to create image previews with ueberzug.
 
 This script was pulled directly from Luke Smith's dotfiles [here](https://github.com/LukeSmithxyz/voidrice/blob/master/.local/bin/lfub)
+
+
 
 
 ## LaTeX Shortcuts
@@ -78,6 +88,8 @@ Behavior differs depending on the subcommand:
   - This script will compile that source file into a PDF, display the PDF, and open the source file in vim.
 
 
+
+
 ## Music Video Downloader
 [`mvdl [FILE]`](mvdl)
 
@@ -91,6 +103,8 @@ It will first download each video.
 Then, it will attempt to find a matching track file.
 If there is a match, it will rename the downloaded music video according to the standard linked above.
 If there is no match, it will rename the downloaded music video to a cleaner, more readable version.
+
+
 
 
 ## Set Random Wallpaper

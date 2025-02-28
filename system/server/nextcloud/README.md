@@ -1,6 +1,6 @@
 # Nextcloud
 
-A collection of Nextcloud-related helper scripts.
+Nextcloud-related helper scripts.
 
 ---
 
@@ -17,7 +17,7 @@ This script assumes that:
 - The Docker container name is 'nextcloud'
 - A working Artifical Intelligence provider is configured
 
-### Setup
+### Use
 This script is used as a executable for systemd worker services.
 These workers will run in the background and check every few seconds for queued AI queries.
 If a new query is detected, the worker will immediately process the query.
@@ -37,7 +37,7 @@ This script assumes:
 - You have Nextcloud installed with Docker
 - The Docker container name is 'nextcloud'
 
-### Setup
+### Use
 This script will need to be called whenever the Nextcloud docker container is created/recreated.
 I highly recommend either running this with a cron job or manually calling it from time to time.
 
@@ -45,7 +45,12 @@ I highly recommend either running this with a cron job or manually calling it fr
 ## Set Proper Permissions + Scan Nextcloud Files
 [`nextcloud-scan-files.sh`](nextcloud-scan-files.sh)
 
-This script sets all file permissions and ownerships for my Nextcloud files. This ensures proper access controls for the Nextcloud web UI. Afterwards, it has Nextcloud scan all files, ensuring that the web UI is aware of and displays all present files.
+Sets proper file/directory permissions and ownership for everything in Nextcloud's externally-mounted files directory.
+Permissions/ownership ensure that the Nextcloud Docker container is able to interact with the directory tree as expected.
+A Nextcloud scan is also run, which will index all newly-added files.
+This scan is required only when manually adding files to Nextcloud's externally-mounted drive.
+
+For context, an "externally-mounted drive" is a directory on the host machine which is mounted as "external storage" in Nextcloud.
 
 ### Prerequisites
 This script assumes:
@@ -53,5 +58,5 @@ This script assumes:
 - The Docker container name is 'nextcloud'
 - Your Nextcloud files are mounted with an 'external storage' share which is mounted on the host system.
 
-### Setup
+### Use
 While not required for most day-to-day use of Nextcloud, you should run this manually whenever you have manually modified anything on your Nextcloud storage drive.

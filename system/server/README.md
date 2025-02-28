@@ -1,6 +1,6 @@
 # Server Automation
 
-A collection of automation scripts related to homelab services running on the host machine.
+Automation scripts related to homelab services running on the host machine.
 
 ---
 
@@ -86,4 +86,4 @@ It is recommended to run this script as a scheduled cron job.
 ## Nextcloud
 [`nextcloud/`](nextcloud/)
 
-A collection of Nextcloud-related scripts.
+Nextcloud-related scripts.
