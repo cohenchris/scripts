@@ -1,4 +1,4 @@
-# Homelab Scripts
+# Scripts
 
 Scripts that I have written over the course of my homelab journey.
 
