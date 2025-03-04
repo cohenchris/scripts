@@ -1,23 +1,36 @@
 #!/bin/bash
 
-if [ -z "${DISPLAY}" ]; then
+if [ -z "${WAYLAND_DISPLAY}" ]; then
   echo "Not running in a graphical environment, exiting..."
   exit 1
 fi
 
-function notify()
+notify()
 {
   urgency="$1"
   message1="$2"
   message2="$3"
 
-  # There is a display - use notify-send
-  if [ "$urgency" = "urgent" ]; then
-    # Notify with critical urgency
-    notify-send --urgency critical "$message1" "$message2"
+  if [ -z "${WAYLAND_DISPLAY}" ]; then
+    # There is a display - use notify-send
+    if [ "${urgency}" = "urgent" ]; then
+      # Notify with critical urgency
+      notify-send --urgency critical "${message1}" "${message2}"
+    else
+      # Notify normally
+      notify-send "${message1}" "${message2}"
+    fi
   else
-    # Notify normally
-    notify-send "$message1" "$message2"
+    # There is no display - print on terminal
+    if [ "${urgency}" = "urgent" ]; then
+      # Print in red
+      echo -e "\e[31m${message1}\e[0m"
+      echo -e "\e[31m${message2}\e[0m"
+    else
+      # Print normally
+      echo "${message1}"
+      echo "${message2}"
+    fi
   fi
 }
 

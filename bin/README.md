@@ -1,6 +1,6 @@
 # Standalone Helpers
 
-Dependency-free system scripts which are added to the PATH and can be run from the command line.
+Dependency-free system scripts which are intended to be added to PATH and run from the command line.
 
 These focus on generic everyday automations.
 Think of these as scripts that can be easily moved from system to system with zero effort (assuming the correct packages are installed).
@@ -51,7 +51,7 @@ Synced email may be viewed with a local client such as `neomutt`.
 
 
 ## LF File Manager Image Navigation
-[`rotdir`](rotdir)
+[`lf-image-scroll`](lf-image-scroll)
 
 Helper script for image viewing in 'lf' file manager.
 When I open an image using this program, this script allows me to press next/previous keys to scroll through all images in the current directory.
@@ -64,17 +64,20 @@ This script was pulled directly from Luke Smith's dotfiles [here](https://github
 
 
 ## LF File Manager Wrapper for Image Viewing
-[`lfwrapper`](lfwrapper)
+[`lf-wrapper`](lf-wrapper)
 
-This is a wrapper script for lf that allows it to create image previews with ueberzug.
+This is a wrapper script for lf. It does the following:
+    - Sets up environment for ueberzug image previewing
+    - On exit, cd to the last active directory
+        - For this to work, this wrapper must be called using `source`
 
-This script was pulled directly from Luke Smith's dotfiles [here](https://github.com/LukeSmithxyz/voidrice/blob/master/.local/bin/lfub)
+This script is a combination of the ueuberzug wrapper pulled from Luke Smith's dotfiles [here](https://github.com/LukeSmithxyz/voidrice/blob/master/.local/bin/lfub), and lfcd logic pulled from the official lf repository [here](https://github.com/gokcehan/lf/blob/master/etc/lfcd.sh).
 
 
 
 
 ## LaTeX Shortcuts
-[`mytex [compile, create, edit] [FILENAME]`](mytex)
+[`texme [compile, create, edit] [FILENAME]`](texme)
 
 This script helps automate common LaTeX commands that I use.
 The user will pass a filename as an argument.

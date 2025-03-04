@@ -7,30 +7,72 @@ require var BATOCERA_HOST
 
 function batocera_mount()
 {
-  if [ -d "batocera" ]; then
-    echo "ERROR: directory $(pwd)/batocera already exists"
-  else
-    echo "Mounting ${BATOCERA_HOST}:/userdata at $(pwd)/batocera"
-    mkdir batocera
-    sshfs ${BATOCERA_HOST}:/userdata batocera
+  local mount_dir=$1
+  require var mount_dir
+
+  if [ -n "$(ls -A ${mount_dir} 2>/dev/null)" ]; then
+    echo "ERROR: directory \"${mount_dir}\" is not empty, cannot mount..."
+    exit 1
   fi
+
+  echo "Mounting \"${BATOCERA_HOST}:/userdata\" at \"${mount_dir}\"..."
+  mkdir -p ${mount_dir}
+  sshfs ${BATOCERA_HOST}:/userdata ${mount_dir}
+
+  if [ $? -ne 0 ]; then
+    echo "ERROR: Batocera mounting failed. Is the host up?"
+
+    if [ -n "$(ls -A ${mount_dir} 2>/dev/null)" ]; then
+      echo "ERROR: directory \"${mount_dir}\" is not empty, cannot remove..."
+    else
+      rm -r ${mount_dir}
+    fi
+
+    exit 1
+  fi
+
+  echo "Batocera successfully mounted at \"${mount_dir}\"!"
 }
 
 function batocera_unmount()
 {
-  if [ -d "batocera" ]; then
-    echo "Unmounting/removing directory $(pwd)/batocera"
-    umount ./batocera
-    rm -r ./batocera
+  local mount_dir=$1
+  require var mount_dir
+  
+  if [ ! -d "${mount_dir}" ]; then
+    echo "Failed to unmount - directory \"${mount_dir} does not exist..."
+    exit 1
+  fi
+
+  echo "Unmounting \"${mount_dir}\"..."
+  umount ${mount_dir}
+
+  if [ $? -ne 0 ]; then
+    echo "ERROR: failed to unmount \"${mount_dir}\"..."
+    exit 1
+  fi
+
+  if [ -n "$(ls -A ${mount_dir} 2>/dev/null)" ]; then
+    echo "WARNING: directory \"${mount_dir}\" is not empty, cannot remove..."
   else
-    echo "Directory $(pwd)/batocera doesn't exist, skipping umount"
+    echo "Removing directory \"${mount_dir}\"..."
+    rm -r ${mount_dir}
   fi
 }
 
-if [ "$1" == "mount" ]; then
-  batocera_mount
-elif [ "$1" == "unmount" ]; then
-  batocera_unmount
+
+BATOCERA_CMD=$1
+BATOCERA_MOUNT_DIR=$2
+
+if ! [[ -n "${BATOCERA_CMD}" && -n "${BATOCERA_MOUNT_DIR}" ]]; then
+  echo "Usage: batocera.sh [mount,unmount/umount] [mount_dir]"
+  exit 1
+fi
+
+if [ "${BATOCERA_CMD}" == "mount" ]; then
+  batocera_mount ${BATOCERA_MOUNT_DIR}
+elif [ "${BATOCERA_CMD}" == "unmount" ] || [ "${BATOCERA_CMD}" == "umount" ]; then
+  batocera_unmount ${BATOCERA_MOUNT_DIR}
 else
-  echo "Invalid argument - choose one of [mount, unmount]"
+  echo "Usage: batocera.sh [mount,unmount/umount] [mount_dir]"
 fi

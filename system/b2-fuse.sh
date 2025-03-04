@@ -7,8 +7,8 @@ require var BACKBLAZE_BUCKET
 
 function b2_mount()
 {
-  BACKBLAZE_B2_MOUNT_DIR=$1
-  require var BACKBLAZE_B2_MOUNT_DIR
+  local mount_dir=$1
+  require var mount_dir
 
   # Ensure that there is a proper config for "backblaze" with rclone
   local remotes=$(rclone listremotes)
@@ -27,36 +27,55 @@ function b2_mount()
     exit 1
   fi
   
-  if [ -n "$(ls -A ${BACKBLAZE_B2_MOUNT_DIR} 2>/dev/null)" ]; then
-    echo "ERROR: directory ${BACKBLAZE_B2_MOUNT_DIR} is not empty, cannot mount..."
+  if [ -n "$(ls -A ${mount_dir} 2>/dev/null)" ]; then
+    echo "ERROR: directory \"${mount_dir}\" is not empty, cannot mount..."
     exit 1
   fi
 
-  mkdir -p ${BACKBLAZE_B2_MOUNT_DIR}
+  mkdir -p ${mount_dir}
 
   echo "Mounting Backblaze bucket ${BACKBLAZE_BUCKET}..."
-  rclone mount backblaze:${BACKBLAZE_BUCKET} ${BACKBLAZE_B2_MOUNT_DIR} --daemon --vfs-cache-mode full
+  rclone mount backblaze:${BACKBLAZE_BUCKET} ${mount_dir} --daemon --vfs-cache-mode full
+
+  if [ $? -ne 0 ]; then
+    echo "ERROR: Backblaze mounting failed, please check rclone and .env configuration..."
+
+    if [ -n "$(ls -A ${mount_dir} 2>/dev/null)" ]; then
+      echo "ERROR: directory \"${mount_dir}\" is not empty, cannot remove..."
+    else
+      rm -r ${mount_dir}
+    fi
+
+    exit 1
+  fi
+
+  echo "Backblaze bucket \"${BACKBLAZE_BUCKET}\" successfully mounted at \"${mount_dir}\"!"
 }
 
 
 function b2_unmount()
 {
-  BACKBLAZE_B2_MOUNT_DIR=$1
-  require var BACKBLAZE_B2_MOUNT_DIR
+  local mount_dir=$1
+  require var mount_dir
 
-  if [ ! -d "${BACKBLAZE_B2_MOUNT_DIR}" ]; then
-    echo "Failed to unmount - directory \"${BACKBLAZE_B2_MOUNT_DIR}\" does not exist..."
+  if [ ! -d "${mount_dir}" ]; then
+    echo "Failed to unmount - directory \"${mount_dir}\" does not exist..."
     exit 1
   fi
 
   echo "Unmounting Backblaze bucket ${BACKBLAZE_BUCKET}..."
-  fusermount3 -u ${BACKBLAZE_B2_MOUNT_DIR}
+  fusermount3 -u ${mount_dir}
 
-  if [ -n "$( ls -A ${BACKBLAZE_B2_MOUNT_DIR} 2>/dev/null)" ]; then
-    echo "WARNING: directory ${BACKBLAZE_B2_MOUNT_DIR} is not empty, cannot remove..."
+  if [ $? -ne 0 ]; then
+    echo "ERROR: Failed to unmount \"${mount_dir}\"..."
+    exit 1
+  fi
+
+  if [ -n "$( ls -A ${mount_dir} 2>/dev/null)" ]; then
+    echo "WARNING: directory ${mount_dir} is not empty, cannot remove..."
   else
-    echo "Removing directory ${BACKBLAZE_B2_MOUNT_DIR}"
-    rm -r ${BACKBLAZE_B2_MOUNT_DIR}
+    echo "Removing directory ${mount_dir}..."
+    rm -r ${mount_dir}
   fi
 }
 
@@ -64,8 +83,8 @@ function b2_unmount()
 B2_FUSE_CMD=$1
 B2_MOUNT_DIR=$2
 
-if [ "${B2_MOUNT_DIR}" == "" ]; then
-  echo "Usage: b2-fuse.sh [mount,unmount] [mount_dir]"
+if ! [[ -n "${B2_FUSE_CMD}" && -n "${B2_MOUNT_DIR}" ]]; then
+  echo "Usage: b2-fuse.sh [mount,unmount/umount] [mount_dir]"
   exit 1
 fi
 

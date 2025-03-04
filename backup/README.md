@@ -21,6 +21,8 @@ Useful Terminology:
 - "local machine" will refer to each of these clients that is present in this network.
 - "backup server" will refer to the central server that all of these aforementioned clients backup to.
 
+NOTE: You MUST run `cp sample.env .env` and fill out the required variables for each script you will be running.
+
 ---
 
 ## Backblaze Remote Backup

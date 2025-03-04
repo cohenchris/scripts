@@ -1,49 +1,50 @@
 #!/bin/bash
 
 for file in "$@"; do
-  if [ -f "$file" ] ; then
-    case "$file" in
+  echo "Attempting to extract ${file}..."
+  if [ -f "${file}" ] ; then
+    case "${file}" in
       *.tar.bz2)
-        tar xvjf "$file"
+        tar xvjf "${file}"
         ;;
       *.tar.gz)
-        tar xvzf "$file"
+        tar xvzf "${file}"
         ;;
       *.tar.xz)
-        tar xf "$file"
+        tar xf "${file}"
         ;;
       *.bz2)
-        bunzip2 "$file"
+        bunzip2 "${file}"
         ;;
       *.rar)
-        unrar x "$file"
+        unrar x "${file}"
         ;;
       *.gz)
-        gunzip "$file"
+        gunzip "${file}"
         ;;
       *.tar)
-        tar xvf "$file"
+        tar xvf "${file}"
         ;;
       *.tbz2)
-        tar xvjf "$file"
+        tar xvjf "${file}"
         ;;
       *.tgz)
-        tar xvzf "$file"
+        tar xvzf "${file}"
         ;;
       *.zip)
-        unzip "$file"
+        unzip "${file}"
         ;;
       *.Z)
-        uncompress "$file"
+        uncompress "${file}"
         ;;
       *.7z)
-        7z x "$file"
+        7z x "${file}"
         ;;
       *)
-        echo "don't know how to extract '$file'..." 
+        echo "don't know how to extract '${file}'..." 
         ;;
     esac
   else
-    echo "'$file' is not a valid file!"
+    echo "'${file}' is not a valid file!"
   fi
 done

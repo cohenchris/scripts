@@ -1,11 +1,10 @@
 #!/bin/sh
 
 # This is a wrapper script for lf that:
-# - Allows creating image previews with ueberzug.
-# - Changes the shell directory to the last visited directory after lf exits.
+# - Sets up environment for ueberzug image previewing.
+# - On exit, cd to the last active directory.
 
 set -e
-
 
 # Cleanup ueberzug FIFO + reset the environment
 cleanup() {
@@ -15,32 +14,21 @@ cleanup() {
 
 
 # Wrapper to update the working directory after exiting lf
-lfcd() {
-  # Create temp file to store the cwd
-  local tmp="$(mktemp)"
-  
-  # Launch lf
-  # On exit, print out the last working directory into the temp file
-  command lf -last-dir-path="${tmp}" "$@"
-
-  # cd to the last working directory
-  if [ -f "${tmp}" ]; then
-    dst_dir="$(cat "${tmp}")"
-    rm -f "${tmp}"
-    [ -d "${dst_dir}" ] && cd "${dst_dir}" || echo "Directory ${dst_dir} not found..."
-  fi
+lfcd () {
+    # `command` is needed in case `lfcd` is aliased to `lf`
+    cd "$(command lf -print-last-dir "$@")"
 }
 
 
-if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+if [ -n "${SSH_CLIENT}" ] || [ -n "${SSH_TTY}" ]; then
   # Running inside SSH, just execute normal lf
 	lf "$@"
 else
   # Running locally, set up ueberzug for image previews
-  [ ! -d "${HOME}/.cache/lf" ] && mkdir -p "$HOME/.cache/lf"
+  [ ! -d "${XDG_CACHE_HOME}/lf" ] && mkdir -p "${XDG_CACHE_HOME}/lf"
 
   # Create unique FIFO (named pipe) for communication with ueberzug
-  export FIFO_UEBERZUG="${HOME}/.cache/lf/ueberzug-$$"
+  export FIFO_UEBERZUG="${XDG_CACHE_HOME}/lf/ueberzug-$$"
   mkfifo "${FIFO_UEBERZUG}"
 
   # Start ueberzug + redirect to FIFO (file descriptor 3 is convention for this)
