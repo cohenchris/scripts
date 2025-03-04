@@ -101,7 +101,7 @@ function send_email() {
   require var logfile
 
   # Poll email send
-  while ! neomutt -s "${subject}" -a ${logfile} -- ${email} < ${body}
+  while ! mutt -s "${subject}" -a ${logfile} -- ${email} < ${body}
   do
     echo -e "email failed, trying again..."
 
