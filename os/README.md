@@ -85,4 +85,4 @@ This script is intended to be used when directly booted from the surviving drive
 ## System Services
 [`services/`](services/)
 
-Custom services for different OSes.
+Custom services for different operating systems.
