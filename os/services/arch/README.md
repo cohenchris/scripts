@@ -113,22 +113,3 @@ for i in {1..4}; do systemctl enable --now nextcloud-ai-worker@$i.service; done 
 ```
 
 2. Automated setup using [`IMPORT.sh`](IMPORT.sh)
-
-
-
-
-## System Mail Transfer Agent
-[`ssmtp.conf`](ssmtp.conf)
-
-Once filled in, this configuration file will enable mail notifications from this system via `ssmtp`.
-
-### Prerequisites
-Before use, please:
-- Install `ssmtp`
-- Fill out credentials in `ssmtp.conf` file as the user with whom you would like to send mail
-
-### Use
-```sh
-cp ssmtp.conf /etc/ssmtp
-chmod 600 /etc/ssmtp/ssmtp.conf
-```

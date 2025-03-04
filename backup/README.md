@@ -172,11 +172,6 @@ Also, please do not run `manual-usbs-critical-data.sh` during this script's exec
 5. Set up a cron job to execute files.sh, server.sh, music.sh, and critical-data.sh when desired.
     - Make sure to stagger to prevent backup corruption. For example, I execute critical-data.sh and music.sh at 3am, files.sh at 4am, and server.sh at 5am daily.
 
-7. Set up SSMTP and neofetch to enable email notifications about your backups (/etc/ssmtp/ssmtp.conf)
-    - Install `ssmtp` and `neomutt`
-    - `echo 'set sendmail="/usr/sbin/ssmtp"' > ~/.config/neomutt/neomuttrc`
-
-
 ## Manual Double USB Cold Backups
 - As part of my 3-2-1 backup system, I have 2x USB sticks in a fireproof safe with the very basics that I would need to restore backups in a worst-case-scenario.
 

@@ -45,7 +45,7 @@ function mytex_create()
   \usepackage{setspace}
   \doublespacing
 
-  \author{Chris Cohen}
+  \author{AUTHOR NAME GOES HERE}
   \title{TITLE GOES HERE}
   \date{\today}
 

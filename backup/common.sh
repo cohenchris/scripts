@@ -184,13 +184,12 @@ function finish() {
   fi
  
   local subject="${STATUS} - ${BACKUP_TYPE} backup ${DATE}"
-  send_email "${EMAIL}" "${subject}" "${MAIL_FILE}" "${LOG_DIR}/${LOG_FILE}"
+  send_email "${EMAIL}" "${subject}" "${MAIL_FILE}" "${LOG_FILE}"
 
   # Clean up
   rm ${MAIL_FILE}
   unset BORG_REPO
   unset BORG_PASSPHRASE
-  unset LOG_DIR
   unset LOG_FILE
   unset MAIL_FILE
 

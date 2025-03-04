@@ -22,8 +22,13 @@ function b2_mount()
       fi
   done
 
-  if [[ $found -eq 0 ]]; then
+  if [ $found -eq 0 ]; then
     echo "ERROR: No remote named \"backblaze\". Please create one using rclone config."
+    exit 1
+  fi
+  
+  if [ -n "$(ls -A ${BACKBLAZE_B2_MOUNT_DIR} 2>/dev/null)" ]; then
+    echo "ERROR: directory ${BACKBLAZE_B2_MOUNT_DIR} is not empty, cannot mount..."
     exit 1
   fi
 
@@ -39,7 +44,7 @@ function b2_unmount()
   BACKBLAZE_B2_MOUNT_DIR=$1
   require var BACKBLAZE_B2_MOUNT_DIR
 
-  if [ ! -d ${BACKBLAZE_B2_MOUNT_DIR} ]; then
+  if [ ! -d "${BACKBLAZE_B2_MOUNT_DIR}" ]; then
     echo "Failed to unmount - directory \"${BACKBLAZE_B2_MOUNT_DIR}\" does not exist..."
     exit 1
   fi
@@ -47,7 +52,12 @@ function b2_unmount()
   echo "Unmounting Backblaze bucket ${BACKBLAZE_BUCKET}..."
   fusermount3 -u ${BACKBLAZE_B2_MOUNT_DIR}
 
-  rm -r ${BACKBLAZE_B2_MOUNT_DIR}
+  if [ -n "$( ls -A ${BACKBLAZE_B2_MOUNT_DIR} 2>/dev/null)" ]; then
+    echo "WARNING: directory ${BACKBLAZE_B2_MOUNT_DIR} is not empty, cannot remove..."
+  else
+    echo "Removing directory ${BACKBLAZE_B2_MOUNT_DIR}"
+    rm -r ${BACKBLAZE_B2_MOUNT_DIR}
+  fi
 }
 
 
@@ -61,9 +71,9 @@ fi
 
 if [ "${B2_FUSE_CMD}" == "mount" ]; then
   b2_mount ${B2_MOUNT_DIR}
-elif [ "${B2_FUSE_CMD}" == "unmount" ]; then
+elif [ "${B2_FUSE_CMD}" == "unmount" ] || [ "${B2_FUSE_CMD}" == "umount" ]; then
   b2_unmount ${B2_MOUNT_DIR}
 else
-  echo "Usage: b2-fuse.sh [mount,unmount] [mount_dir]"
+  echo "Usage: b2-fuse.sh [mount,unmount/umount] [mount_dir]"
   exit 1
 fi

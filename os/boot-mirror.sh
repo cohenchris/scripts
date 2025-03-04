@@ -77,6 +77,12 @@ function boot_mirror()
   # /dev/sdX1 format
   PRIMARY_BOOT_PARTITION=$(findmnt /boot -n -o SOURCE)
 
+  # Ensure there is a drive mounted at /boot
+  if [ -z "${PRIMARY_BOOT_PARTITION}" ]; then
+    echo "ERROR: /boot is not mounted."
+    exit 1
+  fi
+
   # translate all ZFS root pool device IDs to corresponding /dev/sdX1 format
   for i in "${!ZFS_ROOT_POOL_DEVICES[@]}"; do
     # Translate device ID to base /dev/sdX device name

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WORKING_DIR=$(dirname "$(realpath "$0")"
+WORKING_DIR=$(dirname "$(realpath "$0")")
 source ${WORKING_DIR}/.env
 
 require var BATOCERA_HOST

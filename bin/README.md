@@ -64,7 +64,7 @@ This script was pulled directly from Luke Smith's dotfiles [here](https://github
 
 
 ## LF File Manager Wrapper for Image Viewing
-[`lfub`](lfub)
+[`lfwrapper`](lfwrapper)
 
 This is a wrapper script for lf that allows it to create image previews with ueberzug.
 

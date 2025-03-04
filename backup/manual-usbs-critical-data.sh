@@ -4,12 +4,24 @@
 #    DECLARATION   #
 ####################
 
+# Sourcing .env will redirect all output to a log file
+# We do NOT want this here, so save the original file
+# descriptors before sourcing .env
+exec 3>&1
+exec 4>&2
+
 # Set up environment
 STARTING_DIR=$(pwd)
 WORKING_DIR=$(dirname "$(realpath "$0")")
 USB1_MNT_PATH=/mnt/usb1
 USB2_MNT_PATH=/mnt/usb2
 source ${WORKING_DIR}/.env
+
+# Restore original file descriptors and remove log/mail files
+exec 1>&3 3>&-
+exec 2>&4
+rm ${LOG_FILE}
+rm ${MAIL_FILE}
 
 # List devices
 fdisk -l
