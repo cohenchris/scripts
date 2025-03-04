@@ -5,6 +5,10 @@ if [[ "$(id -u)" -ne 0 ]]; then
     exit 1
 fi
 
+# Install some basic packages
+opkg install coreutils-realpath
+opkg install curl
+
 # Install msmtp
 opkg update
 opkg install msmtp msmtp-mta

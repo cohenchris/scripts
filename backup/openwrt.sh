@@ -1,4 +1,4 @@
-#!/bin/ash
+#!/bin/bash
 
 # Set up environment
 WORKING_DIR=$(dirname "$(realpath "$0")")
