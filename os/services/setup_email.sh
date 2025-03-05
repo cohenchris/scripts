@@ -10,14 +10,17 @@ if command -v apt &> /dev/null; then
   echo "Detected apt (Raspbian). Installing packages..."
   apt-get update && apt-get upgrade
   apt install mutt msmtp msmtp-mta
+  REALNAME="Backups Server"
 elif command -v pkg &> /dev/null; then
-  echo "Detected pkg (OPNsense). Installing packages..."
+  echo "Detected pkg (OPNSense). Installing packages..."
   pkg update
   pkg install mutt msmtp msmtp-mta
+  REALNAME="OPNSense"
 elif command -v opkg &> /dev/null; then
   echo "Detected opkg (OpenWRT). Installing packages..."
   opkg update
   opkg install coreutils-realpath curl mutt msmtp msmtp-mta
+  REALNAME="OpenWRT"
 else
     echo "Package manager not recognized. Please install packages manually."
     exit 1
@@ -73,7 +76,7 @@ mkdir -p $(dirname ${MUTTRC_PATH}) 2>/dev/null
 cp ./muttrc "${MUTTRC_PATH}"
 
 # Splice the required fields into the final config file
-sed -i "s|<realname>|OpenWRT|g" ${MUTTRC_PATH}
+sed -i "s|<realname>|${REALNAME}|g" ${MUTTRC_PATH}
 sed -i "s|<email_username>|${EMAIL_USERNAME}|g" ${MUTTRC_PATH}
 
 echo "Test mutt email!" | mutt -s "Test mutt" -- ${EMAIL_USERNAME}
