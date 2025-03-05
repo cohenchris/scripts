@@ -20,7 +20,7 @@ elif command -v pkg &> /dev/null; then
   # Install msmtp from source
   git clone https://git.marlam.de/git/msmtp.git
   cd msmtp
-  autoreconf -i
+  autoreconf -if
   ./configure; make; make install
   cd ..
   rm -r msmtp
@@ -28,11 +28,9 @@ elif command -v pkg &> /dev/null; then
   # Install mutt from source
   git clone https://gitlab.com/muttmua/mutt.git
   cd mutt
-  ./configure --prefix=/usr/local --enable-imap --enable-smtp --enable-pop --enable-hcache --with-ssl
-  gmake
-  gmake install
+  ./prepare --prefix=/usr/local --enable-smtp --with-ssl
+  make && make install
   rm -r mutt
-
 elif command -v opkg &> /dev/null; then
   echo "Detected opkg (OpenWRT). Installing packages..."
   REALNAME="OpenWRT"
