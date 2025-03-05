@@ -15,7 +15,7 @@ elif command -v pkg &> /dev/null; then
   echo "Detected pkg (OPNSense). Installing packages..."
   REALNAME="OPNSense"
   echo 'FreeBSD: { enabled: yes }' > /usr/local/etc/pkg/repos/FreeBSD.conf
-  pkg install git autoconf automake libtool gettext texinfo pkg-config libgnutls-dev gmake
+  pkg install git autoconf automake libtool gettext texinfo pkgconf gnutls gmake
 
   # Install msmtp from source
   git clone https://git.marlam.de/git/msmtp.git
@@ -46,11 +46,6 @@ elif command -v pacman &> /dev/null; then
 else
     echo "Package manager not recognized. Please install packages manually."
     exit 1
-fi
-
-if [ $? -ne 0 ]; then
-  echo "ERROR: packages were not installed, manual intervention required."
-  exit 1
 fi
 
 
