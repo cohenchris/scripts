@@ -85,10 +85,10 @@ cp ./muttrc "${MUTTRC_PATH}"
 # Splice the required fields into the final config file
 if [ "${REALNAME}" = "OPNSense" ]; then
   # sed works a bit differently on OPNSense
-  sed -i "" "s|<realname>|${REALNAME}|g" ${MUTTRC_PATH}
+  sed -i "" "s|<realname>|\"${REALNAME}\"|g" ${MUTTRC_PATH}
   sed -i "" "s|<email_username>|${EMAIL_USERNAME}|g" ${MUTTRC_PATH}
 else
-  sed -i "s|<realname>|${REALNAME}|g" ${MUTTRC_PATH}
+  sed -i "s|<realname>|\"${REALNAME}\"|g" ${MUTTRC_PATH}
   sed -i "s|<email_username>|${EMAIL_USERNAME}|g" ${MUTTRC_PATH}
 fi
 
