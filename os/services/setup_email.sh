@@ -13,6 +13,7 @@ if command -v apt &> /dev/null; then
   REALNAME="Backups Server"
 elif command -v pkg &> /dev/null; then
   echo "Detected pkg (OPNSense). Installing packages..."
+  echo 'FreeBSD: { enabled: yes }' > /usr/local/etc/pkg/repos/FreeBSD.conf
   pkg update
   pkg install mutt msmtp msmtp-mta
   REALNAME="OPNSense"
@@ -29,6 +30,11 @@ elif command -v pacman &> /dev/null; then
 else
     echo "Package manager not recognized. Please install packages manually."
     exit 1
+fi
+
+if [ $? -ne 0 ]; then
+  echo "ERROR: packages were not installed, manual intervention required."
+  exit 1
 fi
 
 
