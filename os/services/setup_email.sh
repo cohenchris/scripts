@@ -47,9 +47,16 @@ mkdir -p $(dirname ${MSMTPRC_PATH}) 2>/dev/null
 cp ./msmtprc "${MSMTPRC_PATH}"
 
 # Splice the required fields into the final config file
-sed -i "s|<email_smtp_url>|${SMTP_HOST_URL}|g" ${MSMTPRC_PATH}
-sed -i "s|<email_username>|${EMAIL_USERNAME}|g" ${MSMTPRC_PATH}
-sed -i "s|<email_password>|${EMAIL_PASSWORD}|g" ${MSMTPRC_PATH}
+if [ "${REALNAME}" = "OPNSense" ]; then
+  # sed works a bit differently on OPNSense
+  sed -i "" "s|<email_smtp_url>|${SMTP_HOST_URL}|g" ${MSMTPRC_PATH}
+  sed -i "" "s|<email_username>|${EMAIL_USERNAME}|g" ${MSMTPRC_PATH}
+  sed -i "" "s|<email_password>|${EMAIL_PASSWORD}|g" ${MSMTPRC_PATH}
+else
+  sed -i "s|<email_smtp_url>|${SMTP_HOST_URL}|g" ${MSMTPRC_PATH}
+  sed -i "s|<email_username>|${EMAIL_USERNAME}|g" ${MSMTPRC_PATH}
+  sed -i "s|<email_password>|${EMAIL_PASSWORD}|g" ${MSMTPRC_PATH}
+fi
 
 # Set proper permissions
 echo
@@ -76,8 +83,14 @@ mkdir -p $(dirname ${MUTTRC_PATH}) 2>/dev/null
 cp ./muttrc "${MUTTRC_PATH}"
 
 # Splice the required fields into the final config file
-sed -i "s|<realname>|${REALNAME}|g" ${MUTTRC_PATH}
-sed -i "s|<email_username>|${EMAIL_USERNAME}|g" ${MUTTRC_PATH}
+if [ "${REALNAME}" = "OPNSense" ]; then
+  # sed works a bit differently on OPNSense
+  sed -i "" "s|<realname>|${REALNAME}|g" ${MUTTRC_PATH}
+  sed -i "" "s|<email_username>|${EMAIL_USERNAME}|g" ${MUTTRC_PATH}
+else
+  sed -i "s|<realname>|${REALNAME}|g" ${MUTTRC_PATH}
+  sed -i "s|<email_username>|${EMAIL_USERNAME}|g" ${MUTTRC_PATH}
+fi
 
 echo "Test mutt email!" | mutt -s "Test mutt" -- ${EMAIL_USERNAME}
 if [ $? -ne 0 ]; then
