@@ -85,7 +85,7 @@ function mail_log() {
 #   email   - destination email address
 #   subject - subject of outgoing email address
 #   body    - body of outgoing email address
-#   logfile - path to log file which will be sent as an attachment
+#   logfile - path to log file which will be sent as an attachment (optional)
 #
 # Sends an email by polling until success
 function send_email() {
@@ -98,11 +98,18 @@ function send_email() {
   require var email
   require var subject
   require var body
-  require var logfile
+
+  # Handle optional logfile argument
+  if [ -n "${logfile}" ]; then
+    # logfile provided
+    MUTT_CMD="mutt -s \"${subject}\" -a ${logfile} -- ${email} < ${body}"
+  else
+    # logfile not provided
+    MUTT_CMD="mutt -s \"${subject}\" -- ${email} < ${body}"
+  fi
 
   # Poll email send
-  while ! mutt -s "${subject}" -a ${logfile} -- ${email} < ${body}
-  do
+  while ! eval "${MUTT_CMD}"; do
     echo -e "email failed, trying again..."
 
     # Limit attempts. If it goes infinitely, it could fill up the disk.

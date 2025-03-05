@@ -21,6 +21,11 @@ elif command -v opkg &> /dev/null; then
   opkg update
   opkg install coreutils-realpath curl mutt msmtp msmtp-mta
   REALNAME="OpenWRT"
+elif command -v pacman &> /dev/null; then
+  echo "Detected pacman (Arch). Installing packages..."
+  pacman -Syu
+  pacman -S msmtp msmtp-mta mutt
+  REALNAME="Phrog"
 else
     echo "Package manager not recognized. Please install packages manually."
     exit 1
@@ -63,7 +68,7 @@ echo
 echo "Setting permissions for ${MSMTPRC_PATH}..."
 chmod 600 ${MSMTPRC_PATH}
 
-# Send test email
+# Send test email with msmtp
 echo
 echo "Test msmtp email!" | msmtp "${EMAIL_USERNAME}"
 
@@ -76,6 +81,7 @@ else
   echo
   echo "MSMTP setup was successful!"
 fi
+
 
 # Set up mutt
 MUTTRC_PATH="/root/.muttrc"
@@ -92,6 +98,7 @@ else
   sed -i "s|<email_username>|${EMAIL_USERNAME}|g" ${MUTTRC_PATH}
 fi
 
+# Send test email with mutt
 echo "Test mutt email!" | mutt -s "Test mutt" -- ${EMAIL_USERNAME}
 if [ $? -ne 0 ]; then
   echo

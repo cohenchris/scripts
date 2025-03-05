@@ -15,20 +15,6 @@ BODY=/tmp/body
 # On some systems, smartctl is installed in /usr/sbin
 export PATH="/usr/sbin:${PATH}"
 
-# require(var)
-#   var - variable to check
-#
-# This function will throw an error if the provided variable is not set
-function require() {
-  local var="$1"
-
-  if [[ -z "${!var}" ]]; then
-    # Log variable name and calling function name
-    echo -e "${RED}ERROR - ${var} is not set in ${FUNCNAME[1]:-env}${NC}"
-    status="FAIL"
-  fi
-}
-
 
 # test_drives()
 #
@@ -134,45 +120,8 @@ function zfs_summarize()
   done
 }
 
-
-# send_email(email, subject, body)
-#   email   - destination email address
-#   subject - subject of outgoing email address
-#   body    - body of outgoing email address
-#
-# Sends an email by polling until success
-function send_email() {
-  local email="$1"
-  local subject="$2"
-  local body="$3"
-  local max_mail_attempts=50
-
-  require email
-  require subject
-  require body
-
-  # Poll email send
-  while ! neomutt -s "${subject}" -- ${email} < ${body}
-  do
-    echo -e "${RED}email failed, trying again...${NC}"
-
-    # Limit attempts. If it goes infinitely, it could fill up the disk.
-    max_mail_attempts=$((max_mail_attempts-1))
-    if [[ ${max_mail_attempts} -eq 0 ]]; then
-      echo -e "${RED}send_email failed${NC}"
-      fail
-    fi
-
-    sleep 5
-  done
-
-  echo -e "${GREEN}email sent!${NC}"
-}
-
-
-
 # Create array of all drives
-SMART_DRIVES=($(lsblk -nd -o name | sed 's/^/\/dev\//'))
+SMART_DRIVES=($(lsblk -nd -o NAME | grep -E '^(sd|nvme)' | sed 's/^/\/dev\//'))
 
 # Create array of all ZFS pools
 ZFS_POOLS=($(zpool list -H -o name))
