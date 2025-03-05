@@ -21,8 +21,9 @@ elif command -v pkg &> /dev/null; then
   git clone https://git.marlam.de/git/msmtp.git
   cd msmtp
   autoreconf -if
-  ./configure; make; make install
-  cd ..
+  ./configure
+  make && make install
+  cd ../
   rm -r msmtp
 
   # Install mutt from source
@@ -30,6 +31,7 @@ elif command -v pkg &> /dev/null; then
   cd mutt
   ./prepare --prefix=/usr/local --enable-smtp --with-ssl
   make && make install
+  cd ../
   rm -r mutt
 elif command -v opkg &> /dev/null; then
   echo "Detected opkg (OpenWRT). Installing packages..."
