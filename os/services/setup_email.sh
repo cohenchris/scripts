@@ -6,8 +6,22 @@ if [[ "$(id -u)" -ne 0 ]]; then
 fi
 
 # Install packages
-opkg update
-opkg install coreutils-realpath curl mutt msmtp msmtp-mta
+if command -v apt &> /dev/null; then
+  echo "Detected apt (Raspbian). Installing packages..."
+  apt-get update && apt-get upgrade
+  apt install mutt msmtp msmtp-mta
+elif command -v pkg &> /dev/null; then
+  echo "Detected pkg (OPNsense). Installing packages..."
+  pkg update
+  pkg install mutt msmtp msmtp-mta
+elif command -v opkg &> /dev/null; then
+  echo "Detected opkg (OpenWRT). Installing packages..."
+  opkg update
+  opkg install coreutils-realpath curl mutt msmtp msmtp-mta
+else
+    echo "Package manager not recognized. Please install packages manually."
+    exit 1
+fi
 
 
 echo "Configuring MSMTP and Mutt so that this system can send email notifications..."
