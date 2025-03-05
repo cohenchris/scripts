@@ -63,8 +63,17 @@ echo
 read -s -p "Enter the password for ${EMAIL_USERNAME}: " EMAIL_PASSWORD
 
 
+if [ "${REALNAME}" = "OPNSense" ]; then
+  # FreeBSD msmtp built from source wants the config file here
+  MSMTPRC_PATH="/usr/local/etc/msmtprc"
+  TLS_TRUST_FILE="/usr/local/share/certs/ca-root-nss.crt"
+else
+  # But Linux msmtp wants the config file here
+  MSMTPRC_PATH="/etc/msmtprc"
+  TLS_TRUST_FILE="/etc/ssl/certs/ca-certificates.crt"
+fi
+
 # Copy test config file to final location
-MSMTPRC_PATH="/etc/msmtprc"
 mkdir -p $(dirname ${MSMTPRC_PATH}) 2>/dev/null
 cp ./msmtprc "${MSMTPRC_PATH}"
 
@@ -74,10 +83,12 @@ if [ "${REALNAME}" = "OPNSense" ]; then
   sed -i "" "s|<email_smtp_url>|${SMTP_HOST_URL}|g" ${MSMTPRC_PATH}
   sed -i "" "s|<email_username>|${EMAIL_USERNAME}|g" ${MSMTPRC_PATH}
   sed -i "" "s|<email_password>|${EMAIL_PASSWORD}|g" ${MSMTPRC_PATH}
+  sed -i "" "s|<tls_trust_file>|${TLS_TRUST_FILE}|g" ${MSMTPRC_PATH}
 else
   sed -i "s|<email_smtp_url>|${SMTP_HOST_URL}|g" ${MSMTPRC_PATH}
   sed -i "s|<email_username>|${EMAIL_USERNAME}|g" ${MSMTPRC_PATH}
   sed -i "s|<email_password>|${EMAIL_PASSWORD}|g" ${MSMTPRC_PATH}
+  sed -i "s|<tls_trust_file>|${TLS_TRUST_FILE}|g" ${MSMTPRC_PATH}
 fi
 
 # Set proper permissions
