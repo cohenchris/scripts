@@ -15,8 +15,21 @@ elif command -v pkg &> /dev/null; then
   echo "Detected pkg (OPNSense). Installing packages..."
   REALNAME="OPNSense"
   echo 'FreeBSD: { enabled: yes }' > /usr/local/etc/pkg/repos/FreeBSD.conf
-  pkg update
-  pkg install mutt msmtp msmtp-mta
+  pkg install git autoconf automake libtool gettext texinfo pkg-config libgnutls-dev.
+
+  # Install msmtp from source
+  git clone https://git.marlam.de/git/msmtp.git
+  cd msmtp
+  autoreconf -i
+  ./configure; make; make install
+
+  # Install mutt from source
+  git clone https://gitlab.com/muttmua/mutt.git
+  cd mutt
+  ./configure --prefix=/usr/local --enable-imap --enable-smtp --enable-pop --enable-hcache --with-ssl
+  gmake
+  gmake install
+
 elif command -v opkg &> /dev/null; then
   echo "Detected opkg (OpenWRT). Installing packages..."
   REALNAME="OpenWRT"
