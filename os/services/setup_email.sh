@@ -8,25 +8,25 @@ fi
 # Install packages
 if command -v apt &> /dev/null; then
   echo "Detected apt (Raspbian). Installing packages..."
+  REALNAME="Backups Server"
   apt-get update && apt-get upgrade
   apt install mutt msmtp msmtp-mta
-  REALNAME="Backups Server"
 elif command -v pkg &> /dev/null; then
   echo "Detected pkg (OPNSense). Installing packages..."
+  REALNAME="OPNSense"
   echo 'FreeBSD: { enabled: yes }' > /usr/local/etc/pkg/repos/FreeBSD.conf
   pkg update
   pkg install mutt msmtp msmtp-mta
-  REALNAME="OPNSense"
 elif command -v opkg &> /dev/null; then
   echo "Detected opkg (OpenWRT). Installing packages..."
+  REALNAME="OpenWRT"
   opkg update
   opkg install coreutils-realpath curl mutt msmtp msmtp-mta
-  REALNAME="OpenWRT"
 elif command -v pacman &> /dev/null; then
   echo "Detected pacman (Arch). Installing packages..."
+  REALNAME="Phrog"
   pacman -Syu
   pacman -S msmtp msmtp-mta mutt
-  REALNAME="Phrog"
 else
     echo "Package manager not recognized. Please install packages manually."
     exit 1
