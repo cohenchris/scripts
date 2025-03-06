@@ -11,7 +11,7 @@ Used to easily send a notification to the Home Assistant app on my phone.
 
 ### Prerequisites
 - You have configured a webhook endpoint in HomeAssistant which sends notifications to your desired devices
-- You have created and filled out the .env file in `scripts/system`
+- You have created and filled out the [`.env` file in `scripts/system`](../sample.env) 
 
 ### Use
 This script may be called manually at any time to send notifications to the devices which have been configured to receive notifications in HomeAssistant.
@@ -33,7 +33,7 @@ This functionality is built into Lidarr, but has been broken for a while
 This script assumes that:
 - You are running Lidarr
 - Lidarr is running on port 8686
-- You have created and filled out the .env file in `scripts/system`
+- You have created and filled out the [`.env` file in `scripts/system`](../sample.env) 
 
 ### Use
 You may either run this script manually or with a scheduled cron job.
@@ -50,18 +50,18 @@ Shuts down every active Plex playback session, shows each use a server maintenan
 There are no prerequisites for this script. If the user passes a valid URL and token, it will work as intended.
 
 ### Use
-To provide a smoother experience for users of your Plex server, it is recommended to run this when shutting down your server for scheduled maintenance.
+To provide a smoother experience for users of your Plex server, this script should be run when shutting down Plex for scheduled maintenance.
 
 
 
 
 ## Restart Docker Container Stack
-[`restart.sh`](restart.sh)
+[`restart-docker.sh`](restart-docker.sh)
 
 This script restarts all running docker containers and installs packages that Nextcloud needs to provide video file previews.
 
 ### Prerequisites
-- You have created and filled out the .env file in `scripts/system`
+- You have created and filled out the [`.env` file in `scripts/system`](../sample.env) 
 
 ### Use
 This script may be called manually at any time to cleanly restart your Docker container stack.
@@ -85,10 +85,10 @@ This script assumes that:
 - You are running qBittorrent through a VPN
 - The VPN is running in Docker (project name 'gluetun' on Docker Hub)
 - The VPN Docker container is named 'vpn'
-- You have created and filled out the .env file in `scripts/system`
+- You have created and filled out the [`.env` file in `scripts/system`](../sample.env) 
 
 ### Use
-It is recommended to run this script as a scheduled cron job.
+This script should be set up as a scheduled cron job.
 
 
 

@@ -1,4 +1,4 @@
-# Standalone Helpers
+# Generic Bin
 
 Dependency-free system scripts which are intended to be added to PATH and run from the command line.
 
@@ -11,18 +11,22 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 ## System Update
 [`update`](update)
 
+This script is meant to run on a system running the `paru` AUR helper package manager (likely Arch Linux).
+It also assumes that the user has a docker-compose stack located at `/home/${USER}/server.
+
 1. Synchronize, install, and upgrade all packages
 2. Clean the package cache to remove unused packages
-3. Update all docker container images
-4. Remove all unused cached docker container images
+3. Update all docker-compose images
+4. Remove all dangling docker container images
 
 
 ## Wifi Network Selector
 [`wifi`](wifi)
 
-Dmenu-based wifi network selector.
+Fuzzel-based wifi network selector.
 Utilizes `nmcli` to scan for available networks and presents them in a friendly list.
 The user may then navigate this list using arrow keys or vim directional bindings (h/j/k/l) and select the desired network by pressing Enter.
+Please note that this script requires the use of a Wayland display manager.
 
 
 
@@ -31,7 +35,7 @@ The user may then navigate this list using arrow keys or vim directional binding
 [`extract [FILE...]`](extract)
 
 There are many different types of compressed files, each of which requires a different extraction program.
-This script allows an unlimited number of arguments to be passed.
+This script allows an unlimited number of arguments to be passed, each of which should be some sort of compressed file.
 It will loop through each argument and use the correct extraction program based on the file extension.
 
 
@@ -68,8 +72,8 @@ This script was pulled directly from Luke Smith's dotfiles [here](https://github
 
 This is a wrapper script for lf. It does the following:
     - Sets up environment for ueberzug image previewing
-    - On exit, cd to the last active directory
-        - For this to work, this wrapper must be called using `source`
+    - On exit, `cd` to the last active directory
+        - For this to work, this wrapper must be sourced instead of called directly
 
 This script is a combination of the ueuberzug wrapper pulled from Luke Smith's dotfiles [here](https://github.com/LukeSmithxyz/voidrice/blob/master/.local/bin/lfub), and lfcd logic pulled from the official lf repository [here](https://github.com/gokcehan/lf/blob/master/etc/lfcd.sh).
 
@@ -83,12 +87,12 @@ This script helps automate common LaTeX commands that I use.
 The user will pass a filename as an argument.
 
 Behavior differs depending on the subcommand:
-`compile`
-  - This script will compile the source file into a PDF.
-`create`
-  - This script will spit out a file (name provided as an argument) which contains a very simple LaTeX template.
-`edit`
-  - This script will compile that source file into a PDF, display the PDF, and open the source file in vim.
+
+`compile <tex_source_file>` compiles the source file into a PDF.
+
+`create <filename>` spits out a file (name provided as an argument) which contains a very simple LaTeX template.
+
+`edit <tex_source_file>` compiles the source file into a PDF, open the PDF, and open the source file in vim.
 
 
 
@@ -96,16 +100,19 @@ Behavior differs depending on the subcommand:
 ## Music Video Downloader
 [`mvdl [FILE]`](mvdl)
 
-This script takes in a file of newline-separated music video youtube URLs.
-This script is an attempt to automate the process of renaming music video files for Plex such that Plex will match the video with a track.
-You may read about this naming process [here](https://support.plex.tv/articles/205568377-adding-local-artist-and-music-videos/)
+This script reads in a file which contains newline-separated YouTube music video URLs.
+If there is a music file and music video file with the same name, Plex can automatically detect this and associate the two files.
+If there is a music file with an associated music video file, Plex will allow you to play either file.
+This script is an attempt to automate the process of pulling + renaming music videos for this feature.
+You may read about this naming process [here](https://support.plex.tv/articles/205568377-adding-local-artist-and-music-videos/).
 
 This script is pretty hardcoded to my personal environment and directory structure.
 
-It will first download each video.
-Then, it will attempt to find a matching track file.
-If there is a match, it will rename the downloaded music video according to the standard linked above.
-If there is no match, it will rename the downloaded music video to a cleaner, more readable version.
+1. User points the script to music and music video directories
+2. Download each video
+3. Based on the title of the music video, attempt to find a matching music file
+4. If a match is found, rename the downloaded music video according to the standard linked above
+5. If a match is not found, rename the downloaded music video to a cleaner, more readable version
 
 
 
@@ -114,3 +121,4 @@ If there is no match, it will rename the downloaded music video to a cleaner, mo
 [`random-wallpaper`](random-wallpaper)
 
 Selects and random image from the `${XDG_DATA_HOME}/wallpapers` directory and sets it as the user's wallpaper.
+Please note that this script requires the use of a Wayland display manager.

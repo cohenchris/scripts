@@ -1,4 +1,4 @@
-# Linux Services
+# Arch Linux Services
 
 Custom services and configuration files for a typical Linux machine.
 The import script is tailored towards Arch Linux, but these services should work on any systemd-based Linux distribution.
@@ -13,7 +13,6 @@ Configuration files for the "Network UPS Tools" driver, which communicate with y
 The default username is `upsmon` and password is `password`.
 
 ### Prerequisites
-This script assumes:
 - There is a UPS connected to your computer via USB
 - The UPS uses driver `usbhid-ups`
 
@@ -40,7 +39,6 @@ sudo systemctl start nut.service
 This is a systemd service file which will lower the idle power consumption of your Nvidia GPU.
 
 ### Prerequisites
-This script assumes:
 - You have an Nvidia GPU
 - You have proper Nvidia drivers installed
 - Your Nvidia GPU is visible on nvidia-smi
@@ -66,7 +64,6 @@ systemctl start nvidia-gpu-power-savings.service
 This is a systemd service file which will start a glances webserver.
 
 ### Prerequisites
-This script assumes:
 - Glances and all relevant dependencies are installed
 - Nothing is running on port 61208 (the default webserver port for glances)
 
@@ -93,7 +90,6 @@ https://docs.nextcloud.com/server/latest/admin_manual/ai/overview.html#systemd-s
 This script improves Nextcloud Assistant's AI task pickup speed responsiveness. By default, an assistant query will be processed as a background job, which is run every 5 minutes. This script, along with `nextcloud-ai-worker@.service`, processes AI tasks as soon as they are scheduled, rather than the user having to wait up to 5 minutes.
 
 ### Prerequisites
-This script assumes:
 - You have Nextcloud installed with Docker
 - The Docker container name is 'nextcloud'
 - A working Artificial Intelligence provider is configured

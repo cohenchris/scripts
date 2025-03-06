@@ -8,7 +8,7 @@ fi
 
 yes | paru -Scc
 
-cd /home/$USER/server
+cd /home/${USER}/server
 docker-compose pull
 docker-compose up -d
 
