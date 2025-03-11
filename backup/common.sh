@@ -182,17 +182,17 @@ function borg_backup() {
 #
 # Logs, notifies me via HomeAssistant, emails me the backup status, and cleans up
 function finish() {
-  local subject="${STATUS} - ${BACKUP_TYPE} backup ${DATE}"
 
   # Log and notify backup status
   if [[ ${STATUS} == "FAIL" ]]; then
-    bash ${SCRIPTS_DIR}/system/server/ha-notify.sh "${subject}" "ERROR - ${BACKUP_TYPE} backup failed..."
+    bash ${SCRIPTS_DIR}/system/server/ha-notify.sh "${BACKUP_TYPE} backup" "ERROR - ${BACKUP_TYPE} backup failed on ${DATE}..."
     echo -e "Backup failed..."
   else
-    bash ${SCRIPTS_DIR}/system/server/ha-notify.sh "${subject}" "SUCCESS - ${BACKUP_TYPE} backup succeeded!"
+    bash ${SCRIPTS_DIR}/system/server/ha-notify.sh "${BACKUP_TYPE} backup" "SUCCESS - ${BACKUP_TYPE} backup succeeded on ${DATE}!"
     echo -e "Backup succeeded!"
   fi
  
+  local subject="${STATUS} - ${BACKUP_TYPE} backup ${DATE}"
   send_email "${EMAIL}" "${subject}" "${MAIL_FILE}" "${LOG_FILE}"
 
   # Clean up
