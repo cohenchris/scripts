@@ -181,7 +181,7 @@ function borg_backup() {
 #
 # Logs, notifies me via HomeAssistant, emails me the backup status, and cleans up
 function finish() {
-  local hanotify = ${1}
+  local hanotify="$1"
 
   # Log and notify backup status
   if [[ ${STATUS} == "FAIL" ]]; then
