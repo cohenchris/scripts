@@ -64,12 +64,14 @@ read -s -p "Enter the password for ${EMAIL_USERNAME}: " EMAIL_PASSWORD
 
 
 if [ "${REALNAME}" = "OPNSense" ]; then
-  # FreeBSD msmtp built from source wants the config file here
+  # FreeBSD
   MSMTPRC_PATH="/usr/local/etc/msmtprc"
+  MSMTP_BIN_LOCATION="/usr/local/bin/msmtp"
   TLS_TRUST_FILE="/usr/local/share/certs/ca-root-nss.crt"
 else
-  # But Linux msmtp wants the config file here
+  # Linux
   MSMTPRC_PATH="/etc/msmtprc"
+  MSMTP_BIN_LOCATION="/usr/bin/msmtp"
   TLS_TRUST_FILE="/etc/ssl/certs/ca-certificates.crt"
 fi
 
@@ -121,9 +123,11 @@ if [ "${REALNAME}" = "OPNSense" ]; then
   # sed works a bit differently on OPNSense
   sed -i "" "s|<realname>|\"${REALNAME}\"|g" ${MUTTRC_PATH}
   sed -i "" "s|<email_username>|${EMAIL_USERNAME}|g" ${MUTTRC_PATH}
+  sed -i "" "s|<msmtp_bin_location>|${MSMTP_BIN_LOCATION}|g" ${MUTTRC_PATH}
 else
   sed -i "s|<realname>|\"${REALNAME}\"|g" ${MUTTRC_PATH}
   sed -i "s|<email_username>|${EMAIL_USERNAME}|g" ${MUTTRC_PATH}
+  sed -i "s|<msmtp_bin_location>|${MSMTP_BIN_LOCATION}|g" ${MUTTRC_PATH}
 fi
 
 # Send test email with mutt

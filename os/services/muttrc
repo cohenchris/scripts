@@ -1,4 +1,4 @@
-set sendmail="/usr/bin/msmtp"
+set sendmail=<msmtp_bin_location>
 set use_from=yes
 set realname=<realname>
 set from=<email_username>
