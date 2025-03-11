@@ -102,10 +102,10 @@ function send_email() {
   # Handle optional logfile argument
   if [ -n "${logfile}" ]; then
     # logfile provided
-    MUTT_CMD="mutt -s \"${subject}\" -a ${logfile} -- ${email} < ${body}"
+    MUTT_CMD="mutt -F "/root/.muttrc" -s \"${subject}\" -a ${logfile} -- ${email} < ${body}"
   else
     # logfile not provided
-    MUTT_CMD="mutt -s \"${subject}\" -- ${email} < ${body}"
+    MUTT_CMD="mutt -F "/root/.muttrc" -s \"${subject}\" -- ${email} < ${body}"
   fi
 
   # Poll email send
