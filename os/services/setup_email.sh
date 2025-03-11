@@ -18,21 +18,25 @@ elif command -v pkg &> /dev/null; then
   pkg install git autoconf automake libtool gettext texinfo pkgconf gnutls gmake
 
   # Install msmtp from source
-  git clone https://git.marlam.de/git/msmtp.git
-  cd msmtp
-  autoreconf -if
-  ./configure
-  make && make install
-  cd ../
-  rm -r msmtp
+  if command -v msmtp &> /dev/null; then
+    git clone https://git.marlam.de/git/msmtp.git
+    cd msmtp
+    autoreconf -if
+    ./configure
+    make && make install
+    cd ../
+    rm -r msmtp
+  fi
 
   # Install mutt from source
-  git clone https://gitlab.com/muttmua/mutt.git
-  cd mutt
-  ./prepare --prefix=/usr/local --enable-smtp --with-ssl
-  make && make install
-  cd ../
-  rm -r mutt
+  if command -v mutt &> /dev/null; then
+    git clone https://gitlab.com/muttmua/mutt.git
+    cd mutt
+    ./prepare --prefix=/usr/local --enable-smtp --with-ssl
+    make && make install
+    cd ../
+    rm -r mutt
+  fi
 elif command -v opkg &> /dev/null; then
   echo "Detected opkg (OpenWRT). Installing packages..."
   REALNAME="OpenWRT"
