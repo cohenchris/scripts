@@ -2,7 +2,23 @@
 
 Nextcloud-related helper scripts.
 
----
+
+
+
+# Table of Contents
+
+- [Nextcloud AI Task Processing](#Nextcloud-AI-Task-Processing)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Nextcloud ffmpeg Installation](#Nextcloud-ffmpeg-Installation)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Set Proper Permissions + Scan Nextcloud Files](#Set-Proper-Permissions-+-Scan-Nextcloud-Files)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+
+
+
 
 ## Nextcloud AI Task Processing
 [`nextcloud/nextcloud-ai-taskprocessing.sh`](nextcloud-ai-taskprocessing.sh)

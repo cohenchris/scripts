@@ -8,7 +8,30 @@ For example, one of the scripts in here nukes a Docker container stack, cleans t
 
 **NOTE: You MUST run `cp sample.env .env` and fill out the required variables for each script you will be running.**
 
----
+
+
+
+# Table of Contents
+
+- [Backblaze Bucket Quick Mount + Unmount via RClone](#Backblaze-Bucket-Quick-Mount-+-Unmount-via-RClone)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Batocera Quick Mount + Unmount via SSHFS](#Batocera-Quick-Mount-+-Unmount-via-SSHFS)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Drive Health Monitoring + Notifications](#Drive-Health-Monitoring-+-Notifications)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Restart Glances Webserver](#Restart-Glances-Webserver)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Set Proper Permissions on Media Files](#Set-Proper-Permissions-on-Media-Files)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Server Automation](#Server-Automation)
+
+
+
 
 ## Backblaze Bucket Quick Mount + Unmount via RClone
 [`b2-fuse.sh [mount, unmount]`](b2-fuse.sh)

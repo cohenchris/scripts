@@ -3,7 +3,29 @@
 Custom services and configuration files for a typical Linux machine.
 The import script is tailored towards Arch Linux, but these services should work on any systemd-based Linux distribution.
 
----
+
+
+
+# Table of Contents
+
+- [Network UPS Tools](#Network-UPS-Tools)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Nvidia GPU Power Savings](#Nvidia-GPU-Power-Savings)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Glances](#Glances)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Nextcloud AI Task Processing](#Nextcloud-AI-Task-Processing)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [MSMTP SMTP client](#MSMTP-SMTP-client)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+
+
+
 
 ## Network UPS Tools
 [`nut/*`](nut/)

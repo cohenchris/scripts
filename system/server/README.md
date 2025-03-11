@@ -2,7 +2,30 @@
 
 Automation scripts related to homelab services running on the host machine.
 
----
+
+
+
+# Table of Contents
+
+- [Send Notifications to Phone via HomeAssistant](#Send-Notifications-to-Phone-via-HomeAssistant)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Monitor Newly Released Albums on Lidarr](#Monitor-Newly-Released-Albums-on-Lidarr)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Broadcast Plex Shutdown Message](#Broadcast-Plex-Shutdown-Message)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Restart Docker Container Stack](#Restart-Docker-Container-Stack)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Test QBittorrent Connectivity](#Test-QBittorrent-Connectivity)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Nextcloud](#Nextcloud)
+
+
+
 
 ## Send Notifications to Phone via HomeAssistant
 [`ha-notify.sh <SUBJECT> <BODY>`](ha-notify.sh)

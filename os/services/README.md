@@ -2,7 +2,22 @@
 
 Custom services and scripts that are not specific to one OS.
 
----
+
+
+
+# Table of Contents
+
+- [MSMTP SMTP client](#MSMTP-SMTP-client)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Mutt E-Mail Client](#Mutt-E-Mail-Client)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Arch Linux Services](#Arch-Linux-Services)
+- [OPNSense Services](#OPNSense-Services)
+
+
+
 
 ## MSMTP SMTP client
 [`msmtprc`](msmtprc)

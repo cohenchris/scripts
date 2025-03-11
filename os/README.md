@@ -3,7 +3,24 @@
 One-time use scripts intended to help manage various OS-level components, including a fresh Arch install, ZFS pool management, and services for various systems.
 Some may have CATASTROPHIC consequences if used incorrectly, so they should be read and fully understood before use.
 
----
+
+
+
+# Table of Contents
+
+- [Install Arch on ZFS](#Install-Arch-on-ZFS)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Sync Mirrored EFI Partitions](#Sync-Mirrored-EFI-Partitions)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Replace/Resilver a Drive in ZFS Root Pool](#Replace/Resilver-a-Drive-in-ZFS-Root-Pool)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [System Services](#System-Services)
+
+
+
 
 ## Install Arch on ZFS
 [`arch-install.sh`](arch-install.sh)

@@ -35,6 +35,45 @@ This is a single device on my network that stores backups for my entire network.
 
 
 
+# Table of Contents
+
+  - [Prerequisites and Use](#Prerequisites-and-Use)
+- [Backblaze Remote Backup](#Backblaze-Remote-Backup)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Switch Backup](#Switch-Backup)
+- [Batocera Console Backup](#Batocera-Console-Backup)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Common Backup Functions](#Common-Backup-Functions)
+  - [Use](#Use)
+- [Critical Data Backup](#Critical-Data-Backup)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- ["Cloud" Files Backup](#"Cloud"-Files-Backup)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Critical Data Backup - 2x Manual USB Cold Backup](#Critical-Data-Backup---2x-Manual-USB-Cold-Backup)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Music Backup](#Music-Backup)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [OpenWRT Backup](#OpenWRT-Backup)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [OPNSense + AdGuard Backup](#OPNSense-+-AdGuard-Backup)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Server Backup](#Server-Backup)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Interacting With Borg](#Interacting-With-Borg)
+  - [Resources:](#Resources:)
+
+
+
+
 ## Backblaze Remote Backup
 [`backblaze.sh`](backblaze.sh)
 

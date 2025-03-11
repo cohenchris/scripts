@@ -2,7 +2,23 @@
 
 Custom services and scripts for a FreeBSD-based OPNSense distribution.
 
----
+
+
+
+# Table of Contents
+
+- [Glances System Monitoring Startup Service](#Glances-System-Monitoring-Startup-Service)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [OPNSense Action to Auto-Restart Glances](#OPNSense-Action-to-Auto-Restart-Glances)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [OPNSense Action to Backup OPNSense + AdGuard](#OPNSense-Action-to-Backup-OPNSense-+-AdGuard)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+
+
+
 
 ## Glances System Monitoring Startup Service
 [`glances`](glances)

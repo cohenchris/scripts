@@ -6,7 +6,23 @@ These focus on generic everyday automations.
 Think of these as scripts that can be easily moved from system to system with zero effort (assuming the correct packages are installed).
 For example, one of the scripts in here is a file extraction wrapper which uses different programs depending on the file extension - this can be dropped on any system that supports bash.
 
----
+
+
+
+# Table of Contents
+
+- [System Update](#System-Update)
+- [Wifi Network Selector](#Wifi-Network-Selector)
+- [Archive Extraction](#Archive-Extraction)
+- [Local E-Mail Sync](#Local-E-Mail-Sync)
+- [LF File Manager Image Navigation](#LF-File-Manager-Image-Navigation)
+- [LF File Manager Wrapper for Image Viewing](#LF-File-Manager-Wrapper-for-Image-Viewing)
+- [LaTeX Shortcuts](#LaTeX-Shortcuts)
+- [Music Video Downloader](#Music-Video-Downloader)
+- [Set Random Wallpaper](#Set-Random-Wallpaper)
+
+
+
 
 ## System Update
 [`update`](update)

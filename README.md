@@ -20,6 +20,16 @@ I've categorized my these into a few different categories:
 
 
 
+# Table of Contents
+
+- [OS Configuration](#OS-Configuration)
+- [Generic Bin](#Generic-Bin)
+- [System Automation](#System-Automation)
+- [Backups](#Backups)
+
+
+
+
 ## OS Configuration
 [`os/`](os/)
 
