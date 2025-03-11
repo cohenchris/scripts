@@ -117,6 +117,7 @@ function send_email() {
     if [[ ${max_mail_attempts} -eq 0 ]]; then
       echo -e "send_email failed"
       status=FAIL
+      exit
     fi
 
     sleep 5
