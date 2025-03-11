@@ -5,7 +5,7 @@ if [[ "$(id -u)" -ne 0 ]]; then
     exit 1
 fi
 
-SCRIPTS_BASE_DIR="$(dirname "$(realpath "$0")")/../../../"
+SCRIPTS_BASE_DIR="$(dirname "$(realpath "$0")")/../../.."
 
 # Install Glances webserver FreeBSD service
 echo "Installing Glances webserver FreeBSD service..."
