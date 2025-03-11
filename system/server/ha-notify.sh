@@ -19,7 +19,7 @@ do
                   -w "%{http_code}"                             \
                   -X POST                                       \
                   -H "Content-Type: application/json"           \
-                  -d "{\"title\": \"${title}\", \"body\":\"${body}\"}"  \
+                  -d "{\"title\": \"${title}\", \"body\": \"${body}\"}"  \
                   "${HA_NOTIFY_WEBHOOK_ENDPOINT}")
 
   if [ "${response}" -eq 200 ]; then
