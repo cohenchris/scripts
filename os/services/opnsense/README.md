@@ -27,6 +27,7 @@ service glances start
 ```
 
 
+
 2. Automated setup using [`IMPORT.sh`](IMPORT.sh)
 
 
@@ -58,6 +59,14 @@ cp ./actions_restartglances.conf /usr/local/opnsense/service/conf/actions.d
 service configd restart
 ```
 
+Manually test by running:
+```sh
+configctl backupopnsense backup
+```
+
+
+
+
 2. Automated setup using [`IMPORT.sh`](IMPORT.sh)
 
 
@@ -86,5 +95,12 @@ Then, run the following:
 cp ./actions_backupopnsense.conf /usr/local/opnsense/service/conf/actions.d
 service configd restart
 ```
+Manually test by running:
+```sh
+configctl backupopnsense backup
+```
+
+
+
 
 2. Automated setup using [`IMPORT.sh`](IMPORT.sh)
