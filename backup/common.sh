@@ -184,10 +184,10 @@ function borg_backup() {
 function finish() {
   # Log and notify backup status
   if [[ ${STATUS} == "FAIL" ]]; then
-    ${SCRIPTS_DIR}/system/server/ha-notify.sh "${BACKUP_TYPE^} Backup" "ERROR - ${BACKUP_NAME} backup failed..."
+    bash ${SCRIPTS_DIR}/system/server/ha-notify.sh "${BACKUP_TYPE^} Backup" "ERROR - ${BACKUP_NAME} backup failed..."
     echo -e "Backup failed..."
   else
-    ${SCRIPTS_DIR}/system/server/ha-notify.sh "${BACKUP_TYPE^} Backup" "SUCCESS - ${BACKUP_NAME} backup succeeded!"
+    bash ${SCRIPTS_DIR}/system/server/ha-notify.sh "${BACKUP_TYPE^} Backup" "SUCCESS - ${BACKUP_NAME} backup succeeded!"
     echo -e "Backup succeeded!"
   fi
  
