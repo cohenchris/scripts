@@ -20,13 +20,13 @@ service glances start
 echo
 echo "Installing and configuring OPNSense backup OPNSense action..."
 cp ./actions_backupopnsense.conf /usr/local/opnsense/service/conf/actions.d
-sed -i "s|<scriptsdir>|${SCRIPTS_BASE_DIR}|g" /usr/local/opnsense/service/conf/actions.d/actions_backupopnsense.conf
+sed -i "" "s|<scriptsdir>|${SCRIPTS_BASE_DIR}|g" /usr/local/opnsense/service/conf/actions.d/actions_backupopnsense.conf
 
 # Install Glances auto-restart action
 echo
 echo "Installing and configuring Glances auto-restart OPNSense action..."
 cp ./actions_restartglances.conf /usr/local/opnsense/service/conf/actions.d
-sed -i "s|<scriptsdir>|${SCRIPTS_BASE_DIR}|g" /usr/local/opnsense/service/conf/actions.d/actions_restartglances.conf
+sed -i "" "s|<scriptsdir>|${SCRIPTS_BASE_DIR}|g" /usr/local/opnsense/service/conf/actions.d/actions_restartglances.conf
 
 # Restart configd to index new OPNSense actions
 echo
