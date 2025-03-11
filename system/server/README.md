@@ -16,6 +16,23 @@ Used to easily send a notification to the Home Assistant app on my phone.
 ### Use
 This script may be called manually at any time to send notifications to the devices which have been configured to receive notifications in HomeAssistant.
 
+**IMPORTANT NOTE**
+
+If you would like to run this on your router, make sure `HA_NOTIFY_WEBHOOK_ENDPOINT` is using the internal http://domain:port format instead of the external domain. Port 443 is used by the OPNSense web GUI, and by default, a HomeAssistant webhook endpoint will use port 443. NAT hairpinning does not work on ports that are being used by the OPNSense web GUI.
+
+For example, instead of:
+```
+https://homeassistant.example.com/api/webhook/<webhook_id>
+```
+use:
+```
+http://homeassistant.lan:8123/api/webhook/<webhook_id>
+```
+or:
+```
+http://192.168.24.3:8123/api/webhook/<webhook_id>
+```
+
 
 
 
