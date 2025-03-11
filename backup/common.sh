@@ -204,5 +204,9 @@ function finish() {
   unset MAIL_FILE
 
   # If failed, exit immediately
-  [[ ${STATUS} == "FAIL" ]] && exit 1
+  if [[ ${STATUS} == "FAIL" ]]; then
+    exit 1
+  else
+    exit 0
+  fi
 }
