@@ -18,7 +18,7 @@ elif command -v pkg &> /dev/null; then
   pkg install git autoconf automake libtool gettext texinfo pkgconf gnutls gmake
 
   # Install msmtp from source
-  if command -v msmtp &> /dev/null; then
+  if ! command -v msmtp &> /dev/null; then
     git clone https://git.marlam.de/git/msmtp.git
     cd msmtp
     autoreconf -if
@@ -29,7 +29,7 @@ elif command -v pkg &> /dev/null; then
   fi
 
   # Install mutt from source
-  if command -v mutt &> /dev/null; then
+  if ! command -v mutt &> /dev/null; then
     git clone https://gitlab.com/muttmua/mutt.git
     cd mutt
     ./prepare --prefix=/usr/local --enable-smtp --with-ssl
