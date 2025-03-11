@@ -11,11 +11,11 @@ Nextcloud-related helper scripts.
   - [Prerequisites](#Prerequisites)
   - [Use](#Use)
 - [Nextcloud ffmpeg Installation](#Nextcloud-ffmpeg-Installation)
-  - [Prerequisites](#Prerequisites)
-  - [Use](#Use)
+  - [Prerequisites](#Prerequisites-1)
+  - [Use](#Use-1)
 - [Set Proper Permissions + Scan Nextcloud Files](#Set-Proper-Permissions-+-Scan-Nextcloud-Files)
-  - [Prerequisites](#Prerequisites)
-  - [Use](#Use)
+  - [Prerequisites](#Prerequisites-2)
+  - [Use](#Use-2)
 
 
 

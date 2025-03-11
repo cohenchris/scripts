@@ -11,8 +11,8 @@ Custom services and scripts that are not specific to one OS.
   - [Prerequisites](#Prerequisites)
   - [Use](#Use)
 - [Mutt E-Mail Client](#Mutt-E-Mail-Client)
-  - [Prerequisites](#Prerequisites)
-  - [Use](#Use)
+  - [Prerequisites](#Prerequisites-1)
+  - [Use](#Use-1)
 - [Arch Linux Services](#Arch-Linux-Services)
 - [OPNSense Services](#OPNSense-Services)
 

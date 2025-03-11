@@ -12,11 +12,11 @@ Some may have CATASTROPHIC consequences if used incorrectly, so they should be r
   - [Prerequisites](#Prerequisites)
   - [Use](#Use)
 - [Sync Mirrored EFI Partitions](#Sync-Mirrored-EFI-Partitions)
-  - [Prerequisites](#Prerequisites)
-  - [Use](#Use)
+  - [Prerequisites](#Prerequisites-1)
+  - [Use](#Use-1)
 - [Replace/Resilver a Drive in ZFS Root Pool](#Replace/Resilver-a-Drive-in-ZFS-Root-Pool)
-  - [Prerequisites](#Prerequisites)
-  - [Use](#Use)
+  - [Prerequisites](#Prerequisites-2)
+  - [Use](#Use-2)
 - [System Services](#System-Services)
 
 

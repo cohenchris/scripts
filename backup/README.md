@@ -60,7 +60,7 @@ This is a single device on my network that stores backups for my entire network.
   - [Prerequisites](#Prerequisites-5)
   - [Use](#Use-6)
 - [OpenWRT Backup](#OpenWRT-Backup)
-  - [Prerequisites](#Prerequisites 6)
+  - [Prerequisites](#Prerequisites-6)
   - [Use](#Use-7)
 - [OPNSense + AdGuard Backup](#OPNSense-+-AdGuard-Backup)
   - [Prerequisites](#Prerequisites-7)

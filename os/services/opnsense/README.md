@@ -11,11 +11,11 @@ Custom services and scripts for a FreeBSD-based OPNSense distribution.
   - [Prerequisites](#Prerequisites)
   - [Use](#Use)
 - [OPNSense Action to Auto-Restart Glances](#OPNSense-Action-to-Auto-Restart-Glances)
-  - [Prerequisites](#Prerequisites)
-  - [Use](#Use)
+  - [Prerequisites](#Prerequisites-1)
+  - [Use](#Use-1)
 - [OPNSense Action to Backup OPNSense + AdGuard](#OPNSense-Action-to-Backup-OPNSense-+-AdGuard)
-  - [Prerequisites](#Prerequisites)
-  - [Use](#Use)
+  - [Prerequisites](#Prerequisites-2)
+  - [Use](#Use-2)
 
 
 
