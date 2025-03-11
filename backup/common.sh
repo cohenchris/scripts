@@ -189,7 +189,7 @@ function finish() {
     echo -e "Backup failed..."
   else
     [[ ${hanotify} != "nohanotify" ]] && ${SCRIPTS_DIR}/system/server/ha-notify.sh "${BACKUP_TYPE^} Backup" "SUCCESS - ${BACKUP_NAME} backup succeeded!"
-    echo -e "Backup succeeded!..."
+    echo -e "Backup succeeded!"
   fi
  
   local subject="${STATUS} - ${BACKUP_TYPE} backup ${DATE}"

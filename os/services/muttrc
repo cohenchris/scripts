@@ -3,3 +3,4 @@ set use_from=yes
 set realname=<realname>
 set from=<email_username>
 set envelope_from=yes
+set record=""
