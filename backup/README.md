@@ -39,11 +39,11 @@ This is a single device on my network that stores backups for my entire network.
 
   - [Prerequisites and Use](#Prerequisites-and-Use)
 - [Backblaze Remote Backup](#Backblaze-Remote-Backup)
-  - [Prerequisites](#Prerequisites)
+  - [Prerequisites](#Prerequisites-1)
   - [Use](#Use)
 - [Switch Backup](#Switch-Backup)
 - [Batocera Console Backup](#Batocera-Console-Backup)
-  - [Prerequisites](#Prerequisites)
+  - [Prerequisites](#Prerequisites-2)
   - [Use](#Use)
 - [Common Backup Functions](#Common-Backup-Functions)
   - [Use](#Use)
