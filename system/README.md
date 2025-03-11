@@ -6,7 +6,7 @@ These focus on automations which can be quite system-specific.
 Think of these as scripts that would require a solid amount of effort to port to another system.
 For example, one of the scripts in here nukes a Docker container stack, cleans things up, and restarts them all - obviously, not all systems will be running a Docker container stack, so this is not immediately portable across different systems.
 
-NOTE: You MUST run `cp sample.env .env` and fill out the required variables for each script you will be running.
+**NOTE: You MUST run `cp sample.env .env` and fill out the required variables for each script you will be running.**
 
 ---
 

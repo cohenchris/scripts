@@ -18,6 +18,8 @@ I've categorized my these into a few different categories:
    - This could have gone under #3, but I've written enough of these scripts that they deserve their own category.
 
 
+
+
 ## OS Configuration
 [`os/`](os/)
 
@@ -25,14 +27,18 @@ One-time use scripts intended to help manage various OS-level components, includ
 Some may have CATASTROPHIC consequences if used incorrectly, so they should be read and fully understood before use.
 
 
-## Generic
+
+
+## Generic Bin
 [`bin/`](bin/)
 
-Dependency-free system scripts which are added to the PATH and can be run from the command line.
+Dependency-free system scripts which are intended to be added to PATH and run from the command line.
 
 These focus on generic everyday automations.
 Think of these as scripts that can be easily moved from system to system with zero effort (assuming the correct packages are installed).
 For example, one of the scripts in here is a file extraction wrapper which uses different programs depending on the file extension - this can be dropped on any system that supports bash.
+
+
 
 
 ## System Automation
@@ -45,8 +51,10 @@ Think of these as scripts that would require a solid amount of effort to port to
 For example, one of the scripts in here nukes a Docker container stack, cleans things up, and restarts them all - obviously, not all systems will be running a Docker container stack, so this is not immediately portable across different systems.
 
 
+
+
 ## Backups
 [`backup/`](backup/)
 
-Scripts to seamlessly backup different parts of the system.
+Scripts which backup various devices and services.
 They are heavily driven by the .env file, but all generally assume a backup system which includes 1 backup on the local machine and 1 backup on a remote backup server (whether this be another computer on your network or a remote Backblaze storage bucket).

@@ -1,14 +1,14 @@
 # OS Management
 
-These are one-time use scripts intended to help manage various OS-level components, including a fresh Arch install, ZFS pool management, and services for various systems.
-Some of these may have CATASTROPHIC effects on your system, so please make sure you fully understand a script before running.
+One-time use scripts intended to help manage various OS-level components, including a fresh Arch install, ZFS pool management, and services for various systems.
+Some may have CATASTROPHIC consequences if used incorrectly, so they should be read and fully understood before use.
 
 ---
 
 ## Install Arch on ZFS
 [`arch-install.sh`](arch-install.sh)
 
-This is an all-in-one script to install Arch on 2 drives as a a mirrored ZFS root pool.
+This is an all-in-one script to install Arch on two drives as a mirrored ZFS root pool.
 
 It will:
 - Partition both drives for ZFS root pool
@@ -21,7 +21,6 @@ It will:
 - Sync EFI partition on both ZFS mirrored root drives to allow booting from either drive
 
 ### Prerequisites
-This script assumes that:
 - You have 2 drives connected which will be used as boot drives
 - The 2 drives are the same size
 - You have a live Arch Linux USB with ZFS installed
@@ -48,7 +47,6 @@ This is designed to be set up in a cron job or systemd hook.
 `boot-mirror.sh mirror <root_pool_name>` performs a mirroring operation on the two boot drives.
 
 ### Prerequisites
-This script assumes that:
 - You have 2 identical boot drives which were configured with 2 partitions - one EFI partition and one ZFS root partition
 - One of the EFI boot partitions is automatically mounted when the system is booted.
 
@@ -69,7 +67,6 @@ In case of a drive failure, on your mirrored ZFS root pool, this script assists 
 It will resilver the ZFS partition, clone the EFI boot partition to the new drive, AND update the systemd.mount service which auto-mounts the EFI boot partition.
 
 ### Prerequisites
-This script assumes that:
 - You have a mirrored ZFS root pool
 - You have removed the defective ZFS boot drive from your system
 - You are booted from the remaining ZFS boot drive

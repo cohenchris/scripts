@@ -10,7 +10,6 @@ Custom services and scripts for a FreeBSD-based OPNSense distribution.
 This is a FreeBSD service which runs the Glances system monitor in webserver mode.
 
 ### Prerequisites
-This script assumes that:
 - Port 61208 (glances default) is unused by other system services
 
 ### Use
@@ -45,8 +44,7 @@ For more details on the exact functionality of said script, please check out [`r
 After this action is installed, you may schedule it from the OPNSense web UI (System --> Settings --> Cron).
 
 ### Prerequisites
-This script assumes that:
-- The prerequisites for the above `glances` script have been met.
+- Prerequisites for the above `glances` script have been met.
 
 ### Use
 Two options are available to setup this OPNSense action:
@@ -75,7 +73,6 @@ For more details on the exact functionality of said script, please check out [`o
 After this action is installed, you may schedule it from the OPNSense web UI (System --> Settings --> Cron).
 
 ### Prerequisites
-This script assumes that:
 - You have populated the [`.env`](../../../backup/sample.env) file for [`opnsense.sh`](../../../backup/opnsense..sh)
 
 ### Use
