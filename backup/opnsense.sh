@@ -21,4 +21,4 @@ mkdir -p ${OPNSENSE_LOCAL_BACKUP_DIR}/adguard
 cp /usr/local/AdGuardHome/AdGuardHome.yaml ${OPNSENSE_LOCAL_BACKUP_DIR}/adguard/${BACKUP_NAME}
 scp ${OPNSENSE_LOCAL_BACKUP_DIR}/adguard/${BACKUP_NAME} ${REMOTE_BACKUP_SERVER}:${OPNSENSE_REMOTE_BACKUP_DIR}/adguard
 
-finish
+finish nohanotify
