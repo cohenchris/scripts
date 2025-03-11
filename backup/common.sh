@@ -185,10 +185,10 @@ function finish() {
 
   # Log and notify backup status
   if [[ ${STATUS} == "FAIL" ]]; then
-    bash ${SCRIPTS_DIR}/system/server/ha-notify.sh "${BACKUP_TYPE} backup" "ERROR - ${BACKUP_TYPE} backup failed on ${DATE}..."
+    bash ${SCRIPTS_DIR}/system/server/ha-notify.sh "${BACKUP_TYPE} backup" "ERROR - ${BACKUP_TYPE} backup failed - ${DATE}..."
     echo -e "Backup failed..."
   else
-    bash ${SCRIPTS_DIR}/system/server/ha-notify.sh "${BACKUP_TYPE} backup" "SUCCESS - ${BACKUP_TYPE} backup succeeded on ${DATE}!"
+    bash ${SCRIPTS_DIR}/system/server/ha-notify.sh "${BACKUP_TYPE} backup" "SUCCESS - ${BACKUP_TYPE} backup succeeded - ${DATE}!"
     echo -e "Backup succeeded!"
   fi
  
