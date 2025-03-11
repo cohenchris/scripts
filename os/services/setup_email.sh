@@ -118,7 +118,7 @@ fi
 
 
 # Set up mutt
-MUTTRC_PATH="/root/.muttrc"
+MUTTRC_PATH="/${USER}/.muttrc"
 mkdir -p $(dirname ${MUTTRC_PATH}) 2>/dev/null
 cp ./muttrc "${MUTTRC_PATH}"
 
