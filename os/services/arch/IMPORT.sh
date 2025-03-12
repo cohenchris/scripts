@@ -5,23 +5,37 @@ if [[ "$(id -u)" -ne 0 ]]; then
     exit 1
 fi
 
+read -p "Enter your username: " USERNAME
+
+if ! id "${USERNAME}" &>/dev/null; then
+  echo "ERROR: User ${USERNAME} does not exist"
+  exit 1
+fi
+
+read -p "Operate as user ${USERNAME}? (y/N) " yn
+
+case $yn in
+  [Yy]* ) ;;
+  *     ) exit;;
+esac
+
 SCRIPTS_BASE_DIR="$(dirname "$(realpath "$0")")/../../../"
 
 # Install glances dependencies and service
 echo "Installing Glance webserver service..."
-paru -Sy --noconfirm python-fastapi uvicorn python-jinja-time
+sudo -u ${USERNAME} paru -Sy --noconfirm python-fastapi uvicorn python-jinja-time
 cp glances.service /etc/systemd/system
 
 # Install nvidia GPU power savings dependencies and service
 echo
 echo "Installing Nvidia GPU power savings service..."
-paru -Sy --noconfirm nvidia-lts nvidia-container-toolkit python-nvidia-ml-py
+sudo -u ${USERNAME} paru -Sy --noconfirm nvidia-lts nvidia-container-toolkit python-nvidia-ml-py
 cp nvidia-gpu-power-savings.service /etc/systemd/system
 
 # Install network UPS tools and service
 echo
 echo "Installing and configuring Network UPS tools..."
-paru -Sy --noconfirm nut
+sudo -u ${USERNAME} paru -Sy --noconfirm nut
 cp ./nut/* /etc/nut
 chown -R root:nut /etc/nut/*
 chmod 640 /etc/nut/*

@@ -88,18 +88,18 @@ fi
 echo
 echo "Mounting ${USB1_DEV_NAME} to ${USB1_MNT_PATH}..."
 
-mount ${USB1_DEV_NAME} ${USB1_MNT_PATH}
+MOUNT_STATUS=$(mount ${USB1_DEV_NAME} ${USB1_MNT_PATH})
 
-if [[ ${?} -ne 0 ]]; then
-  echo "ERROR: Mounting ${USB1_DEV_NAME} to ${USB1_MNT_PATH} failed with error code ${?}..."
+if [[ ${MOUNT_STATUS} -ne 0 ]]; then
+  echo "ERROR: Mounting ${USB1_DEV_NAME} to ${USB1_MNT_PATH} failed with error code ${MOUNT_STATUS}..."
   exit
 fi
 
 echo
 echo "Mounting ${USB2_DEV_NAME} to ${USB2_MNT_PATH}..."
-mount ${USB2_DEV_NAME} ${USB2_MNT_PATH}
-if [[ ${?} -ne 0 ]]; then
-  echo "ERROR: Mounting ${USB2_DEV_NAME} to ${USB2_MNT_PATH} failed with error code ${?}..."
+MOUNT_STATUS=$(mount ${USB2_DEV_NAME} ${USB2_MNT_PATH})
+if [[ ${MOUNT_STATUS} -ne 0 ]]; then
+  echo "ERROR: Mounting ${USB2_DEV_NAME} to ${USB2_MNT_PATH} failed with error code ${MOUNT_STATUS}..."
   exit
 fi
 
