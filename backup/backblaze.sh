@@ -1,9 +1,10 @@
 #!/bin/bash
 # Backup everything to Backblaze
 
-# backblaze_sync(dir_to_sync, backblaze_bucket)
+# backblaze_sync(dir_to_sync, backblaze_bucket, exclude_regex)
 #   dir_to_sync      - backup directory to sync to backblaze
 #   backblaze_bucket - backblaze destination bucket
+#   exclude_regex    - regex for files/directories to exclude in the backblaze backup
 #
 # Syncs a given directory to a given bucket on Backblaze
 function backblaze_sync() {
@@ -35,7 +36,6 @@ function backblaze_sync() {
 
   cd ${WORKING_DIR}
 }
-
 
 
 # Set up environment

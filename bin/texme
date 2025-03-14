@@ -1,15 +1,21 @@
 #!/bin/bash
 
+# mytex_compile(filename_to_compile)
+#   filename_to_compile - name/prefix of file to compile with LaTeX
+#
+# Compiles a LaTeX file into PDF with Biber, XeLaTeX, and PDFLaTeX
 function mytex_compile()
 {
-  if [[ $1 == *".tex" ]]
+  filename_to_compile="$1"
+
+  if [[ ${filename_to_compile} == *".tex" ]]
   then
-    tex_filename=$1
-  elif [[ $1 == *"." ]]
+    tex_filename=${filename_to_compile}
+  elif [[ ${filename_to_compile} == *"." ]]
   then
-    tex_filename=$1"tex"
+    tex_filename=${filename_to_compile}"tex"
   else
-    tex_filename=$1".tex"
+    tex_filename=${filename_to_compile}".tex"
   fi
 
   biber_filename=${tex_filename%.*}
@@ -31,8 +37,14 @@ function mytex_compile()
 }
 
 
+# mytex_create(filename_out)
+#   filename_out - name/prefix of file to compile with LaTeX
+#
+# Spits out a file which contains a very simple LaTeX document template
 function mytex_create()
 {
+  filename_out="$1"
+
   echo "\documentclass[12pt]{article}
 
   \usepackage[backend=biber]{biblatex}
@@ -67,12 +79,18 @@ function mytex_create()
 
   \newpage
   \printbibliography
-  \end{document}" >> $1
+  \end{document}" >> ${filename_out}
 }
 
 
+# mytex_edit(filename_to_edit)
+#   filename_to_edit - name of LaTeX file to edit
+#
+# Compiles LaTeX file into a PDF, opens the PDF, and opens the LaTeX file in vim
 function mytex_edit()
 {
+  filename_to_edit="$1"
+
   #files=$(ls *.tex | wc -l)
   #if [ $files -ne 1 ]; then
   #  echo "ERROR: There needs to be only 1 valid LaTeX file to edit..."
@@ -84,11 +102,9 @@ function mytex_edit()
     exit
   fi
 
-  FILENAME=$1
-
   pdf=$(ls | grep *.pdf | wc -l)
   if [ $pdf -ne 1 ]; then
-    mytex_compile $FILENAME >> /dev/null
+    mytex_compile ${filename_to_edit} >> /dev/null
     exit
   fi
 
@@ -96,13 +112,15 @@ function mytex_edit()
   nvim $FILENAME
 }
 
+mytex_command="$1"
+mytex_filename="$2"
 
-if [ "$1" == "compile" ]; then
-  mytex_compile $2
-elif [ "$1" == "create" ]; then
-  mytex_create $2
-elif [ "$1" == "edit" ]; then
-  mytex_edit $2
+if [ "${mytex_command}" == "compile" ]; then
+  mytex_compile ${mytex_filename}
+elif [ "${mytex_command}" == "create" ]; then
+  mytex_create ${mytex_filename}
+elif [ "${mytex_command}" == "edit" ]; then
+  mytex_edit ${mytex_filename}
 else
   echo "Invalid argument - choose one of [compile, create, edit]"
 fi

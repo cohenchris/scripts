@@ -18,7 +18,7 @@ export PATH="/usr/sbin:${PATH}"
 
 # test_drives()
 #
-# Run full smartctl and ZFS tests on the defined drives
+# Run full S.M.A.R.T. test on SMART_DRIVES and ZFS scrub/trim on ZFS_POOLS
 function test_drives() {
   # Smartctl long test
   for drive in ${SMART_DRIVES[@]}; do
@@ -35,7 +35,7 @@ function test_drives() {
 
 # report_health()
 #
-# Send smartctl and ZFS reports via email
+# Email a S.M.A.R.T. report for SMART_DRIVES and ZFS pool report for ZFS_POOLS
 function report_health()
 {
   rm -f ${BODY}
@@ -50,7 +50,6 @@ function report_health()
     zfs_summarize
   fi
 
-
   # Send the summary email
   SUBJECT="${STATUS} - Drive Health Report ${DATE}"
   send_email "${EMAIL}" "${SUBJECT}" "${BODY}"
@@ -60,7 +59,7 @@ function report_health()
 
 # smart_summarize()
 #
-# Print out full S.M.A.R.T. summary
+# Print out full S.M.A.R.T. summary for the externally SMART_DRIVES
 function smart_summarize()
 {
   echo >> ${BODY}
@@ -96,7 +95,7 @@ function smart_summarize()
 
 # zfs_summarize()
 #
-# Print out full ZFS pool summary
+# Print out full ZFS pool summary for the externally defined ZFS_POOLS
 function zfs_summarize()
 {
   echo >> ${BODY}

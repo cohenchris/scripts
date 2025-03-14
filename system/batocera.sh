@@ -5,6 +5,11 @@ source ${WORKING_DIR}/.env
 
 require var BATOCERA_HOST
 
+
+# batocera_mount(mount_dir)
+#   mount_dir - directory at which we should mount the Batocera userdata directory
+#
+# Mount Batocera userdata directory to a local directory
 function batocera_mount()
 {
   local mount_dir=$1
@@ -34,6 +39,11 @@ function batocera_mount()
   echo "Batocera successfully mounted at \"${mount_dir}\"!"
 }
 
+
+# batocera_unmount(mount_dir)
+#   mount_dir - local directory where Batocera userdata directory is mounted
+#
+# Unmount Batocera userdata directory from local directory
 function batocera_unmount()
 {
   local mount_dir=$1

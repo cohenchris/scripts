@@ -3,31 +3,39 @@
 MAIL_DIR="${XDG_DATA_HOME}/mail"
 [ ! -d "$MAIL_DIR" ] && mkdir -p "$MAIL_DIR"
 
+# notify(urgency, title, body)
+#   urgency - whether or not the message is urgent
+#   title   - notification title
+#   body    - notification body
+#
+# Notifies user with given urgency. If there is a wayland graphical environment,
+# the notification will be sent to the notification daemon. If not, the notification
+# will be written to stdout.
 notify()
 {
   urgency="$1"
-  message1="$2"
-  message2="$3"
+  title="$2"
+  body="$3"
 
   if [ -z "${WAYLAND_DISPLAY}" ]; then
     # There is a display - use notify-send
     if [ "${urgency}" = "urgent" ]; then
       # Notify with critical urgency
-      notify-send --urgency critical "${message1}" "${message2}"
+      notify-send --urgency critical "${title}" "${body}"
     else
       # Notify normally
-      notify-send "${message1}" "${message2}"
+      notify-send "${title}" "${body}"
     fi
   else
-    # There is no display - print on terminal
+    # There is no display - print to stdout
     if [ "${urgency}" = "urgent" ]; then
       # Print in red
-      echo -e "\e[31m${message1}\e[0m"
-      echo -e "\e[31m${message2}\e[0m"
+      echo -e "\e[31m${title}\e[0m"
+      echo -e "\e[31m${body}\e[0m"
     else
       # Print normally
-      echo "${message1}"
-      echo "${message2}"
+      echo "${title}"
+      echo "${body}"
     fi
   fi
 }

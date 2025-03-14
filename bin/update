@@ -2,10 +2,6 @@
 
 yes | paru -Syu
 
-if [ $? -ne 0 ]; then
-  exit
-fi
-
 yes | paru -Scc
 
 cd /home/${USER}/server

@@ -1,24 +1,28 @@
 #!/bin/bash
-echo "Starting Nextcloud AI Worker $1"
 
+# start_worker(worker_name)
+#   worker_name - name of the Nextcloud AI systemd worker to start
+#
 # Function to attempt starting the worker
 start_worker() {
-    echo "Attempting to start Nextcloud AI Worker $1..."
-    
-    # Run the worker inside the container (60 seconds for task execution)
-    docker exec --user www-data nextcloud php occ background-job:worker -t 60 'OC\TaskProcessing\SynchronousBackgroundJob'
-    
-    # Capture the exit status of the docker exec command
-    exit_code=$?
+  local worker_name="$1"
 
-    # Check if the worker ran successfully
-    if [ $exit_code -eq 0 ]; then
-        echo "Worker completed successfully."
-        return 0  # Success
-    else
-        echo "Worker failed to start or complete with exit code $exit_code."
-        return 1  # Failure
-    fi
+  echo "Attempting to start Nextcloud AI Worker ${worker_name}..."
+  
+  # Run the worker inside the container (60 seconds for task execution)
+  docker exec --user www-data nextcloud php occ background-job:worker -t 60 'OC\TaskProcessing\SynchronousBackgroundJob'
+  
+  # Capture the exit status of the docker exec command
+  exit_code=$?
+
+  # Check if the worker ran successfully
+  if [ ${exit_code} -eq 0 ]; then
+      echo "Worker completed successfully."
+      return 0  # Success
+  else
+      echo "Worker failed to start or complete with exit code ${exit_code}."
+      return 1  # Failure
+  fi
 }
 
 # Loop to start the worker and retry if it fails

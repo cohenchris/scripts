@@ -81,11 +81,11 @@ function mail_log() {
 
 
 
-# send_email(email, subject, body, logfile)
-#   email   - destination email address
-#   subject - subject of outgoing email address
-#   body    - body of outgoing email address
-#   logfile - path to log file which will be sent as an attachment (optional)
+# send_email(email, subject, body, logfile?)
+#   email    - destination email address
+#   subject  - subject of outgoing email address
+#   body     - body of outgoing email address
+#   logfile? - path to log file which will be sent as an attachment (optional)
 #
 # Sends an email by polling until success
 function send_email() {

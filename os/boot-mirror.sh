@@ -8,7 +8,9 @@ fi
 
 
 
-
+# boot_mirror_setup()
+#
+# Set up automatic EFI boot partition mirroring for ZFS root pool.
 function boot_mirror_setup()
 {
   # Ask for pool name to work on
@@ -56,11 +58,14 @@ EOF
 }
 
 
-
-
+# boot_mirror(zfs_root_pool)
+#   zfs_root_pool - name of the ZFS root pool whose EFI boot partitions we should mirror.
+#
+# Given a ZFS root pool name, determine which drive's EFI boot partition is mounted at /boot, then mirror that partition to the other root pool device's partition.
 function boot_mirror()
 {
-  ZFS_ROOT_POOL=$1
+  ZFS_ROOT_POOL="$1"
+
   if [ -z "${ZFS_ROOT_POOL}" ]; then
     echo "ERROR: must provide a ZFS root pool name."
     exit
@@ -130,8 +135,6 @@ function boot_mirror()
   echo
   echo "Done!"
 }
-
-
 
 
 if [ "$1" == "mirror" ]; then

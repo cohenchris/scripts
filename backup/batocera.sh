@@ -26,9 +26,8 @@ ssh ${BATOCERA_HOST} "ls"
 batocera_host_up=$?
 mail_log check "batocera host up check" ${batocera_host_up}
 
-# TODO: need to install a drive specifically for backups in this machine
-
 if [[ "${batocera_host_up}" -eq 0 ]]; then
+  # TODO: need to install a drive specifically for backups in this machine
   # Make a backup of batocera on local and remote backup directories
  
   #mail_log plain "Batocera Local Backup"

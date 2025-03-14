@@ -8,7 +8,11 @@
 #   which will cause the music video to show up in Plex for that track
 
 
-# Log with pretty colors
+# LOG()
+#   log_level - importance of log message
+#   message   - message to log
+#
+# Log a message with pretty colors depending on log_level
 function LOG()
 {
   log_level="$1"
@@ -47,7 +51,8 @@ function LOG()
 }
 
 
-# Clean music video titles
+# clean_music_video_title(name_to_clean)
+#   name_to_clean - music video title to clean up
 #
 # Youtube music video titles are obviously not standardized, so this just does its best
 # I attempt to handle two different title formats:
@@ -103,7 +108,7 @@ function clean_music_video_title()
 }
 
 
-# Clean music track file name
+# clean_track_file(track_file_to_clean)
 #
 # Plex music files should be standardized in the following formats:
 #   "Artist Name - Album Name - TrackNum - Title.extension"
@@ -138,7 +143,8 @@ function clean_track_file()
 }
 
 
-# Extract music file track names
+# extract_track_name(track_path)
+#   track_path - track string from which to extract a title string
 #
 # Plex music files should be standardized in the following formats:
 #   "Artist Name - Album Name - TrackNum - Title.extension"
@@ -164,7 +170,11 @@ function extract_track_name()
 }
 
 
-# In dir_to_search, attempt to find a file whose name matches track_to_find
+# find_match(dir_to_search, track_to_find)
+#   dir_to_search - music directory to search for a file whose name matches track_to_find
+#   track_to_find - title string of video for which we would like to find a track file match 
+#
+# This function assists in matching a the downloaded music video to a track file on this computer
 function find_match()
 {
   dir_to_search="$1"

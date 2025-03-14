@@ -5,9 +5,14 @@ source ${WORKING_DIR}/.env
 
 require var BACKBLAZE_BUCKET
 
+# b2_mount(mount_dir)
+#   mount_dir - directory at which we should mount the Backblaze bucket
+#
+# Mount remote Backblaze bucket to a local directory
 function b2_mount()
 {
-  local mount_dir=$1
+  local mount_dir="$1"
+
   require var mount_dir
 
   # Ensure that there is a proper config for "backblaze" with rclone
@@ -22,7 +27,7 @@ function b2_mount()
       fi
   done
 
-  if [ $found -eq 0 ]; then
+  if [ ${found} -eq 0 ]; then
     echo "ERROR: No remote named \"backblaze\". Please create one using rclone config."
     exit 1
   fi
@@ -53,9 +58,13 @@ function b2_mount()
 }
 
 
+# b2_unmount(mount_dir)
+#   mount_dir - local directory where Backblaze bucket is mounted
+#
+# Unmount Backblaze bucket from local directory
 function b2_unmount()
 {
-  local mount_dir=$1
+  local mount_dir="$1"
   require var mount_dir
 
   if [ ! -d "${mount_dir}" ]; then

@@ -6,13 +6,17 @@
 
 set -e
 
-# Cleanup ueberzug FIFO + reset the environment
+# cleanup()
+#
+# Clean up ueberzug FIFO + reset the environment
 cleanup() {
   exec 3>&-
 	rm "${FIFO_UEBERZUG}"
 }
 
 
+# lfcd()
+#
 # Wrapper to update the working directory after exiting lf
 lfcd () {
     # `command` is needed in case `lfcd` is aliased to `lf`

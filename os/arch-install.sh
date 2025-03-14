@@ -5,7 +5,10 @@
 # 4. YADM dotfiles restore + bootstrap
 
 
+# pre_chroot_setup()
 #
+# Arch Linux setup which is executed in a live USB.
+# Responsible for partitioning ZFS root pool devices, creating mirrored ZFS root pool, system bootstrapping, and more. 
 function pre_chroot_setup()
 {
   ##############################
@@ -184,7 +187,10 @@ function pre_chroot_setup()
 }
 
 
+# post_chroot_setup()
 #
+# Arch Linux setup which is executed after chrooting into a fresh Arch Linux install.
+# Responsible for root user/password, personal user/password, hostname, permissions, system time, networking, basic packages, bluetooth, crontab, AUR helper, automatic drive mounting, and more.
 function post_chroot_setup() {
   ##############################################
   # USERS, PERMISSIONS, LOCAL MACHINE SETTINGS #
