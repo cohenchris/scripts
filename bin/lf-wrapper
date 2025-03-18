@@ -4,7 +4,9 @@
 # - Sets up environment for ueberzug image previewing.
 # - On exit, cd to the last active directory.
 
+
 set -e
+
 
 # cleanup()
 #

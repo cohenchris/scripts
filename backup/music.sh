@@ -16,26 +16,32 @@ require var MUSICVIDEOS_LOCAL_BACKUP_DIR
 require var MUSICVIDEOS_REMOTE_BACKUP_DIR
 
 # Stop Lidarr to prevent files changing while backing up
+mail_log plain "Stopping Lidarr to prevent conflicts with music files..."
 docker stop lidarr
-mail_log check "lidarr stop" $?
+mail_log check "Lidarr stop" $?
 
 # Create a borg backup on the local drive
-mail_log plain "Music Local Backup"
+mail_log plain "Backing up music data locally..."
 borg_backup ${MUSIC_DIR} ${MUSIC_LOCAL_BACKUP_DIR}
+mail_log check "Music local backup" $?
 
 # Create a borg backup on the remote backup server
-mail_log plain "Music Remote Backup"
+mail_log plain "Backing up music data on remote backup server..."
 borg_backup ${MUSIC_DIR} ${REMOTE_BACKUP_SERVER}:${MUSIC_REMOTE_BACKUP_DIR}
+mail_log check "Music remote backup" $?
 
 # Resume Lidarr
+mail_log plain "Resuming Lidarr..."
 docker start lidarr
-mail_log check "lidarr start" $?
+mail_log check "Lidarr start" $?
 
 # Make a backup of music videos on local and remote backup directories
-mail_log plain "Music Videos Backup"
+mail_log plain "Backing up music video data locally..."
 rsync -r --delete --update --progress ${MUSICVIDEOS_DIR}/ ${MUSICVIDEOS_LOCAL_BACKUP_DIR}
-mail_log check "music videos local backup" $?
+mail_log check "Music video local backup" $?
+
+mail_log check "Backing up music video data on remote backup server..."
 rsync -r --delete --update --progress ${MUSICVIDEOS_DIR}/ ${REMOTE_BACKUP_SERVER}:${MUSICVIDEOS_REMOTE_BACKUP_DIR}
-mail_log check "music videos remote backup" $?
+mail_log check "Music video remote backup" $?
 
 finish

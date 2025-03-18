@@ -22,24 +22,25 @@ require var BATOCERA_REMOTE_BACKUP_DIR
 wakeonlan ${BATOCERA_MAC}
 
 # Check that batocera is up (this command will wait long enough for the device to boot)
+mail_log plain "Checking if Batocera host is up..."
 ssh ${BATOCERA_HOST} "ls"
-batocera_host_up=$?
-mail_log check "batocera host up check" ${batocera_host_up}
+mail_log check "Batocera host up check" $?
 
 if [[ "${batocera_host_up}" -eq 0 ]]; then
   # TODO: need to install a drive specifically for backups in this machine
   # Make a backup of batocera on local and remote backup directories
  
-  #mail_log plain "Batocera Local Backup"
+  #mail_log plain "Backup up Batocera locally..."
   #rsync -r --delete --update --progress ${BATOCERA_HOST}:${BATOCERA_DIR}/ ${BATOCERA_HOST}:${BATOCERA_LOCAL_BACKUP_DIR}
   #
-  #mail_log check "batocera local backup" $?
+  #mail_log check "Batocera local backup" $?
 
-  mail_log plain "Batocera Remote Backup"
+  mail_log plain "Backing up Batocera to remote backup server..."
   rsync -r --delete --update --progress ${BATOCERA_HOST}:${BATOCERA_DIR}/ ${BATOCERA_REMOTE_BACKUP_DIR}
-  mail_log check "batocera remote backup" $?
+  mail_log check "Batocera remote backup" $?
 
   # Power console off
+  mail_log plain "Powering off Batocera..."
   ssh ${BATOCERA_HOST} "poweroff"
   mail_log check "batocera host shutdown" $?
 fi

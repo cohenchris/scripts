@@ -70,6 +70,7 @@ function mail_log() {
       # Failure
       echo -e "[✘]    ${message}" >> ${MAIL_FILE}
       STATUS=FAIL
+      finish
     else
       # Success
       echo -e "[✔]    ${message}" >> ${MAIL_FILE}
@@ -164,7 +165,7 @@ function borg_backup() {
     borg create --log-json --progress --stats ::${BACKUP_NAME} ${dir_to_backup}
   fi
 
-  mail_log check "borg backup" $?
+  mail_log check "Borg backup" $?
 
   # Prune archives
   # Archives to keep:
@@ -173,7 +174,7 @@ function borg_backup() {
   #   --keep-monthly 6    ->     one from each of the 6 previous months
   borg prune --log-json --keep-daily 7 --keep-weekly 4 --keep-monthly 6
 
-  mail_log check "borg prune" $?
+  mail_log check "Borg prune" $?
 }
 
 

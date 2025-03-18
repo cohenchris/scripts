@@ -18,31 +18,42 @@ require var PLEX_URL
 require var PLEX_TOKEN
 
 # Stop all Plex playback sessions with an informational message
+mail_log plain "Stopping Plex to prevent conflicts with server files..."
 ${SCRIPTS_DIR}/system/server/plex-server-maintenance-broadcast.py ${PLEX_URL} ${PLEX_TOKEN}
+mail_log check "Stop Plex" $?
 sleep 30
 
 # Shutdown server
+mail_log plain "Stopping all Docker containers..."
 cd ${SERVER_DIR}
 docker-compose down
-mail_log check "docker-compose down" $?
+mail_log check "Docker-compose down" $?
 # Export crontab
+mail_log "Exporting crontab for ${SERVER_USER}..."
 crontab -l -u ${SERVER_USER} > crontab.txt
+mail_log check "${SERVER_USER} crontab export" $?
+
+mail_log "Exporting crontab for root user..."
 crontab -l > sudo_crontab.txt
+mail_log check "root crontab export" $?
 cd ${WORKING_DIR}
 
 # Create a borg backup on the local drive
-mail_log plain "Local Backup"
+mail_log plain "Backing up server data locally..."
 borg_backup ${SERVER_DIR} ${SERVER_LOCAL_BACKUP_DIR}
+mail_log check "Server local backup" $?
 
 # Create a borg backup on the remote backup server
-mail_log plain "Remote Backup"
+mail_log plain "Backing up server data to remote backup server..."
 borg_backup ${SERVER_DIR} ${REMOTE_BACKUP_SERVER}:${SERVER_REMOTE_BACKUP_DIR}
+mail_log check "Server remote backup" $?
 
 # Start services back up
+mail_log plain "Restarting all Docker containers..."
 cd ${SERVER_DIR}
 rm crontab.txt sudo_crontab.txt
 docker-compose up -d
-mail_log check "docker-compose up" $?
+mail_log check "Docker-compose up" $?
 cd ${WORKING_DIR}
 
 finish

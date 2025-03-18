@@ -37,7 +37,7 @@ It also assumes that the user has a docker-compose stack located at `/home/${USE
 
 
 ## Wifi Network Selector
-[`wifi`](wifi)
+[`wifi-selector`](wifi-selector)
 
 Fuzzel-based wifi network selector.
 Utilizes `nmcli` to scan for available networks and presents them in a friendly list.
