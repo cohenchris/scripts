@@ -29,11 +29,11 @@ cd ${SERVER_DIR}
 docker-compose down
 mail_log check "Docker-compose down" $?
 # Export crontab
-mail_log "Exporting crontab for ${SERVER_USER}..."
+mail_log plain "Exporting crontab for ${SERVER_USER}..."
 crontab -l -u ${SERVER_USER} > crontab.txt
 mail_log check "${SERVER_USER} crontab export" $?
 
-mail_log "Exporting crontab for root user..."
+mail_log plain "Exporting crontab for root user..."
 crontab -l > sudo_crontab.txt
 mail_log check "root crontab export" $?
 cd ${WORKING_DIR}
@@ -55,5 +55,11 @@ rm crontab.txt sudo_crontab.txt
 docker-compose up -d
 mail_log check "Docker-compose up" $?
 cd ${WORKING_DIR}
+
+# Due to some Python permission issues, the container will take 15+ mins to
+# start back up. The HomeAssistant notification script has a hard dependency
+# on this, so we wait.
+# https://github.com/linuxserver/docker-homeassistant/issues/116
+sleep 15m
 
 finish

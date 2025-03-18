@@ -253,9 +253,9 @@ function post_chroot_setup() {
     dosfstools \
     linux-lts-headers \
     git \
+    pipewire-pulse \
     bluez \
     bluez-utils \
-    pulseaudio-bluetooth \
     xdg-utils \
     xdg-user-dirs \
     rsync \
