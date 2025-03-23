@@ -1,20 +1,20 @@
 # Scripts
 
-One-stop shop for all of the scripts that I use for my home network.
+One-stop shop for various homelab scripts.
 
-I've categorized my these into a few different categories:
+I've categorized these into a few different categories:
 
 1. Scripts that are run once
      - Operations that you need to perform only once on a fresh install.
      - Think OS install/configuration, systemd services, etc.
-2. Ultra-portable scripts that are run many times
+2. Ultra-portable scripts that are run arbitrarily
     - Operations that any computer can run regardless of how it is being used
     - Think file management, package updates, display configuration, etc
     - No configuration required from the user - could be placed directly in `/usr/bin` on any system
-3. Scripts that are run many times, but must be configured to your exact use case
+3. Scripts that are run arbitrarily, but must be configured to your specific environment
     - Operations that may be semi-generic, but require the user to specify exactly how they are using their system
     - Think service management, automations to mount/unmount very specific drives/devices, etc.
-4. Scripts that are specialized for backing up different facets of my devices
+4. Scripts that are specialized for backing up various facets of my network
    - This could have gone under #3, but I've written enough of these scripts that they deserve their own category.
 
 
