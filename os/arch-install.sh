@@ -145,7 +145,7 @@ function pre_chroot_setup()
   mount "${ZFS_ROOT1_P1_DEV_NAME}" /mnt/boot
 
   # Install base tools + linux kernel + vim
-  pacstrap /mnt base base-devel linux-lts linux-firmware intel-ucode vim
+  pacstrap /mnt base base-devel linux-lts linux-firmware intel-ucode vim vi
 
   ##################################
   # ZFS DATASET AUTOMATIC MOUNTING #
