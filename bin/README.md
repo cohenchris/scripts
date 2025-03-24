@@ -20,6 +20,7 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 - [LaTeX Shortcuts](#LaTeX-Shortcuts)
 - [Music Video Downloader](#Music-Video-Downloader)
 - [Set Random Wallpaper](#Set-Random-Wallpaper)
+- [Blue Light Filter](#Blue-Light-Filter)
 
 
 
@@ -138,3 +139,17 @@ This script is pretty hardcoded to my personal environment and directory structu
 
 Selects and random image from the `${XDG_DATA_HOME}/wallpapers` directory and sets it as the user's wallpaper.
 Please note that this script requires the use of a Wayland display manager.
+
+
+
+
+## Blue Light Filter
+[`bluelightfilter [up,down,kill]`](bluelightfilter)
+
+This script helps manage blue light filtering on Wayland using `wl-gammarelay-rs`.
+
+`up` increases the orange intensity
+
+`down` decreases the orange intensity
+
+`kill` resets the filter to default

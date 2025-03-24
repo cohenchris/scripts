@@ -1,0 +1,12 @@
+#!/bin/bash
+
+
+if [ "$1" == "up" ]; then
+  busctl --user -- call rs.wl-gammarelay / rs.wl.gammarelay UpdateTemperature n -500
+elif [ "$1" == "down" ]; then
+  busctl --user -- call rs.wl-gammarelay / rs.wl.gammarelay UpdateTemperature n +500
+elif [ "$1" == "kill" ]; then
+  busctl --user set-property rs.wl-gammarelay / rs.wl.gammarelay Temperature q 6500
+else
+  echo "Usage: bluelightfilter [up,down,kill]"
+fi
