@@ -50,7 +50,7 @@ This is a single device on my network that stores backups for my entire network.
 - [Critical Data Backup](#Critical-Data-Backup)
   - [Prerequisites](#Prerequisites-2)
   - [Use](#Use-3)
-- ["Cloud" Files Backup](#"Cloud"-Files-Backup)
+- [Cloud Files Backup](#Cloud-Files-Backup)
   - [Prerequisites](#Prerequisites-3)
   - [Use](#Use-4)
 - [Critical Data Backup - 2x Manual USB Cold Backup](#Critical-Data-Backup---2x-Manual-USB-Cold-Backup)
@@ -179,7 +179,7 @@ Also, please do not run [`manual-usbs-critical-data.sh`](manual-usbs-critical-da
 
 
 
-## "Cloud" Files Backup
+## Cloud Files Backup
 [`files.sh`](files.sh)
 
 The files for my Nextcloud installation are not stored in the container itself, but instead on a separate drive.
