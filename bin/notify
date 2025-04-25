@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# notify(urgency, title, body)
+#   urgency - whether or not the message is urgent
+#   title   - notification title
+#   body    - notification body
+#
+# Notifies user with given urgency. If there is a wayland graphical environment,
+# the notification will be sent to the notification daemon. If not, the notification
+# will be written to stdout.
+urgency="$1"
+title="$2"
+body="$3"
+
+if ! [ -z "${WAYLAND_DISPLAY}" ]; then
+  # There is a display - use notify-send
+  if [ "${urgency}" = "LOW" ]; then
+    # Notify normally
+    notify-send --urgency low "${title}" "${body}"
+  elif [ "${urgency}" = "NORMAL" ]; then
+    # Notify with normal urgency
+    notify-send --urgency normal "${title}" "${body}"
+  elif [ "${urgency}" = "CRITICAL" ]; then
+    # Notify with critical urgency
+    notify-send --urgency critical "${title}" "${body}"
+  else
+    echo "urgency must be one of [LOW, NORMAL, CRITICAL]"
+    exit
+  fi
+else
+  # There is no display - print to stdout
+  if [ "${urgency}" = "CRITICAL" ]; then
+    # Print in red
+    echo -e "\e[31m${title}\e[0m"
+    echo -e "\e[31m${body}\e[0m"
+  else
+    # Print normally
+    echo "${title}"
+    echo "${body}"
+  fi
+fi

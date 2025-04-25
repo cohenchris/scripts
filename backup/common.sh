@@ -158,6 +158,9 @@ function borg_backup() {
         --exclude="*/config/plex/Library/Application Support/Plex Media Server/Cache" \
         --exclude="*/config/plex/Library/Application Support/Plex Media Server/Media" \
         --exclude="*/config/ai/ollama/models" \
+        --exclude="*/config/immich/machine-learning/models" \
+        --exclude="*/config/immich/photos/encoded-video" \
+        --exclude="*/config/immich/photos/thumbs" \
         --exclude="*/cache" \
         --exclude="*/logs" \
         --log-json --progress --stats ::${BACKUP_NAME} ${dir_to_backup}

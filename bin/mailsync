@@ -1,86 +1,44 @@
 #!/bin/bash
 
-MAIL_DIR="${XDG_DATA_HOME}/mail"
-[ ! -d "$MAIL_DIR" ] && mkdir -p "$MAIL_DIR"
-
-# notify(urgency, title, body)
-#   urgency - whether or not the message is urgent
-#   title   - notification title
-#   body    - notification body
-#
-# Notifies user with given urgency. If there is a wayland graphical environment,
-# the notification will be sent to the notification daemon. If not, the notification
-# will be written to stdout.
-notify()
-{
-  urgency="$1"
-  title="$2"
-  body="$3"
-
-  if [ -z "${WAYLAND_DISPLAY}" ]; then
-    # There is a display - use notify-send
-    if [ "${urgency}" = "urgent" ]; then
-      # Notify with critical urgency
-      notify-send --urgency critical "${title}" "${body}"
-    else
-      # Notify normally
-      notify-send "${title}" "${body}"
-    fi
-  else
-    # There is no display - print to stdout
-    if [ "${urgency}" = "urgent" ]; then
-      # Print in red
-      echo -e "\e[31m${title}\e[0m"
-      echo -e "\e[31m${body}\e[0m"
-    else
-      # Print normally
-      echo "${title}"
-      echo "${body}"
-    fi
-  fi
-}
-
-notify noturgent "Checking email..."
+notify NORMAL "Syncing new mail" "Please wait..."
 
 # Sync from remote store to local store
-mbsync -c ~/.config/isync/mbsyncrc mail
+mbsync -c ${MBSYNC_CONFIG} mail
 if ! [[ $? -eq 0 ]]; then
-  notify urgent "Email syncing error" "mbsync failed"
+  notify CRITICAL "Email syncing error" "mbsync failed..."
   exit
 fi
 
 # Index all new mail
 notmuch new
 if ! [[ $? -eq 0 ]]; then
-  notify urgent "Email syncing error" "notmuch new failed"
+  notify CRITICAL "Email syncing error" "notmuch new failed..."
   exit
 fi
 
-# If in a graphical environment, notify about any unread mail
-if ! [ -z ${DISPLAY} ]; then
-  notifymuch
-  if ! [[ $? -eq 0 ]]; then
-    notify urgent "Email syncing error" "notifymuch failed"
-    exit
-  fi
-fi
-
-# Sync contacts from Nextcloud
+# Sync contacts and calendar from CardDAV server
 vdirsyncer sync
 if ! [[ $? -eq 0 ]]; then
-  # Maybe contacts aren't initialized, try discover
-  vdirsyncer discover nextcloud_contacts
+  # Maybe vCards aren't initialized, try discover
+  yes | vdirsyncer discover
   if ! [[ $? -eq 0 ]]; then
-    notify urgent "Email syncing error" "vdirsyncer failed"
+    notify CRITICAL "Email syncing error" "vdirsyncer failed..."
     exit
   fi
 
   # Try sync again
   vdirsyncer sync
   if ! [[ $? -eq 0 ]]; then
-    notify urgent "Email syncing error" "vdirsyncer failed"
+    notify CRITICAL "Email syncing error" "vdirsyncer failed..."
     exit
   fi
 fi
 
-notify noturgent "Email checked successfully"
+unread_messages_count=$(notmuch count 'tag:unread')
+if [ ${unread_messages_count} -eq 0 ]; then
+  notify LOW "Mailbox sync complete" "No new messages :)"
+elif [ ${unread_messages_count} -eq 1 ]; then
+  notify NORMAL "Mailbox sync complete" "You have 1 unread message..."
+else
+  notify NORMAL "Mailbox sync complete" "You have ${unread_messages_count} unread messages..."
+fi

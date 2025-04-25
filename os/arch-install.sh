@@ -254,6 +254,7 @@ function post_chroot_setup() {
     linux-lts-headers \
     git \
     pipewire-pulse \
+    pipewire-alsa \
     bluez \
     bluez-utils \
     xdg-utils \

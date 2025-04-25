@@ -98,7 +98,7 @@ For more details on the exact functionality of said script, please check out [`o
 After this action is installed, you may schedule it from the OPNSense web UI (System --> Settings --> Cron).
 
 ### Prerequisites
-- You have populated the [`.env`](../../../backup/sample.env) file for [`opnsense.sh`](../../../backup/opnsense..sh)
+- You have populated the [`.env`](../../../backup/sample.env) file for [`opnsense.sh`](../../../backup/opnsense.sh)
 
 ### Use
 Two options are available to setup this OPNSense action:
@@ -114,6 +114,44 @@ service configd restart
 Manually test by running:
 ```sh
 configctl backupopnsense backup
+```
+
+
+
+
+2. Automated setup using [`IMPORT.sh`](IMPORT.sh)
+
+
+
+
+## OPNSense Action to Check Drive Health
+[`actions_drivehealth.conf`](actions_drivehealth.conf)
+
+This is an "OPNSense action", which is essentially a cron job that can be configured from the OPNSense web UI.
+This action will run a script which, depending on the sub-command selected, can either run a drive health test or send a drive health report.
+
+After this action is installed, you may schedule it from the OPNSense web UI (System --> Settings --> Cron).
+
+### Prerequisites
+- You have populated the [`.env`](../../../system/sample.env) file for [`drive-health.sh`](../../../system/drive-health.sh)
+- You are able to send email notifications
+- Smartmontools is installed
+- If you have ZFS pools, ZFS is installed
+
+### Use
+Two options are available to setup this OPNSense action:
+
+1. Manual setup
+First, edit `actions_drivehealth.conf` and replace <scriptsdir> with the path to the BASE of this git repository.
+Then, run the following:
+
+```sh
+cp ./actions_drivehealth.conf /usr/local/opnsense/service/conf/actions.d
+service configd restart
+```
+Manually test by running:
+```sh
+configctl drivehealth backup
 ```
 
 

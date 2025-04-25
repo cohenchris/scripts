@@ -14,8 +14,7 @@ if command -v apt &> /dev/null; then
 elif command -v pkg &> /dev/null; then
   echo "Installing packages for OPNSense..."
   REALNAME="OPNSense"
-  echo 'FreeBSD: { enabled: yes }' > /usr/local/etc/pkg/repos/FreeBSD.conf
-  pkg install git autoconf automake libtool gettext texinfo pkgconf gnutls gmake
+  pkg install git autoconf automake libtool gettext texinfo pkgconf gnutls gmake lsblk
 
   # Install msmtp from source
   if ! command -v msmtp &> /dev/null; then

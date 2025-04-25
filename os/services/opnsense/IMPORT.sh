@@ -28,6 +28,12 @@ echo "Installing and configuring Glances auto-restart OPNSense action..."
 cp ./actions_restartglances.conf /usr/local/opnsense/service/conf/actions.d
 sed -i "" "s|<scriptsdir>|${SCRIPTS_BASE_DIR}|g" /usr/local/opnsense/service/conf/actions.d/actions_restartglances.conf
 
+# Install drive health monitoring action
+echo
+echo "Installing and configuring drive health monitoring OPNSense action..."
+cp ./actions_drivehealth.conf /usr/local/opnsense/service/conf/actions.d
+sed -i "" "s|<scriptsdir>|${SCRIPTS_BASE_DIR}|g" /usr/local/opnsense/service/conf/actions.d/actions_drivehealth.conf
+
 # Restart configd to index new OPNSense actions
 echo
 echo "Restarting config to index new OPNSense actions..."

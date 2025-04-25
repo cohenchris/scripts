@@ -21,6 +21,9 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 - [Music Video Downloader](#Music-Video-Downloader)
 - [Set Random Wallpaper](#Set-Random-Wallpaper)
 - [Blue Light Filter](#Blue-Light-Filter)
+- [Email Lookup](#Email-Lookup)
+- [Fuzzel-Based Pinentry](#Fuzzel-Based-Pinentry)
+- [Notification Wrapper](#Notification-Wrapper)
 
 
 
@@ -98,7 +101,7 @@ This script is a combination of the ueuberzug wrapper pulled from Luke Smith's d
 
 
 ## LaTeX Shortcuts
-[`texme [compile, create, edit] [FILENAME]`](texme)
+[`texme [compile,create,edit] [FILENAME]`](texme)
 
 This script helps automate common LaTeX commands that I use.
 The user will pass a filename as an argument.
@@ -153,3 +156,30 @@ This script helps manage blue light filtering on Wayland using `wl-gammarelay-rs
 `down` decreases the orange intensity
 
 `kill` resets the filter to default
+
+
+
+
+## Email Lookup
+[`email-lookup [query]`](email-lookup)
+
+Searches for an email address matching 'query' in your local khard address book.
+This is intended to be used for autocompletion by another program, like neomutt.
+
+
+
+
+## Fuzzel-Based Pinentry
+[`pinentry-fuzzel`](pinentry-fuzzel)
+
+Incredibly simple pinentry handler using fuzzel.
+I often use this to unlock my GPG keyring.
+
+
+
+
+## Notification Wrapper
+[`notify [LOW,NORMAL,CRITICAL] [message1] [message2]`](notify)
+
+Easy-to-use notify-send wrapper for sending desktop notifications.
+Used by many of the scripts in this repository.
