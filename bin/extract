@@ -6,43 +6,64 @@ for file in "$@"; do
     case "${file}" in
       *.tar.bz2)
         tar xvjf "${file}"
-        ;;
+      ;;
+
       *.tar.gz)
         tar xvzf "${file}"
-        ;;
+      ;;
+
       *.tar.xz)
         tar xf "${file}"
-        ;;
+      ;;
+
       *.bz2)
         bunzip2 "${file}"
-        ;;
+      ;;
+
       *.rar)
         unrar x "${file}"
-        ;;
+      ;;
+
       *.gz)
         gunzip "${file}"
-        ;;
+      ;;
+
       *.tar)
         tar xvf "${file}"
-        ;;
+      ;;
+
       *.tbz2)
         tar xvjf "${file}"
-        ;;
+      ;;
+
       *.tgz)
         tar xvzf "${file}"
-        ;;
+      ;;
+
       *.zip)
         unzip "${file}"
-        ;;
+      ;;
+
       *.Z)
         uncompress "${file}"
-        ;;
+      ;;
+
       *.7z)
         7z x "${file}"
-        ;;
+      ;;
+
+      *.zst)
+        zstd -d "${file}"
+      ;;
+
+      *.jar)
+        jar xvf "${file}"
+      ;;
+
       *)
         echo "don't know how to extract '${file}'..." 
-        ;;
+      ;;
+
     esac
   else
     echo "'${file}' is not a valid file!"

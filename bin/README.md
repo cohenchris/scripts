@@ -74,19 +74,6 @@ Synced email may be viewed with a local client such as `neomutt`.
 
 
 
-## LF File Manager Image Navigation
-[`lf-image-scroll`](lf-image-scroll)
-
-Helper script for image viewing in 'lf' file manager.
-When I open an image using this program, this script allows me to press next/previous keys to scroll through all images in the current directory.
-This script "rotates" the content of a directory based on the first chosen file.
-For example, if I open the 15th image, pressing next will show me the 16th image.
-
-This script was pulled directly from Luke Smith's dotfiles [here](https://github.com/LukeSmithxyz/voidrice/blob/master/.local/bin/rotdir).
-
-
-
-
 ## LF File Manager Wrapper for Image Viewing
 [`lf-wrapper`](lf-wrapper)
 
@@ -101,7 +88,7 @@ This script is a combination of the ueuberzug wrapper pulled from Luke Smith's d
 
 
 ## LaTeX Shortcuts
-[`texme [compile,create,edit] [FILENAME]`](texme)
+[`mytex [compile,create,edit] [FILENAME]`](mytex)
 
 This script helps automate common LaTeX commands that I use.
 The user will pass a filename as an argument.

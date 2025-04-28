@@ -13,7 +13,7 @@ set -e
 # Clean up ueberzug FIFO + reset the environment
 cleanup() {
   exec 3>&-
-	rm "${FIFO_UEBERZUG}"
+	  rm "${FIFO_UEBERZUG}"
 }
 
 
@@ -38,8 +38,8 @@ else
   mkfifo "${FIFO_UEBERZUG}"
 
   # Start ueberzug + redirect to FIFO (file descriptor 3 is convention for this)
-  ueberzug layer -s <"${FIFO_UEBERZUG}" -p json &
-  exec 3>"${FIFO_UEBERZUG}"
+  ueberzug layer -s < "${FIFO_UEBERZUG}" -p json &
+  exec 3> "${FIFO_UEBERZUG}"
 
   # Run cleanup on various signal events
   trap cleanup HUP INT QUIT TERM PWR EXIT

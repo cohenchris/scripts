@@ -17,7 +17,7 @@ sudo find ${NEXTCLOUD_FILES_DIR} -type d -exec chmod 755 {} \;
 echo "Changing permission bits for all files to 644..."
 sudo find ${NEXTCLOUD_FILES_DIR} -type f -exec chmod 644 {} \;
 
-echo "Scanning for Nextcloud..."
+echo "Running Nextcloud scan..."
 docker exec --user www-data nextcloud php occ files:scan --all
 
 echo "Done!"

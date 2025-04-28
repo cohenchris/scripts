@@ -1,18 +1,18 @@
 #!/bin/bash
 
-notify NORMAL "Syncing new mail" "Please wait..."
+notify NORMAL "Begin mail sync" "Please wait..."
 
 # Sync from remote store to local store
 mbsync -c ${MBSYNC_CONFIG} mail
 if ! [[ $? -eq 0 ]]; then
-  notify CRITICAL "Email syncing error" "mbsync failed..."
+  notify CRITICAL "FAILED - mbsync" "Unable to refresh mailboxes"
   exit
 fi
 
 # Index all new mail
 notmuch new
 if ! [[ $? -eq 0 ]]; then
-  notify CRITICAL "Email syncing error" "notmuch new failed..."
+  notify CRITICAL "FAILED - notmuch" "Unable to index mail"
   exit
 fi
 
@@ -22,23 +22,23 @@ if ! [[ $? -eq 0 ]]; then
   # Maybe vCards aren't initialized, try discover
   yes | vdirsyncer discover
   if ! [[ $? -eq 0 ]]; then
-    notify CRITICAL "Email syncing error" "vdirsyncer failed..."
+    notify CRITICAL "FAILED - vdirsyncer" "Unable to discover a vdirsyncer collection"
     exit
   fi
 
   # Try sync again
   vdirsyncer sync
   if ! [[ $? -eq 0 ]]; then
-    notify CRITICAL "Email syncing error" "vdirsyncer failed..."
+    notify CRITICAL "FAILED - vdirsyncer" "Unable to sync collections"
     exit
   fi
 fi
 
 unread_messages_count=$(notmuch count 'tag:unread')
 if [ ${unread_messages_count} -eq 0 ]; then
-  notify LOW "Mailbox sync complete" "No new messages :)"
+  notify LOW "Mail sync complete" "No new messages :)"
 elif [ ${unread_messages_count} -eq 1 ]; then
-  notify NORMAL "Mailbox sync complete" "You have 1 unread message..."
+  notify NORMAL "Mail sync complete" "You have 1 unread message"
 else
-  notify NORMAL "Mailbox sync complete" "You have ${unread_messages_count} unread messages..."
+  notify NORMAL "Mail sync complete" "You have ${unread_messages_count} unread messages"
 fi
