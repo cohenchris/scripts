@@ -15,6 +15,7 @@ Custom services and scripts that are not specific to one OS.
   - [Use](#Use-1)
 - [Arch Linux Services](#Arch-Linux-Services)
 - [OPNSense Services](#OPNSense-Services)
+- [OpenWRT Services](#OpenWRT-Services)
 
 
 
@@ -98,3 +99,11 @@ The import script is tailored towards Arch Linux, but these services should work
 [`opnsense/`](opnsense/)
 
 Custom services and scripts for a FreeBSD-based OPNSense distribution.
+
+
+
+
+## OpenWRT Services
+[`openwrt/`](openwrt/)
+
+Custom services and scripts for a Linux-based OpenWRT distribution.

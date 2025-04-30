@@ -47,7 +47,7 @@ chmod 640 /etc/nut/*
 sudo systemctl enable nut.service
 sudo systemctl start nut.service
 ```
-2. Automated setup using [`IMPORT.sh`](IMPORT.sh)
+2. Automated setup using [`setup.sh`](setup.sh)
 
 
 
@@ -72,7 +72,7 @@ systemctl daemon-reload
 systemctl enable nvidia-gpu-power-savings.service
 systemctl start nvidia-gpu-power-savings.service
 ```
-2. Automated setup using [`IMPORT.sh`](IMPORT.sh)
+2. Automated setup using [`setup.sh`](setup.sh)
 
 
 
@@ -96,7 +96,7 @@ systemctl daemon-reload
 systemctl enable glances.service
 systemctl start glances.service
 ```
-2. Automated setup using [`IMPORT.sh`](IMPORT.sh)
+2. Automated setup using [`setup.sh`](setup.sh)
 
 
 
@@ -127,5 +127,5 @@ mv nextcloud-ai-worker@.service /etc/systemd/system
 for i in {1..4}; do systemctl enable --now nextcloud-ai-worker@$i.service; done # Modify loop counter for however many workers you desire
 ```
 
-2. Automated setup using [`IMPORT.sh`](IMPORT.sh)
+2. Automated setup using [`setup.sh`](setup.sh)
 

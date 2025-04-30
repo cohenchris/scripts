@@ -44,7 +44,7 @@ service glances start
 
 
 
-2. Automated setup using [`IMPORT.sh`](IMPORT.sh)
+2. Automated setup using [`setup.sh`](setup.sh)
 
 
 
@@ -83,7 +83,7 @@ configctl backupopnsense backup
 
 
 
-2. Automated setup using [`IMPORT.sh`](IMPORT.sh)
+2. Automated setup using [`setup.sh`](setup.sh)
 
 
 
@@ -119,7 +119,7 @@ configctl backupopnsense backup
 
 
 
-2. Automated setup using [`IMPORT.sh`](IMPORT.sh)
+2. Automated setup using [`setup.sh`](setup.sh)
 
 
 
@@ -157,4 +157,4 @@ configctl drivehealth backup
 
 
 
-2. Automated setup using [`IMPORT.sh`](IMPORT.sh)
+2. Automated setup using [`setup.sh`](setup.sh)

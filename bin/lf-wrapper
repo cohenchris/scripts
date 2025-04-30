@@ -21,7 +21,7 @@ cleanup() {
 #
 # Wrapper to update the working directory after exiting lf
 lfcd () {
-    # `command` is needed in case `lfcd` is aliased to `lf`
+    # `command` is needed in case `lf` is aliased
     cd "$(command lf -print-last-dir "$@")"
 }
 
