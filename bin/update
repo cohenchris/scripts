@@ -3,18 +3,21 @@
 DOCKER_COMPOSE_HOME_DIR="/home/${USER}/server"
 SCRIPTS_DIR="/home/${USER}/scripts"
 
-# Update all packages
+# Synchronizes all packages from repositories
+# Downloads fresh package database from the servers
+# Upgrades all outdated packages to their latest versions
 paru -Syu --noconfirm
 
+# Clear all package cache
 paru -Scc --noconfirm
 
-# Update docker containers
+# Update and restart all docker containers in docker-compose.yml
 cd ${DOCKER_COMPOSE_HOME_DIR}
 docker-compose pull
 docker-compose up -d
 
-# Prune extra docker information
+# Clean docker environment
 docker system prune -a -f
 
-# Mirror boot EFI partitions
-${SCRIPTS_DIR}/os/boot-mirror.sh zroot
+# Mirror EFI boot partitions
+sudo ${SCRIPTS_DIR}/os/boot-mirror.sh zroot
