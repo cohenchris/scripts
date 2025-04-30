@@ -19,7 +19,7 @@ case $yn in
   *     ) exit;;
 esac
 
-SCRIPTS_BASE_DIR="$(dirname "$(realpath "$0")")/../../../"
+SCRIPTS_BASE_DIR=$(realpath "$(dirname "$(realpath "$0")")/../../..")
 
 # Install glances dependencies and service
 echo "Installing Glance webserver service..."
