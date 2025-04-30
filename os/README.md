@@ -52,28 +52,32 @@ When the script is done, you should reboot, remove the live USB, and boot into y
 
 
 ## Sync Mirrored EFI Partitions
-[`boot-mirror.sh [mirror,setup] [root_pool_name]`](boot-mirror.sh)
+[`boot-mirror.sh [root_pool_name]`](boot-mirror.sh)
 
 This keeps a mirrored ZFS root pool's EFI partitions in sync.
 For this to work, one partition must be mounted at /boot, and the other must be unmounted.
 
-This is designed to be set up in a cron job or systemd hook.
-
-`boot-mirror.sh setup` creates and enables the systemd service to automate mirroring.
-
-`boot-mirror.sh mirror <root_pool_name>` performs a mirroring operation on the two boot drives.
+Initially, I had this running with a pacman hook, but the hook would run before data in the EFI partition was actually updated.
+So, instead, this should be run manually.
 
 ### Prerequisites
 - You have 2 identical boot drives which were configured with 2 partitions - one EFI partition and one ZFS root partition
 - One of the EFI boot partitions is automatically mounted when the system is booted.
 
 ### Use
-While this script may be run manually with the `mirror` argument if desired,
+This script should be run manually whenever a package is updated that will modify the data present in your mounted EFI boot partition.
+These packages include, but are not limited to:
+- `linux-lts`
+- `mkinitcpio`
+- `systemd`
+- `intel-ucode`
+- `efibootmgr`
+
 I highly recommend automating the mirroring of your EFI boot partitions to minimize the amount of time your EFI boot partitions will be out of sync.
 If you have a drive failure, and the surviving disk's EFI partition is out of date, you will almost certainly run into undefined behavior due to kernel mismatching issues.
-The best way to prevent this is to run the script whenever systemd is updated.
-To set this up, please run `boot-mirror.sh setup`.
-
+Personally, I have an [`update`](../bin/update) script that does a variety of things to update and clean my system.
+At the very end of this script, I call this script to mirror the EFI boot partitions.
+This means that the script is called whether the EFI boot partition data is updated or not, it's better to be safe.
 
 
 

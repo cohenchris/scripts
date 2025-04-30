@@ -8,56 +8,6 @@ fi
 
 
 
-# boot_mirror_setup()
-#
-# Set up automatic EFI boot partition mirroring for ZFS root pool.
-function boot_mirror_setup()
-{
-  # Ask for pool name to work on
-  zpool list
-  echo
-  read -p "Please type the name of the root pool: " ZFS_ROOT_POOL_NAME
-
-  # Confirm pool choice
-  echo
-  zpool status ${ZFS_ROOT_POOL_NAME}
-  echo
-
-  read -p "Is this the root pool? (y/N) " yn
-
-  case $yn in
-    [Yy]* ) ;;
-    *     ) exit;;
-  esac
-
-  # Get this script's directory
-  OS_SCRIPTS_DIR=$(dirname "$(realpath "$0")")
-
-  echo
-  echo "Creating new pacman systemd hook..."
-
-  mkdir -p /etc/pacman.d/hooks/
-cat <<EOF > /etc/pacman.d/hooks/100-systemd-boot.hook
-[Trigger]
-Type = Package
-Operation = Upgrade
-Target = linux-lts
-Target = mkinitcpio
-Target = systemd
-Target = intel-ucode
-Target = efibootmgr
-
-[Action]
-Description = Sync boot partitions when /boot/ is updated
-When = PostTransaction
-Exec = ${OS_SCRIPTS_DIR}/boot-mirror.sh mirror ${ZFS_ROOT_POOL_NAME}
-EOF
-
-  echo
-  echo "EFI boot partitions will now be synced when /boot/ partition is updated!"
-}
-
-
 # boot_mirror(zfs_root_pool)
 #   zfs_root_pool - name of the ZFS root pool whose EFI boot partitions we should mirror.
 #
@@ -136,11 +86,4 @@ function boot_mirror()
   echo "Done!"
 }
 
-
-if [ "$1" == "mirror" ]; then
-  boot_mirror $2
-elif [ "$1" == "setup" ]; then
-  boot_mirror_setup
-else
-  echo "Invalid argument - choose one of [mirror, setup]"
-fi
+boot_mirror "$1"

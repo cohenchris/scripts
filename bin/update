@@ -1,11 +1,17 @@
 #!/bin/bash
 
-yes | paru -Syu
+# Update all packages
+paru -Syu --noconfirm
 
-yes | paru -Scc
+paru -Scc --noconfirm
 
+# Update docker containers
 cd /home/${USER}/server
 docker-compose pull
 docker-compose up -d
 
+# Prune extra docker information
 docker system prune -a -f
+
+# Mirror boot EFI partitions
+/home/${USER}/scripts/os/boot-mirror.sh mirror zroot
