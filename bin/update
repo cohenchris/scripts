@@ -1,12 +1,15 @@
 #!/bin/bash
 
+DOCKER_COMPOSE_HOME_DIR="/home/${USER}/server"
+SCRIPTS_DIR="/home/${USER}/scripts"
+
 # Update all packages
 paru -Syu --noconfirm
 
 paru -Scc --noconfirm
 
 # Update docker containers
-cd /home/${USER}/server
+cd ${DOCKER_COMPOSE_HOME_DIR}
 docker-compose pull
 docker-compose up -d
 
@@ -14,4 +17,4 @@ docker-compose up -d
 docker system prune -a -f
 
 # Mirror boot EFI partitions
-/home/${USER}/scripts/os/boot-mirror.sh mirror zroot
+${SCRIPTS_DIR}/os/boot-mirror.sh zroot

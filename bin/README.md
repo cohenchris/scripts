@@ -38,6 +38,7 @@ It also assumes that the user has a docker-compose stack located at `/home/${USE
 2. Clean the package cache to remove unused packages
 3. Update all docker-compose images
 4. Remove all dangling docker container images
+5. Mirror EFI boot partitions on mirrored ZFS root pool
 
 
 ## Wifi Network Selector
