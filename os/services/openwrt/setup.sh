@@ -21,4 +21,4 @@ nameserver 10.24.0.1
 nameserver ::1
 EOF
 
-echo "Setup complete!
+echo "Setup complete!"
