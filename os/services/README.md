@@ -48,7 +48,7 @@ chown root:root /etc/msmtprc
 chmod 600 /etc/msmtprc
 ```
 
-2. Automated setup using [`IMPORT.sh`](IMPORT.sh)
+2. Automated setup using [`setup-email.sh`](setup-email.sh)
 
 This script will prompt you for your SMTP URL, email, and password.
 Once provided, it will copy the config file so that it's visible to MSMTP, fill in your details, and set proper permissions.
@@ -78,7 +78,7 @@ Then, copy into the proper location
 cp ./muttrc /root/.muttrc
 ```
 
-2. Automated setup using [`IMPORT.sh`](IMPORT.sh)
+2. Automated setup using [`setup-email.sh`](setup-email.sh)
 
 This script will prompt you for your SMTP URL, email, and password.
 Once provided, it will copy the config file so that it's visible to Mutt and fill in your details.
