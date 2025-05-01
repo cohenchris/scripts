@@ -27,24 +27,38 @@ function pre_chroot_setup()
   echo "#   YOU RISK CATASTROPHIC DATA LOSS.   #"
   echo "########################################"
 
+  # How many drives should we install ZFS root pool on?
+  echo
+  read -p "How many drives should be used in the root pool? (1 or 2): " NUM_DRIVES
+
+  case ${NUM_DRIVES} in
+    [1] ) ;;
+    [2] ) USE_2_DRIVES=1 ;;
+    *   ) echo "ERROR: Number of drives must be either 1 or 2." && exit ;;
+  esac
+
   # Ask for ZFS root pool device name #1
   echo
   read -p "Enter target ZFS root pool device name #1 (in the format /dev/sdX): " ZFS_ROOT1_DEV_NAME
 
+if [[ "${USE_2_DRIVES}" -eq 1 ]]; then
   # Ask for ZFS root pool device name #2
   echo
   read -p "Enter target ZFS root pool device name #2 (in the format /dev/sdX): " ZFS_ROOT2_DEV_NAME
+fi
 
   # Confirm choices
   echo
   fdisk -l ${ZFS_ROOT1_DEV_NAME}
   echo
+if [[ "${USE_2_DRIVES}" -eq 1 ]]; then
   fdisk -l ${ZFS_ROOT2_DEV_NAME}
   echo
+fi
 
-  read -p "Are these devices correct? (y/N) " yn
+  read -p "Device(s) correct? (y/N) " yn
 
-  case $yn in
+  case ${yn} in
     [Yy]* ) ;;
     *     ) exit;;
   esac
@@ -54,25 +68,35 @@ function pre_chroot_setup()
   ######################
   # Destroy all existing partitions
   sgdisk --zap-all ${ZFS_ROOT1_DEV_NAME}
+if [[ "${USE_2_DRIVES}" -eq 1 ]]; then
   sgdisk --zap-all ${ZFS_ROOT2_DEV_NAME}
+fi
 
   # Create boot partitions
   sgdisk -n1:0:+4G -t1:ef00 ${ZFS_ROOT1_DEV_NAME}
+if [[ "${USE_2_DRIVES}" -eq 1 ]]; then
   sgdisk -n1:0:+4G -t1:ef00 ${ZFS_ROOT2_DEV_NAME}
+fi
 
   # Create ZFS partitions
   sgdisk -n2:0:0 -t2:bf00 ${ZFS_ROOT1_DEV_NAME}
+if [[ "${USE_2_DRIVES}" -eq 1 ]]; then
   sgdisk -n2:0:0 -t2:bf00 ${ZFS_ROOT2_DEV_NAME}
+fi
 
   # Define partitions 1 and 2 for each drive
   ZFS_ROOT1_P1_DEV_NAME=$(lsblk -nr -o NAME "${ZFS_ROOT1_DEV_NAME}" | awk 'NR==2 {print "/dev/"$1}')
   ZFS_ROOT1_P2_DEV_NAME=$(lsblk -nr -o NAME "${ZFS_ROOT1_DEV_NAME}" | awk 'NR==3 {print "/dev/"$1}')
+if [[ "${USE_2_DRIVES}" -eq 1 ]]; then
   ZFS_ROOT2_P1_DEV_NAME=$(lsblk -nr -o NAME "${ZFS_ROOT2_DEV_NAME}" | awk 'NR==2 {print "/dev/"$1}')
   ZFS_ROOT2_P2_DEV_NAME=$(lsblk -nr -o NAME "${ZFS_ROOT2_DEV_NAME}" | awk 'NR==3 {print "/dev/"$1}')
+fi
 
   # Create boot filesystem for both drives
   mkfs.vfat "${ZFS_ROOT1_P1_DEV_NAME}"
+if [[ "${USE_2_DRIVES}" -eq 1 ]]; then
   mkfs.vfat "${ZFS_ROOT2_P1_DEV_NAME}"
+fi
 
   ##########################
   # ZFS ROOT POOL CREATION #
@@ -92,6 +116,12 @@ function pre_chroot_setup()
   systemctl restart zfs-zed.service
 
   # ZFS root
+  if [[ "${USE_2_DRIVES}" -eq 1 ]]; then
+    ZFS_ROOT_DEVICES_STRING="zroot mirror ${ZFS_ROOT1_P2_DEV_NAME} ${ZFS_ROOT2_P2_DEV_NAME}"
+  else
+    ZFS_ROOT_DEVICES_STRING="zroot ${ZFS_ROOT1_P2_DEV_NAME}"
+  fi
+
   zpool create -f \
                -o ashift=12 \
                -O compression=lz4 \
@@ -105,7 +135,7 @@ function pre_chroot_setup()
                -O mountpoint=none \
                -O devices=off \
                -R /mnt \
-               zroot mirror "${ZFS_ROOT1_P2_DEV_NAME}" "${ZFS_ROOT2_P2_DEV_NAME}"
+               "${ZFS_ROOT_DEVICES_STRING}"
 
 
   ########################
@@ -306,6 +336,7 @@ function post_chroot_setup() {
   ############################
   # Create systemd.mount file for boot partition on main drive
   BOOT_DRIVE_UUID=$(findmnt -no UUID /boot)
+
 cat <<EOF > /etc/systemd/system/boot.mount
 [Unit]
 Description=Mount Boot Partition
@@ -338,13 +369,13 @@ EOF
   bootctl --path=/boot install
 
   # Bootloader - set default entry selection and menu timeout
-  cat <<EOF > /boot/loader/loader.conf
+cat <<EOF > /boot/loader/loader.conf
 default arch
 timeout 5
 EOF
 
   # Create bootloader entry for Arch Linux main kernel
-  cat <<EOF > /boot/loader/entries/arch.conf
+cat <<EOF > /boot/loader/entries/arch.conf
 title Arch Linux
 linux /vmlinuz-linux-lts
 initrd /intel-ucode.img
@@ -353,7 +384,7 @@ options zfs=zroot/ROOT/arch rw
 EOF
 
   # Create bootloader entry for Arch Linux fallback kernel
-  cat <<EOF > /boot/loader/entries/arch-fallback.conf
+cat <<EOF > /boot/loader/entries/arch-fallback.conf
 title Arch Linux (Fallback)
 linux /vmlinuz-linux-lts
 initrd /intel-ucode.img
@@ -377,12 +408,14 @@ Description = update systemd-boot
 When = PostTransaction
 Exec = /usr/bin/bootctl update
 EOF
+
 }
 
 
 ########
 # MAIN #
 ########
+
 # User must run as root
 if [[ "$(id -u)" -ne 0 ]]; then
     echo "This script must be run as root" 
@@ -399,13 +432,15 @@ if [[ -f /etc/hostname && "$(cat /etc/hostname)" == "archiso" ]]; then
   echo "Running on live USB, proceeding with pre-chroot setup..."
   pre_chroot_setup
 
-  echo
-  echo "Mirroring boot partition on second drive..."
-  # Unmount first drive's EFI boot partition and sync to flush all changes to disk
-  umount /mnt/boot
-  sync
-  # Use dd to copy first drive's EFI boot partition to second drive's EFI boot partition
-  sudo dd if=${ZFS_ROOT1_P1_DEV_NAME} of=${ZFS_ROOT2_P1_DEV_NAME} status=progress
+  if [[ "${USE_2_DRIVES}" -eq 1 ]]; then
+    echo
+    echo "Mirroring boot partition on second drive..."
+    # Unmount first drive's EFI boot partition and sync to flush all changes to disk
+    umount /mnt/boot
+    sync
+    # Use dd to copy first drive's EFI boot partition to second drive's EFI boot partition
+    sudo dd if=${ZFS_ROOT1_P1_DEV_NAME} of=${ZFS_ROOT2_P1_DEV_NAME} status=progress
+  fi
 
   # Unmount to prevent data corruption
   echo
@@ -423,3 +458,4 @@ else
   echo "Running inside chroot, proceeding with post-chroot setup..."
   post_chroot_setup
 fi
+
