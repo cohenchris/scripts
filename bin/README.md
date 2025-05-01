@@ -24,6 +24,7 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 - [Email Lookup](#Email-Lookup)
 - [Fuzzel-Based Pinentry](#Fuzzel-Based-Pinentry)
 - [Notification Wrapper](#Notification-Wrapper)
+- [Screenshot Wrapper](#Screenshot-Wrapper)
 
 
 
@@ -171,3 +172,13 @@ I often use this to unlock my GPG keyring.
 
 Easy-to-use notify-send wrapper for sending desktop notifications.
 Used by many of the scripts in this repository.
+
+
+
+
+## Screenshot Wrapper
+[`screenshot`](screenshot)
+
+Screenshot utility wrapper script that vastly improves quality-of-life.
+Notifies the user about what is happening, status of the screenshot, and where it is saved.
+It will also open up a file manager at the location where the screenshot is saved.

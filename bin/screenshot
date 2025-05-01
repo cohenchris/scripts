@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Default save to ~/Downloads
+SCREENSHOT_SAVE_DIR=$(realpath ~/Downloads)
+
+# If ~/Downloads doesn't exist, default to the user's home directory
+if ! [ -d "${SCREENSHOT_SAVE_DIR}" ]; then
+  SCREENSHOT_SAVE_DIR="~"
+fi
+
+DATE=$(date +"%Y%m%d-%H%M")
+SCREENSHOT_NAME="${SCREENSHOT_SAVE_DIR}/screenshot-${DATE}.jpg"
+
+notify NORMAL "Taking Screenshot..." "Please select the area which you would like to capture"
+
+grim -g "$(slurp)" "${SCREENSHOT_NAME}"
+
+if [ $? -eq 0 ]; then
+  notify NORMAL "📸 Capture was successful!" "Saved to ${SCREENSHOT_NAME}"
+  ${FILE_BROWSER} ${SCREENSHOT_NAME}
+else
+  notify CRITICAL "ERROR" "Failed to capture selected area :("
+fi

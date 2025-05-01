@@ -14,9 +14,12 @@ nc -z $PUBLIC_IP $PORT
 
 # If not connectable, restart
 if [ $? -ne 0 ]; then
-  echo "qBittorrent not connectable with public IP."
+  echo "qBittorrent not connectable via VPN public IP."
   echo "Restarting VPN..."
   docker restart vpn
   echo "Restarting qBittorrent..."
   docker restart qbittorrent
+else
+  echo "qBittorrent connectable via VPN public IP."
+  echo "No action required!"
 fi
