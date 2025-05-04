@@ -1,0 +1,28 @@
+#!/bin/bash
+
+VPN_CONFIGS_LOCATION="${XDG_CONFIG_HOME}/wireguard"
+
+if [[ -e ${VPN_CONFIGS_LOCATION} || ! -d ${VPN_CONFIGS_LOCATION} ]]; then
+  notify CRITICAL "ERROR" "No VPN configuration files found at \"${VPN_CONFIGS_LOCATION}\""
+  exit
+fi
+
+notify NORMAL "Please select your preferred VPN server"
+
+serverChoice=$(ls ${VPN_CONFIGS_LOCATION} | sed 's/\.conf$//' | fuzzel --dmenu -p "Select a VPN server: ")
+
+if [[ -z ${serverChoice} ]]; then
+  notify CRITICAL "ERROR" "Must select a VPN server"
+  exit
+fi
+
+notify NORMAL "Attempting to connect to VPN server \"${serverChoice}\""
+
+echo "${XDG_CONFIG_HOME}/wireguard/${serverChoice}.conf"
+errorCode=$(wg-quick up "${XDG_CONFIG_HOME}/wireguard/${serverChoice}.conf")
+
+if echo ${errorCode} | grep -q "successfully activated"; then
+  notify NORMAL "Connection to VPN server \"${serverChoice}\" succeeded."
+else
+  notify CRITICAL "Connection to VPN server \"${serverChoice}\" failed." "Error code ${errorCode}"
+fi

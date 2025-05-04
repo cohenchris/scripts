@@ -9,7 +9,7 @@ echo ${availableNetworks}
 networkChoice=$(echo "${availableNetworks}" | awk '{$1=$1};1' | fuzzel --dmenu -p "Select wireless network: ")
 
 if [[ -z ${networkChoice} ]]; then
-  notify CRITICAL "Must select a wireless network"
+  notify CRITICAL "ERROR" "Must select a wireless network"
   exit
 fi
 
@@ -21,7 +21,7 @@ errorCode=$(nmcli device wifi connect "${networkChoice}" password "$networkPassw
 if echo ${errorCode} | grep -q "successfully activated"; then
   notify NORMAL "Connection to wireless network \"${networkChoice}\" succeeded."
 else
-  notify CRITICAL "Connection to wireless network \"${networkChoice}\" failed." "${errorCode}"
+  notify CRITICAL "Connection to wireless network \"${networkChoice}\" failed." "Error code ${errorCode}"
 fi
 
 unset networkPassword

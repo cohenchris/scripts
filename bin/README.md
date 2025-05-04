@@ -25,7 +25,7 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 - [Fuzzel-Based Pinentry](#Fuzzel-Based-Pinentry)
 - [Notification Wrapper](#Notification-Wrapper)
 - [Screenshot Wrapper](#Screenshot-Wrapper)
-
+- [VPN Selector](#VPN-Selector)
 
 
 
@@ -182,3 +182,14 @@ Used by many of the scripts in this repository.
 Screenshot utility wrapper script that vastly improves quality-of-life.
 Notifies the user about what is happening, status of the screenshot, and where it is saved.
 It will also open up a file manager at the location where the screenshot is saved.
+
+
+
+
+## Wifi Network Selector
+[`vpn-selector`](vpn-selector)
+
+Fuzzel-based Wireguard VPN server selector.
+Relies on config files present in `${XDG_CONFIG_HOME}/wireguard` to scan for configured VPN server endpoints and presents them in a selectable list.
+The user may then navigate this list using arrow keys or vim directional bindings (h/j/k/l) and select the desired VPN server by pressing Enter.
+Please note that this script requires the use of a Wayland display manager.
