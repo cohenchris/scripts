@@ -17,7 +17,7 @@ Some may have CATASTROPHIC consequences if used incorrectly, so they should be r
 - [Replace/Resilver a Drive in ZFS Root Pool](#Replace/Resilver-a-Drive-in-ZFS-Root-Pool)
   - [Prerequisites](#Prerequisites-2)
   - [Use](#Use-2)
-- [System Services](#System-Services)
+- [System Services Configuration](#System-Services-Configuration)
 
 
 
@@ -100,7 +100,7 @@ This script is intended to be used when directly booted from the surviving drive
 
 
 
-## System Services
+## System Services Configuration
 [`services/`](services/)
 
-Custom services for different operating systems.
+OS-specific system configuration scripts which are mostly intended to be used on a new install.

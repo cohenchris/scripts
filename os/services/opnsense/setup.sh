@@ -39,4 +39,8 @@ echo
 echo "Restarting config to index new OPNSense actions..."
 service configd restart
 
-echo "Import complete! Please schedule cron jobs for your new actions from the OPNSense web UI."
+# Set up email notifications
+${SCRIPTS_BASE_DIR}/os/services/email/setup.sh
+
+echo
+echo "Setup complete! Please schedule cron jobs for your new actions from the OPNSense web UI."

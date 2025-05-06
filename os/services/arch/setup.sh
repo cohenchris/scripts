@@ -55,3 +55,8 @@ upsdrvctl start
 systemctl enable --now nut.target nut-driver.target nut-driver-enumerator.service
 for i in {1..4}; do systemctl enable --now nextcloud-ai-worker@$i.service; done
 
+# Set up email notifications
+${SCRIPTS_BASE_DIR}/os/services/email/setup.sh
+
+echo
+echo "Setup complete!"

@@ -26,6 +26,7 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 - [Notification Wrapper](#Notification-Wrapper)
 - [Screenshot Wrapper](#Screenshot-Wrapper)
 - [VPN Selector](#VPN-Selector)
+- [Fuzzel Askpass](#Fuzzel-Askpass)
 
 
 
@@ -193,3 +194,17 @@ Fuzzel-based Wireguard VPN server selector.
 Relies on config files present in `${XDG_CONFIG_HOME}/wireguard` to scan for configured VPN server endpoints and presents them in a selectable list.
 The user may then navigate this list using arrow keys or vim directional bindings (h/j/k/l) and select the desired VPN server by pressing Enter.
 Please note that this script requires the use of a Wayland display manager.
+
+
+
+
+## Fuzzel Askpass
+[`fuzzel-askpass`](fuzzel-askpass)
+
+Fuzzel-based askpass entry program.
+Intended to be used with sudo as a graphical password prompt.
+
+```sh
+export SUDO_ASKPASS="/path/to/fuzzel-askpass"
+sudo -A <command>
+```

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Intended to be used as a script for SUDO_ASKPASS
+fuzzel -i --password --dmenu --prompt-only="Enter Password: "
