@@ -16,7 +16,7 @@ notify NORMAL "Taking Screenshot..." "Please select the area which you would lik
 grim -g "$(slurp)" "${SCREENSHOT_NAME}"
 
 if [ $? -eq 0 ]; then
-  notify NORMAL "📸 Capture was successful!" "Saved to ${SCREENSHOT_NAME}"
+  notify GOOD "📸 Capture was successful!" "Saved to ${SCREENSHOT_NAME}"
   ${FILE_BROWSER} ${SCREENSHOT_NAME}
 else
   notify CRITICAL "ERROR" "Failed to capture selected area :("

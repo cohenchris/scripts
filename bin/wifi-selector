@@ -19,7 +19,7 @@ notify NORMAL "Attempting to connect to wireless network \"${networkChoice}\""
 errorCode=$(nmcli device wifi connect "${networkChoice}" password "$networkPassword")
 
 if echo ${errorCode} | grep -q "successfully activated"; then
-  notify NORMAL "Connection to wireless network \"${networkChoice}\" succeeded."
+  notify GOOD "Connection to wireless network \"${networkChoice}\" succeeded."
 else
   notify CRITICAL "Connection to wireless network \"${networkChoice}\" failed." "Error code ${errorCode}"
 fi

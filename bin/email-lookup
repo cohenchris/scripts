@@ -11,9 +11,9 @@ num_results=$((num_results - 1))
 if [ $? -eq 0 ]; then
   # Success
   if [ ${num_results} -eq 1 ]; then
-    notify NORMAL "Match found!" "Search completed with ${num_results} match"
+    notify GOOD "Match found!" "Search completed with ${num_results} match"
   else
-    notify NORMAL "Match found!" "Search completed with ${num_results} matches"
+    notify GOOD "Match found!" "Search completed with ${num_results} matches"
   fi
 else
   # Failure

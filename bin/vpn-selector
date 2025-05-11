@@ -30,7 +30,7 @@ function connect_vpn()
   wgStatus=$?
 
   if [[ ${wgStatus} -eq 0 ]]; then
-    notify NORMAL "Connected!" "Connection to VPN server \"${serverChoice}\" succeeded."
+    notify GOOD "Success!" "Connection to VPN server \"${serverChoice}\" succeeded."
   else
     notify CRITICAL "ERROR" "Connection to VPN server \"${serverChoice}\" failed."
     exit 1
@@ -41,7 +41,7 @@ function disconnect_vpn()
 {
   # Are you sure you would like to disconnect from VPN?
   notify NORMAL "Please Confirm" "Are you sure you would like to disconnect from VPN server \"${CONNECTION_NAME}\""
-  yn=$(printf 'Yes\nNo' | fuzzel --dmenu --prompt "Really disconnect? ")
+  yn=$(printf 'Yes\nNo' | fuzzel --dmenu --prompt "Really disconnect from VPN? ")
 
   case ${yn} in
     Yes)
@@ -60,7 +60,7 @@ function disconnect_vpn()
   wgStatus=$?
 
   if [[ ${wgStatus} -eq 0 ]]; then
-    notify NORMAL "Disconnected!" "Successfully disconnected from VPN server \"${CONNECTION_NAME}\""
+    notify GOOD "Disconnected!" "Successfully disconnected from VPN server \"${CONNECTION_NAME}\""
   else
     notify CRITICAL "ERROR" "Failed to disconnect from VPN server \"${CONNECTION_NAME}\""
     exit 1

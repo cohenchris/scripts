@@ -14,25 +14,29 @@ body="$3"
 
 if ! [ -z "${WAYLAND_DISPLAY}" ]; then
   # There is a display - use notify-send
-  if [ "${urgency}" = "LOW" ]; then
-    # Notify normally
+  if [ "${urgency}" = "GOOD" ]; then
+    # Notify with a positive look (hijacking the rarely-used "low" urgency)
     notify-send --urgency low "${title}" "${body}"
   elif [ "${urgency}" = "NORMAL" ]; then
-    # Notify with normal urgency
+    # Notify with a neutral look
     notify-send --urgency normal "${title}" "${body}"
   elif [ "${urgency}" = "CRITICAL" ]; then
-    # Notify with critical urgency
+    # Notify with a negative look
     notify-send --urgency critical "${title}" "${body}"
   else
-    echo "urgency must be one of [LOW, NORMAL, CRITICAL]"
+    echo "urgency must be one of [GOOD, NORMAL, CRITICAL]"
     exit
   fi
 else
   # There is no display - print to stdout
   if [ "${urgency}" = "CRITICAL" ]; then
     # Print in red
-    echo -e "\e[31m${title}\e[0m"
+    echo -e "\e[31m${title}\n${body}\e[0m"
     echo -e "\e[31m${body}\e[0m"
+  elif [ "${urgency}" = "GOOD" ]; then
+    # Print in green
+    echo -e "\e[32m${title}\e[0m"
+    echo -e "\e[32m${body}\e[0m"
   else
     # Print normally
     echo "${title}"

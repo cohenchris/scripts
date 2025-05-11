@@ -169,7 +169,7 @@ I often use this to unlock my GPG keyring.
 
 
 ## Notification Wrapper
-[`notify [LOW,NORMAL,CRITICAL] [message1] [message2]`](notify)
+[`notify [GOOD,NORMAL,CRITICAL] [message1] [message2]`](notify)
 
 Easy-to-use notify-send wrapper for sending desktop notifications.
 Used by many of the scripts in this repository.
