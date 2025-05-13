@@ -40,7 +40,7 @@ mail_log plain "Backing up music video data locally..."
 rsync -r --delete --update --progress ${MUSICVIDEOS_DIR}/ ${MUSICVIDEOS_LOCAL_BACKUP_DIR}
 mail_log check "Music video local backup" $?
 
-mail_log check "Backing up music video data on remote backup server..."
+mail_log plain "Backing up music video data on remote backup server..."
 rsync -r --delete --update --progress ${MUSICVIDEOS_DIR}/ ${REMOTE_BACKUP_SERVER}:${MUSICVIDEOS_REMOTE_BACKUP_DIR}
 mail_log check "Music video remote backup" $?
 
