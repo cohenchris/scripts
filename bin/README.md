@@ -147,6 +147,12 @@ This is intended to be used for autocompletion by another program, like neomutt.
 Incredibly simple pinentry handler using fuzzel.
 I often use this to unlock my GPG keyring.
 
+To configure this program as pinentry for unlocking your GPG keyring, the following line should be in your `gpg-agent.conf` file:
+
+```sh
+pinentry-program /path/to/fuzzel-pinentry
+```
+
 
 
 
