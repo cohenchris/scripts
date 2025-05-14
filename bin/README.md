@@ -25,6 +25,7 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 - [Screenshot Wrapper](#Screenshot-Wrapper)
 - [VPN Selection Menu](#VPN-Selection-Menu)
 - [Fuzzel Askpass](#Fuzzel-Askpass)
+- [Unicode Character Selection Menu](#Unicode-Character-Selection-Menu)
 
 
 
@@ -175,7 +176,7 @@ It will also open up a file manager at the location where the screenshot is save
 
 
 
-## Wifi Selection Menu
+## VPN Selection Menu
 [`vpn-menu`](vpn-menu)
 
 Fuzzel-based Wireguard VPN server selection menu.
@@ -194,4 +195,30 @@ Intended to be used with sudo as a graphical password prompt.
 ```sh
 export SUDO_ASKPASS="/path/to/fuzzel-askpass"
 sudo -A <command>
+```
+
+
+
+
+## Unicode Character Selection Menu
+[`unicode-char-menu`](unicode-char-menu)
+
+Fuzzel-based selection menu for unicode characters which would otherwise be impossible to type.
+This script relies on files in the `${XDG_DATA_HOME}/chars`.
+Each file that resides in this directory should be in one of the following formats:
+
+```sh
+<character> <description>
+📁 file folder
+📂 open file folder
+🗂️ card index dividers
+```
+
+OR
+
+```sh
+<character> <description>; <unicode_hex_identifier>
+  address-book; f2b9
+  address-card; f2bb
+  adjust; f042
 ```

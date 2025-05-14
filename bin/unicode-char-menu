@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# Based on Luke Smith's script [here](https://github.com/LukeSmithxyz/voidrice/blob/master/.local/bin/dmenuunicode)
+
+# Location where unicode character choice files should be placed
+CHARS_DIR="${XDG_DATA_HOME}/chars"
+
+if ! [[ -d "${CHARS_DIR}" ]] || [[ -z "$(ls -A ${CHARS_DIR})" ]]; then
+  # Directory does not exist or is empty
+  notify CRITICAL "ERROR" "No characters to choose from in ${CHARS_DIR}"
+  exit 1
+fi
+
+# Prompt user for selection
+choice=$(cut -d ';' -f1 "${CHARS_DIR}"/* | fuzzel --dmenu | sed "s/ .*//")
+
+if [ -z "${choice}" ]; then
+  # No choice
+  notify CRITICAL "ERROR" "No emoji selected"
+  exit 1
+else
+  # Copy emoji to clipboard
+  printf "%s" "${choice}" | waycopy
+  notify GOOD "Emoji selected" "'${choice}' copied to clipboard."
+fi
