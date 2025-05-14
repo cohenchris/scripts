@@ -12,20 +12,18 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 # Table of Contents
 
 - [System Update](#System-Update)
-- [Wifi Network Selector](#Wifi-Network-Selector)
+- [WiFi Selection Menu](#WiFi-Selection-Menu)
 - [Archive Extraction](#Archive-Extraction)
 - [Local E-Mail Sync](#Local-E-Mail-Sync)
-- [LF File Manager Image Navigation](#LF-File-Manager-Image-Navigation)
-- [LF File Manager Wrapper for Image Viewing](#LF-File-Manager-Wrapper-for-Image-Viewing)
+- [LF File Manager Wrapper](#LF-File-Manager-Wrapper)
 - [LaTeX Shortcuts](#LaTeX-Shortcuts)
 - [Music Video Downloader](#Music-Video-Downloader)
 - [Set Random Wallpaper](#Set-Random-Wallpaper)
-- [Blue Light Filter](#Blue-Light-Filter)
 - [Email Lookup](#Email-Lookup)
 - [Fuzzel-Based Pinentry](#Fuzzel-Based-Pinentry)
 - [Notification Wrapper](#Notification-Wrapper)
 - [Screenshot Wrapper](#Screenshot-Wrapper)
-- [VPN Selector](#VPN-Selector)
+- [VPN Selection Menu](#VPN-Selection-Menu)
 - [Fuzzel Askpass](#Fuzzel-Askpass)
 
 
@@ -43,13 +41,12 @@ It also assumes that the user has a docker-compose stack located at `/home/${USE
 5. Mirror EFI boot partitions on mirrored ZFS root pool
 
 
-## Wifi Network Selector
-[`wifi-selector`](wifi-selector)
+## WiFi Selection Menu
+[`wifi-menu`](wifi-menu)
 
-Fuzzel-based wifi network selector.
+Fuzzel-based wifi network selection menu.
 Utilizes `nmcli` to scan for available networks and presents them in a friendly list.
 The user may then navigate this list using arrow keys or vim directional bindings (h/j/k/l) and select the desired network by pressing Enter.
-Please note that this script requires the use of a Wayland display manager.
 
 
 
@@ -77,7 +74,7 @@ Synced email may be viewed with a local client such as `neomutt`.
 
 
 
-## LF File Manager Wrapper for Image Viewing
+## LF File Manager Wrapper
 [`lf-wrapper`](lf-wrapper)
 
 This is a wrapper script for lf. It does the following:
@@ -131,21 +128,6 @@ This script is pretty hardcoded to my personal environment and directory structu
 [`random-wallpaper`](random-wallpaper)
 
 Selects and random image from the `${XDG_DATA_HOME}/wallpapers` directory and sets it as the user's wallpaper.
-Please note that this script requires the use of a Wayland display manager.
-
-
-
-
-## Blue Light Filter
-[`bluelightfilter [up,down,kill]`](bluelightfilter)
-
-This script helps manage blue light filtering on Wayland using `wl-gammarelay-rs`.
-
-`up` increases the orange intensity
-
-`down` decreases the orange intensity
-
-`kill` resets the filter to default
 
 
 
@@ -160,7 +142,7 @@ This is intended to be used for autocompletion by another program, like neomutt.
 
 
 ## Fuzzel-Based Pinentry
-[`pinentry-fuzzel`](pinentry-fuzzel)
+[`fuzzel-pinentry`](fuzzel-pinentry)
 
 Incredibly simple pinentry handler using fuzzel.
 I often use this to unlock my GPG keyring.
@@ -187,13 +169,12 @@ It will also open up a file manager at the location where the screenshot is save
 
 
 
-## Wifi Network Selector
-[`vpn-selector`](vpn-selector)
+## Wifi Selection Menu
+[`vpn-menu`](vpn-menu)
 
-Fuzzel-based Wireguard VPN server selector.
+Fuzzel-based Wireguard VPN server selection menu.
 Relies on config files present in `${XDG_CONFIG_HOME}/wireguard` to scan for configured VPN server endpoints and presents them in a selectable list.
 The user may then navigate this list using arrow keys or vim directional bindings (h/j/k/l) and select the desired VPN server by pressing Enter.
-Please note that this script requires the use of a Wayland display manager.
 
 
 
