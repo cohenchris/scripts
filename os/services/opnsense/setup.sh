@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if ! command -v bash &> /dev/null; then
+  pkg install bash
+fi
+
 if [[ "$(id -u)" -ne 0 ]]; then
     echo "This script must be run as root" 
     exit 1
@@ -40,7 +44,7 @@ echo "Restarting config to index new OPNSense actions..."
 service configd restart
 
 # Set up email notifications
-${SCRIPTS_BASE_DIR}/os/services/email/setup.sh
+bash ${SCRIPTS_BASE_DIR}/os/services/email/setup.sh
 
 echo
 echo "Setup complete! Please schedule cron jobs for your new actions from the OPNSense web UI."
