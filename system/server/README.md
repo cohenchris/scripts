@@ -142,7 +142,7 @@ This script should be set up as a scheduled cron job.
 I love listening to and rating music (see [the ratings page on my website!](https://chriscohen.dev/music)).
 
 This script generates an excel spreadsheet which helps me track my listening progress.
-The excel spreadsheet is created in the directory from which this script is invoked.
+The excel spreadsheet is created in the user's home directory.
 
 The spreadsheet contains a table which lists each artist in my Plex music library, each of their albums, and how many of their albums that I have rated.
 The album cells are highlighted in green if fully rated, and red otherwise.

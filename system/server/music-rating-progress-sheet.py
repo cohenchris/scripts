@@ -153,13 +153,7 @@ for i, row in enumerate(artist_rating_sheet):
                 sheet[coord].fill = redFill
                 pass
 
-wb.save(filename="musicRatingProgress.xlsx")
-
-#
-# SAVE TO NEXTCLOUD (etc/musicRatingProgress.ods)
-#
-
-#os.system("mv musicRatingProgress.xlsx /home/phrog/files/etc/")
-#os.system("docker exec -it --user www-data nextcloud php occ files:scan --all")
+file_path = os.path.join(os.path.expanduser("~"), "musicRatingProgress.xlsx")
+wb.save(filename=file_path)
 
 print("--- %s seconds ---" % (time.time() - start_time))
