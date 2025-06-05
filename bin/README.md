@@ -20,7 +20,7 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 - [Music Video Downloader](#Music-Video-Downloader)
 - [Set Random Wallpaper](#Set-Random-Wallpaper)
 - [Email Lookup](#Email-Lookup)
-- [Fuzzel-Based Pinentry](#Fuzzel-Based-Pinentry)
+- [Custom Pinentry](#Custom-Pinentry)
 - [Notification Wrapper](#Notification-Wrapper)
 - [Screenshot Wrapper](#Screenshot-Wrapper)
 - [VPN Selection Menu](#VPN-Selection-Menu)
@@ -89,7 +89,7 @@ This script is a combination of the ueuberzug wrapper pulled from Luke Smith's d
 
 
 ## LaTeX Shortcuts
-[`mytex [compile,create,edit] [FILENAME]`](mytex)
+[`my-tex [compile,create,edit] [FILENAME]`](my-tex)
 
 This script helps automate common LaTeX commands that I use.
 The user will pass a filename as an argument.
@@ -142,16 +142,18 @@ This is intended to be used for autocompletion by another program, like neomutt.
 
 
 
-## Fuzzel-Based Pinentry
-[`fuzzel-pinentry`](fuzzel-pinentry)
+## Custom Pinentry
+[`my-pinentry`](my-pinentry)
 
-Incredibly simple pinentry handler using fuzzel.
+Custom pinentry program.
+If executed within a graphical environment, this script will run my custom fuzzel-based pinentry implementation.
+Otherwise, the script will fall back to the system default `pinentry` program.`
 I often use this to unlock my GPG keyring.
 
 To configure this program as pinentry for unlocking your GPG keyring, the following line should be in your `gpg-agent.conf` file:
 
 ```sh
-pinentry-program /path/to/fuzzel-pinentry
+pinentry-program /path/to/my-pinentry
 ```
 
 
