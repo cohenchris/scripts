@@ -22,6 +22,9 @@ Automation scripts related to homelab services running on the host machine.
 - [Test QBittorrent Connectivity](#Test-QBittorrent-Connectivity)
   - [Prerequisites](#Prerequisites-4)
   - [Use](#Use-4)
+- [Music Rating Progress](#Music-Rating-Progress)
+  - [Prerequisites](#Prerequisites-5)
+  - [Use](#Use-5)
 - [Nextcloud](#Nextcloud)
 
 
@@ -130,6 +133,30 @@ This script assumes that:
 ### Use
 This script should be set up as a scheduled cron job.
 
+
+
+
+## Music Rating Progress
+[`music-rating-progress-sheet.py`](music-rating-progress-sheet.py)
+
+I love listening to and rating music (see [the ratings page on my website!](https://chriscohen.dev/music)).
+
+This script generates an excel spreadsheet which helps me track my listening progress.
+The excel spreadsheet is created in the directory from which this script is invoked.
+
+The spreadsheet contains a table which lists each artist in my Plex music library, each of their albums, and how many of their albums that I have rated.
+The album cells are highlighted in green if fully rated, and red otherwise.
+The rating progress cells highlighted in the same way - green if I have rated every album, and red otherwise.
+
+At the very bottom, I've also included a cell which calculates my overall listening progress.
+
+
+### Prerequisites
+- You have created and filled out the [`.env` file in `scripts/system`](../sample.env) 
+
+
+### Use
+This script should be run manually.
 
 
 
