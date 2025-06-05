@@ -1,25 +1,34 @@
 #!/bin/python3
 
-from __future__ import division             # allows division to be float by default
+import sys
 import csv
 import openpyxl
 import os
-#from plexapi.myplex import MyPlexAccount
-from plexapi.server import PlexServer
+import plexapi.server
 from pprint import pprint
 import time
-from dotenv import load_dotenv
+
+
+if len(sys.argv) != 3:
+    print("Usage: plex-server-maintenance-broadcast.py <plex URL> <plex token>")
+    exit(1)
 
 
 start_time = time.time()
 
 
-load_dotenv()
-baseurl = os.getenv("PLEX_URL")
-token = os.getenv("PLEX_TOKEN")
+PLEX_URL = sys.argv[1]
+PLEX_TOKEN = sys.argv[2]
 
-#account = MyPlexAccount(token)
-server = PlexServer(baseurl, token)
+try:
+    server = plexapi.server.PlexServer(PLEX_URL, PLEX_TOKEN)
+except requests.exceptions.ConnectionError as e:
+    print("ERROR: Bad URL! Unable to connect to Plex")
+    exit(1)
+except plexapi.exceptions.Unauthorized as e:
+    print("ERROR: Bad API key! Unable to connect to Plex")
+    exit(1)
+
 
 greenFill = openpyxl.styles.PatternFill("solid", fgColor="CCFFCC")
 redFill = openpyxl.styles.PatternFill("solid", fgColor="FFCCCC")

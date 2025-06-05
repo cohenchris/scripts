@@ -137,7 +137,7 @@ This script should be set up as a scheduled cron job.
 
 
 ## Music Rating Progress
-[`music-rating-progress-sheet.py`](music-rating-progress-sheet.py)
+[`music-rating-progress-sheet.py <plex URL> <plex token>`](music-rating-progress-sheet.py)
 
 I love listening to and rating music (see [the ratings page on my website!](https://chriscohen.dev/music)).
 
@@ -152,11 +152,12 @@ At the very bottom, I've also included a cell which calculates my overall listen
 
 
 ### Prerequisites
-- You have created and filled out the [`.env` file in `scripts/system`](../sample.env) 
+There are no prerequisites for this script. If the user passes a valid URL and token, it will work as intended.
 
 
 ### Use
 This script should be run manually.
+
 
 
 
