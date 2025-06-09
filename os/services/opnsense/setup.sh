@@ -14,11 +14,24 @@ SCRIPTS_BASE_DIR=$(realpath "$(dirname "$(realpath "$0")")/../../..")
 # Install Glances webserver FreeBSD service
 echo "Installing Glances webserver FreeBSD service..."
 pkg update
-pkg install py311-glances
+pkg install py311-pip
+pip install glances bottle --user
+grep -q "~/.local/bin" ~/.profile || sed -i '' '/^PATH=/ s|$|:~/.local/bin|' ~/.profile
 cp ./glances /usr/local/etc/rc.d
-echo 'glances_enable="YES"' >> /etc/rc.conf
+if ! grep -q 'glances_enable="YES"' /etc/rc.conf; then
+  echo 'glances_enable="YES"' >> /etc/rc.conf
+fi
 service glances enable
 service glances start
+
+# Install smartmontools
+pkg install smartmontools
+cp /usr/local/etc/smartd.conf.sample /usr/local/etc/smartd.conf
+if ! grep -q 'smartd_enable="YES"' /etc/rc.conf; then
+  echo 'smartd_enable="YES"' >> /etc/rc.conf
+fi
+service smartd enable
+service smartd start
 
 # Install OPNSense backup action
 echo
