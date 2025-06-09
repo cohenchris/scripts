@@ -22,7 +22,8 @@ nameserver ::1
 EOF
 
 # Set up email notifications
-${SCRIPTS_BASE_DIR}/os/services/email/setup.sh
+cd ${SCRIPTS_BASE_DIR}/os/services/email
+./setup.sh
 
 echo
 echo "Setup complete!"
