@@ -1,4 +1,4 @@
-#!/bin/bash
+g!/bin/bash
 
 if [ "$(id -u)" -ne 0 ]; then
     echo "This script must be run as root" 
@@ -120,7 +120,7 @@ function zfs_summarize()
 }
 
 # Create array of all drives
-SMART_DRIVES=($(lsblk -nd -o NAME | grep -E '^(sd|nvme)' | sed 's/^/\/dev\//'))
+SMART_DRIVES=$(ls /dev | grep -E '^(sd[a-z]+|nvme[0-9]+n[0-9]+|ada[0-9]+|da[0-9]+)$' | sort)
 
 # Create array of all ZFS pools
 ZFS_POOLS=($(zpool list -H -o name))
