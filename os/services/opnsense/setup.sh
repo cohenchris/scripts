@@ -57,7 +57,8 @@ echo "Restarting config to index new OPNSense actions..."
 service configd restart
 
 # Set up email notifications
-bash ${SCRIPTS_BASE_DIR}/os/services/email/setup.sh
+cd ${SCRIPTS_BASE_DIR}/os/services/email
+bash ./setup.sh
 
 echo
 echo "Setup complete! Please schedule cron jobs for your new actions from the OPNSense web UI."
