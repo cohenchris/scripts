@@ -60,6 +60,10 @@ for file in "$@"; do
         jar xvf "${file}"
       ;;
 
+      *.xz)
+        xz --decompress "${file}"
+      ;;
+
       *)
         echo "don't know how to extract '${file}'..." 
       ;;
