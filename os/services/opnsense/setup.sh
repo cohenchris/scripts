@@ -16,9 +16,6 @@ echo "Installing Glances webserver FreeBSD service..."
 pkg update
 pkg install py311-pip
 pip install glances bottle --user
-if ! grep -q "/root/.local/bin" /etc/profile; then
-  echo 'export PATH=$PATH:/root/.local/bin' >> /etc/profile
-fi
 cp ./glances /usr/local/etc/rc.d
 if ! grep -q 'glances_enable="YES"' /etc/rc.conf; then
   echo 'glances_enable="YES"' >> /etc/rc.conf
