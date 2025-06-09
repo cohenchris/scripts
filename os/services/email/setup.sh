@@ -14,7 +14,7 @@ if command -v apt &> /dev/null; then
 elif command -v pkg &> /dev/null; then
   echo "Installing packages for OPNSense..."
   REALNAME="OPNSense"
-  pkg install git autoconf automake libtool gettext texinfo pkgconf gnutls gmake lsblk
+  pkg install git autoconf automake libtool gettext texinfo pkgconf gnutls gmake
 
   # Install msmtp from source
   if ! command -v msmtp &> /dev/null; then
