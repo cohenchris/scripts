@@ -41,12 +41,12 @@ function report_health()
   rm -f ${BODY}
 
   # If there are S.M.A.R.T. devices detected, report on them
-  if [[ ${#SMART_DRIVES[@]} -gt 0 ]]; then
+  if ! [[ -z ${SMART_DRIVES[0]} ]]; then
     smart_summarize
   fi
 
   # If there are ZFS pools detected, report on them
-  if [[ ${#ZFS_POOLS[@]} -gt 0 ]]; then
+  if ! [[ -z ${ZFS_POOLS[0]} ]]; then
     zfs_summarize
   fi
 
