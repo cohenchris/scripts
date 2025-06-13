@@ -23,7 +23,7 @@ SCRIPTS_BASE_DIR=$(realpath "$(dirname "$(realpath "$0")")/../../..")
 
 # Install glances dependencies and service
 echo "Installing Glance webserver service..."
-sudo -u ${USERNAME} paru -Sy --noconfirm python-fastapi uvicorn python-jinja-time
+sudo -u ${USERNAME} paru -Sy --noconfirm glances python-fastapi uvicorn python-jinja-time hddtemp python-docker python-matplotlib python-netifaces2
 cp glances.service /etc/systemd/system
 
 # Install nvidia GPU power savings dependencies and service
