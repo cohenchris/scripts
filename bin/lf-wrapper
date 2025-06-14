@@ -1,24 +1,10 @@
 #!/bin/sh
 
-# This is a wrapper script for lf which handles the following:
-# - Run directly or via SSH in any manner   --> Execute vanilla lf
-# - Sourced current terminal                --> On exit, cd to the last active directory
+# This is a wrapper script for lf which ensures the cache directory is created.
+# Also, if sourced, lf will cd to the last working directory.
+# If not sourced, lf will behave normally.
 
 set -e
 
-# lfcd()
-#
-# Wrapper to update the working directory after exiting lf
-lfcd () {
-    # `command` is needed in case `lf` is aliased
-    cd "$(command lf -print-last-dir "$@")"
-}
-
-
-if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
-  # Running inside SSH, just execute normal lf
-	command lf "$@"
-else
-  [ ! -d "${XDG_CACHE_HOME}/lf" ] && mkdir -p "${XDG_CACHE_HOME}/lf"
-	lfcd "$@" 3>&-
-fi
+[ ! -d "${XDG_CACHE_HOME}/lf" ] && mkdir -p "${XDG_CACHE_HOME}/lf"
+cd "$(command lf -print-last-dir "$@")"
