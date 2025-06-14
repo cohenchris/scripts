@@ -1,21 +1,10 @@
 #!/bin/sh
 
-# This is a wrapper script for lf which, when sourced, adds the following functionality:
-# - Sets up environment for ueberzug image previewing.
-# - On exit, cd to the last active directory.
-
+# This is a wrapper script for lf which handles the following:
+# - Run directly or via SSH in any manner   --> Execute vanilla lf
+# - Sourced current terminal                --> On exit, cd to the last active directory
 
 set -e
-
-
-# cleanup()
-#
-# Clean up ueberzug FIFO + reset the environment
-cleanup() {
-    exec 3>&-
-	rm "${FIFO_UEBERZUG}"
-}
-
 
 # lfcd()
 #
@@ -26,25 +15,10 @@ lfcd () {
 }
 
 
-if [ -n "${SSH_CLIENT}" ] || [ -n "${SSH_TTY}" ]; then
+if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
   # Running inside SSH, just execute normal lf
 	command lf "$@"
 else
-  # Running locally, set up ueberzug for image previews
   [ ! -d "${XDG_CACHE_HOME}/lf" ] && mkdir -p "${XDG_CACHE_HOME}/lf"
-
-  # Create unique FIFO (named pipe) for communication with ueberzug
-  export FIFO_UEBERZUG="${XDG_CACHE_HOME}/lf/ueberzug-$$"
-  mkfifo "${FIFO_UEBERZUG}"
-
-  # Start ueberzug + redirect to FIFO (file descriptor 3 is convention for this)
-  ueberzug layer -s <"${FIFO_UEBERZUG}" -p json &
-  exec 3>"${FIFO_UEBERZUG}"
-
-  # Run cleanup on various signal events
-  #trap cleanup HUP INT QUIT TERM PWR EXIT
-  trap cleanup EXIT
-
-  # Execute LF (with the cd wrapper script)
-  lfcd "$@" 3>&-
+	lfcd "$@" 3>&-
 fi
