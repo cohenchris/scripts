@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Based on https://github.com/gokcehan/lf/blob/master/etc/lfcd.sh
+
 # This is a wrapper script for lf which ensures the cache directory is created.
 # Also, if sourced, lf will cd to the last working directory.
 # If not sourced, lf will behave normally.

@@ -78,12 +78,12 @@ Synced email may be viewed with a local client such as `neomutt`.
 ## LF File Manager Wrapper
 [`lf-wrapper`](lf-wrapper)
 
-This is a wrapper script for lf. It does the following:
-    - Sets up environment for ueberzug image previewing
-    - On exit, `cd` to the last active directory
+A wrapper script for lf which:
+    - Ensures that the lf cache directory is created
+    - Provides functionality to `cd` to the last working directory
         - For this to work, this wrapper must be sourced instead of called directly
 
-This script is a combination of the ueuberzug wrapper pulled from Luke Smith's dotfiles [here](https://github.com/LukeSmithxyz/voidrice/blob/master/.local/bin/lfub), and lfcd logic pulled from the official lf repository [here](https://github.com/gokcehan/lf/blob/master/etc/lfcd.sh).
+This script is based on the lfcd script provided in the official lf repository [here](https://github.com/gokcehan/lf/blob/master/etc/lfcd.sh).
 
 
 
