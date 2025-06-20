@@ -22,12 +22,12 @@ mail_log check "Lidarr stop" $?
 
 # Create a borg backup on the local drive
 mail_log plain "Backing up music data locally..."
-borg_backup ${MUSIC_DIR} ${MUSIC_LOCAL_BACKUP_DIR}
+borg_backup ${MUSIC_DIR} ${MUSIC_LOCAL_BACKUP_DIR} ${MUSIC_EXCLUDE_REGEX[*]}
 mail_log check "Music local backup" $?
 
 # Create a borg backup on the remote backup server
 mail_log plain "Backing up music data on remote backup server..."
-borg_backup ${MUSIC_DIR} ${REMOTE_BACKUP_SERVER}:${MUSIC_REMOTE_BACKUP_DIR}
+borg_backup ${MUSIC_DIR} ${REMOTE_BACKUP_SERVER}:${MUSIC_REMOTE_BACKUP_DIR} ${MUSIC_EXCLUDE_REGEX[*]}
 mail_log check "Music remote backup" $?
 
 # Resume Lidarr

@@ -40,12 +40,12 @@ cd ${WORKING_DIR}
 
 # Create a borg backup on the local drive
 mail_log plain "Backing up server data locally..."
-borg_backup ${SERVER_DIR} ${SERVER_LOCAL_BACKUP_DIR}
+borg_backup "${SERVER_DIR}" "${SERVER_LOCAL_BACKUP_DIR}" "${SERVER_EXCLUDE_REGEX[@]}"
 mail_log check "Server local backup" $?
 
 # Create a borg backup on the remote backup server
 mail_log plain "Backing up server data to remote backup server..."
-borg_backup ${SERVER_DIR} ${REMOTE_BACKUP_SERVER}:${SERVER_REMOTE_BACKUP_DIR}
+borg_backup "${SERVER_DIR}" "${REMOTE_BACKUP_SERVER}:${SERVER_REMOTE_BACKUP_DIR}" "${SERVER_EXCLUDE_REGEX[@]}"
 mail_log check "Server remote backup" $?
 
 # Start services back up
