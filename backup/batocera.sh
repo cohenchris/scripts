@@ -23,7 +23,7 @@ require var BATOCERA_REMOTE_BACKUP_DIR
 BATOCERA_DIR="/userdata"
 # By default, any downloaded Steam games will be included in this backup
 # Takes up way too much space and is completely unnecessary, so exclude it
-EXCLUDE_DOWNLOADED_STEAM_GAMES="${BATOCERA_DIR}/saves/flatpak/data/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps"
+EXCLUDE_DOWNLOADED_STEAM_GAMES="saves/flatpak/data/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps"
 
 # Attempt to wake batocera using Wake-On-LAN
 wakeonlan "${BATOCERA_MAC}"
