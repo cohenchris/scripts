@@ -42,6 +42,7 @@ if [[ "${batocera_host_up}" -eq 0 ]]; then
 #        --update \
 #        --progress \
 #        --exclude "${EXCLUDE_DOWNLOADED_STEAM_GAMES}" \
+#        --delete-excluded \
 #        "${BATOCERA_HOST}:${BATOCERA_DIR}/"
 #        "${BATOCERA_HOST}:${BATOCERA_LOCAL_BACKUP_DIR}"
 #  mail_log check "Batocera local backup" $?
@@ -52,6 +53,7 @@ if [[ "${batocera_host_up}" -eq 0 ]]; then
         --update \
         --progress \
         --exclude "${EXCLUDE_DOWNLOADED_STEAM_GAMES}" \
+        --delete-excluded \
         "${BATOCERA_HOST}:${BATOCERA_DIR}/" \
         "${BATOCERA_REMOTE_BACKUP_DIR}"
   mail_log check "Batocera remote backup" $?
