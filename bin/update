@@ -1,7 +1,7 @@
 #!/bin/bash
 
-DOCKER_COMPOSE_HOME_DIR="/home/${USER}/server"
-SCRIPTS_DIR="/home/${USER}/scripts"
+DOCKER_COMPOSE_HOME_DIR="${HOME}/server"
+SCRIPTS_DIR="${HOME}/scripts"
 
 # Synchronizes all packages from repositories
 # Downloads fresh package database from the servers
@@ -12,7 +12,7 @@ paru -Syu --noconfirm
 paru -Scc --noconfirm
 
 # Update and restart all docker containers in docker-compose.yml
-cd ${DOCKER_COMPOSE_HOME_DIR}
+cd "${DOCKER_COMPOSE_HOME_DIR}"
 docker-compose pull
 docker-compose up -d
 
@@ -20,4 +20,4 @@ docker-compose up -d
 docker system prune -a -f
 
 # Mirror EFI boot partitions
-sudo ${SCRIPTS_DIR}/os/boot-mirror.sh zroot
+sudo "${SCRIPTS_DIR}/os/boot-mirror.sh" zroot

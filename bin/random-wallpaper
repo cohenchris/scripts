@@ -5,19 +5,19 @@ if [ -z "${WAYLAND_DISPLAY}" ]; then
   exit 1
 fi
 
-WALLPAPER_DIR="${XDG_DATA_HOME}/wallpapers"
+WALLPAPER_DIR="${XDG_DATA_HOME:-${HOME}/.local/share}/wallpapers"
 
 if [ ! -d "${WALLPAPER_DIR}" ]; then
-  notify CRITICAL "ERROR" "Wallpapers directory not found at ${XDG_DATA_HOME}/wallpapers"
+  notify CRITICAL "ERROR" "Wallpapers directory not found at ${WALLPAPER_DIR}"
   exit 1
 fi
 
-cd ${WALLPAPER_DIR}
+cd "${WALLPAPER_DIR}"
 WALLPAPER=$(find $(pwd) -type f | grep -v '.git' | shuf -n 1)
-WALLPAPER=$(readlink -f ${WALLPAPER})
+WALLPAPER=$(readlink -f "${WALLPAPER}")
 
 # Set .active.jpg to keep track of active wallpaper
-ln -sf ${WALLPAPER} ${XDG_CACHE_HOME}/active-wallpaper.jpg
+ln -sf "${WALLPAPER}" "${XDG_CACHE_HOME:-${HOME}/.cache}/active-wallpaper.jpg"
 
 MONITOR=$(hyprctl monitors | grep "Monitor" | awk '{print $2}')
 

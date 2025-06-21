@@ -8,5 +8,5 @@
 
 set -e
 
-[ ! -d "${XDG_CACHE_HOME}/lf" ] && mkdir -p "${XDG_CACHE_HOME}/lf"
+[ ! -d "${XDG_CACHE_HOME:-${HOME}/.cache}/lf" ] && mkdir -p "${XDG_CACHE_HOME:-${HOME}/.cache}/lf"
 cd "$(command lf -print-last-dir "$@")"

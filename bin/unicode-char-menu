@@ -3,7 +3,7 @@
 # Based on Luke Smith's script [here](https://github.com/LukeSmithxyz/voidrice/blob/master/.local/bin/dmenuunicode)
 
 # Location where unicode character choice files should be placed
-CHARS_DIR="${XDG_DATA_HOME}/chars"
+CHARS_DIR="${XDG_DATA_HOME:-${HOME}/.local/share}/chars"
 
 if ! [[ -d "${CHARS_DIR}" ]] || [[ -z "$(ls -A ${CHARS_DIR})" ]]; then
   # Directory does not exist or is empty

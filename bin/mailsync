@@ -3,7 +3,7 @@
 notify NORMAL "Begin mail sync" "Please wait..."
 
 # Sync from remote store to local store
-mbsync -c ${MBSYNC_CONFIG} mail
+mbsync -c "${MBSYNC_CONFIG}" mail
 if ! [[ $? -eq 0 ]]; then
   notify CRITICAL "FAILED - mbsync" "Unable to refresh mailboxes"
   exit
@@ -35,7 +35,7 @@ if ! [[ $? -eq 0 ]]; then
 fi
 
 unread_messages_count=$(notmuch count 'tag:unread')
-if [ ${unread_messages_count} -eq 0 ]; then
+if [ "${unread_messages_count}" -eq 0 ]; then
   notify GOOD "Mail sync complete" "No new messages :)"
 elif [ ${unread_messages_count} -eq 1 ]; then
   notify GOOD "Mail sync complete" "You have 1 unread message"

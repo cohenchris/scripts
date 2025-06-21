@@ -1,12 +1,9 @@
 #!/bin/bash
 
-# Default save to ~/Downloads
-SCREENSHOT_SAVE_DIR=$(realpath ~/Downloads)
-
-# If ~/Downloads doesn't exist, default to the user's home directory
-if ! [ -d "${SCREENSHOT_SAVE_DIR}" ]; then
-  SCREENSHOT_SAVE_DIR="~"
-fi
+# Default save to ${HOME}/Downloads
+# Create if it does not already exist
+SCREENSHOT_SAVE_DIR=$(realpath ${HOME}/Downloads)
+! [ -d "${SCREENSHOT_SAVE_DIR}" ] && mkdir "${SCREENSHOT_SAVE_DIR}"
 
 DATE=$(date +"%Y%m%d-%H%M")
 SCREENSHOT_NAME="${SCREENSHOT_SAVE_DIR}/screenshot-${DATE}.jpg"
@@ -17,7 +14,7 @@ grim -g "$(slurp)" "${SCREENSHOT_NAME}"
 
 if [ $? -eq 0 ]; then
   notify GOOD "📸 Capture was successful!" "Saved to ${SCREENSHOT_NAME}"
-  ${FILE_BROWSER} ${SCREENSHOT_NAME}
+  "${FILE_BROWSER}" "${SCREENSHOT_NAME}"
 else
   notify CRITICAL "ERROR" "Failed to capture selected area :("
 fi

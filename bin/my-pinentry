@@ -14,7 +14,7 @@
 #   - `$$`: The process ID (PID) of the current script. This ensures that log
 #     messages can be traced back to the specific instance of the script running.
 function LOG() {
-  /usr/bin/logger -t "${0} [$$]" "$@";
+  /usr/bin/logger -t "$0 [$$]" "$@";
 }
 
 
@@ -48,26 +48,30 @@ function pinentry_gui()
             LOG "Getting info 'flavor'..."
             echo "D fuzzel"
             echo "OK"
-            ;;
+          ;;
+
           version)
             LOG "Getting info 'version'..."
             echo "D 0.1"
             echo "OK"
-            ;;
+          ;;
+
           ttyinfo)
             LOG "Getting info 'ttyinfo'..."
             echo "D - - -"
             echo "OK"
-            ;;
+          ;;
+
           pid)
             LOG "Getting info 'pid'..."
             echo "D $$"
             echo "OK"
-            ;;
+          ;;
+
           *)
             LOG "Unknown argument '${args}' for GETINFO..."
             echo "OK"
-            ;;
+          ;;
         esac
       ;;
 
