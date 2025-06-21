@@ -18,7 +18,7 @@ function backblaze_sync() {
 
   # Check B2 auth
   mail_log plain "Checking Backblaze authorization for bucket ${backblaze_bucket}..."
-  ${B2_BIN} get-bucket ${backblaze_bucket} > /dev/null 2>&1
+  ${B2_BIN} get-bucket "${backblaze_bucket}" > /dev/null 2>&1
   mail_log check "Backblaze authorization" $?
 
   # If exclude_regex was provided, prepend a pipe character to properly format the variable for b2 sync exclude regex
@@ -27,24 +27,24 @@ function backblaze_sync() {
   # Sync directory to Backblaze
   # Handle user-specified excluded files/directories
   # Always prevent hidden files from being included
-  cd ${dir_to_sync}
+  cd "${dir_to_sync}"
   mail_log plain "Syncing backup to Backblaze..."
   ${B2_BIN} sync --delete --replaceNewer --excludeRegex "\..*${exclude_regex}" . b2://${backblaze_bucket}
   mail_log check "Backblaze backup" $?
 
-  cd ${WORKING_DIR}
+  cd "${WORKING_DIR}"
 }
 
 
 # Set up environment
 WORKING_DIR=$(dirname "$(realpath "$0")")
-source ${WORKING_DIR}/.env
+source "${WORKING_DIR}/.env"
 
 require var MAIN_BACKUPS_DIR
 require var OFFSITE_BACKBLAZE_BUCKET
 require var MAIN_BACKUPS_EXCLUDE_REGEX
 
 # Sync backups directory to Backblaze
-backblaze_sync ${MAIN_BACKUPS_DIR} ${OFFSITE_BACKBLAZE_BUCKET} ${MAIN_BACKUPS_EXCLUDE_REGEX}
+backblaze_sync "${MAIN_BACKUPS_DIR}" "${OFFSITE_BACKBLAZE_BUCKET}" "${MAIN_BACKUPS_EXCLUDE_REGEX}"
 
 finish

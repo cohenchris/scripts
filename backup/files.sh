@@ -5,12 +5,15 @@
 
 # Set up environment
 WORKING_DIR=$(dirname "$(realpath "$0")")
-source ${WORKING_DIR}/.env
+source "${WORKING_DIR}/.env"
 
 require var FILES_DIR
 require var FILES_LOCAL_BACKUP_DIR
 require var REMOTE_BACKUP_SERVER
 require var FILES_REMOTE_BACKUP_DIR
+require var FILES_BACKUP_KEEP_DAILY
+require var FILES_BACKUP_KEEP_WEEKLY
+require var FILES_BACKUP_KEEP_MONTHLY
 
 # Put Nextcloud in maintenance mode to prevent file changes
 mail_log plain "Enabling Nextcloud maintenance mode..."
@@ -19,12 +22,12 @@ mail_log check "nextcloud maintenance on" $?
 
 # Create a borg backup on the local drive
 mail_log plain "Backing up Nextcloud data locally..."
-borg_backup ${FILES_DIR} ${FILES_LOCAL_BACKUP_DIR} ${FILES_EXCLUDE_REGEX[*]}
+borg_backup "${FILES_DIR}" "${FILES_LOCAL_BACKUP_DIR}" "${FILES_BACKUP_KEEP_DAILY}" "${FILES_BACKUP_KEEP_WEEKLY}" "${FILES_BACKUP_KEEP_MONTHLY}" "${FILES_EXCLUDE_REGEX[@]}"
 mail_log check "Local Nextcloud backup" $?
 
 # Create a borg backup on the remote backup server
 mail_log plain "Backing up Nextcloud data on remote backup server..."
-borg_backup ${FILES_DIR} ${REMOTE_BACKUP_SERVER}:${FILES_REMOTE_BACKUP_DIR} ${FILES_EXCLUDE_REGEX[*]}
+borg_backup "${FILES_DIR}" "${REMOTE_BACKUP_SERVER}:${FILES_REMOTE_BACKUP_DIR}" "${FILES_BACKUP_KEEP_DAILY}" "${FILES_BACKUP_KEEP_WEEKLY}" "${FILES_BACKUP_KEEP_MONTHLY}" "${FILES_EXCLUDE_REGEX[@]}"
 mail_log check "Remote Nextcloud backup..." $?
 
 # Take Nextcloud out of maintenance mode

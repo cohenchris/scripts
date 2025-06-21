@@ -11,17 +11,16 @@ exec 3>&1
 exec 4>&2
 
 # Set up environment
-STARTING_DIR=$(pwd)
 WORKING_DIR=$(dirname "$(realpath "$0")")
 USB1_MNT_PATH=/mnt/usb1
 USB2_MNT_PATH=/mnt/usb2
-source ${WORKING_DIR}/.env
+source "${WORKING_DIR}/.env"
 
 # Restore original file descriptors and remove log/mail files
 exec 1>&3 3>&-
 exec 2>&4
-rm ${LOG_FILE}
-rm ${MAIL_FILE}
+rm "${LOG_FILE}"
+rm "${MAIL_FILE}"
 
 # List devices
 fdisk -l
@@ -44,9 +43,9 @@ read -p "Enter USB device name #2 (in the format /dev/sdX): " USB2_DEV_NAME
 
 # Confirm choices
 echo
-fdisk -l ${USB1_DEV_NAME}
+fdisk -l "${USB1_DEV_NAME}"
 echo
-fdisk -l ${USB2_DEV_NAME}
+fdisk -l "${USB2_DEV_NAME}"
 echo
 
 require var USB1_DEV_NAME
@@ -54,11 +53,11 @@ require var USB2_DEV_NAME
 require var CRITICAL_DATA_LOCAL_BACKUP_DIR
 require var WORKING_DIR
 require var BACKUP_CODES_PASS_FILE
-require file ${BACKUP_CODES_PASS_FILE}
+require file "${BACKUP_CODES_PASS_FILE}"
 
 read -p "Are these devices correct? (y/N) " yn
 
-case $yn in
+case "${yn}" in
   [Yy]* ) ;;
   *     ) exit;;
 esac
@@ -71,14 +70,14 @@ echo
 echo "Creating temporary mount directories for USBs..."
 
 if [[ ! -d "${USB1_MNT_PATH}" ]]; then
-  mkdir ${USB1_MNT_PATH}
+  mkdir "${USB1_MNT_PATH}"
 else
   echo "ERROR: ${USB1_MNT_PATH} already exists. Please remove this directory before running this script."
   exit 1
 fi
 
 if [[ ! -d "${USB2_MNT_PATH}" ]]; then
-  mkdir ${USB2_MNT_PATH}
+  mkdir "${USB2_MNT_PATH}"
 else
   echo "ERROR: ${USB2_MNT_PATH} already exists. Please remove this directory before running this script."
   exit 1
@@ -87,19 +86,19 @@ fi
 # Mount provided devices to their temporary mount directories
 echo "Mounting ${USB1_DEV_NAME} to ${USB1_MNT_PATH}..."
 
-mount ${USB1_DEV_NAME} ${USB1_MNT_PATH}
+mount "${USB1_DEV_NAME}" "${USB1_MNT_PATH}"
 MOUNT_STATUS=$?
 
-if [[ ${MOUNT_STATUS} -ne 0 ]]; then
+if [[ "${MOUNT_STATUS}" -ne 0 ]]; then
   echo "ERROR: Mounting ${USB1_DEV_NAME} to ${USB1_MNT_PATH} failed with error code ${MOUNT_STATUS}..."
   exit 1
 fi
 
 echo
 echo "Mounting ${USB2_DEV_NAME} to ${USB2_MNT_PATH}..."
-mount ${USB2_DEV_NAME} ${USB2_MNT_PATH}
+mount "${USB2_DEV_NAME}" "${USB2_MNT_PATH}"
 MOUNT_STATUS=$?
-if [[ ${MOUNT_STATUS} -ne 0 ]]; then
+if [[ "${MOUNT_STATUS}" -ne 0 ]]; then
   echo "ERROR: Mounting ${USB2_DEV_NAME} to ${USB2_MNT_PATH} failed with error code ${MOUNT_STATUS}..."
   exit 1
 fi
@@ -115,44 +114,44 @@ rm -r ${USB2_MNT_PATH}/*
 ####################
 # First, copy base critical data backup to usb1
 echo
-echo "Copying critical data backup to usb1..."
-cd ${USB1_MNT_PATH}
-cp -r ${CRITICAL_DATA_LOCAL_BACKUP_DIR}/* .
+echo "Copying critical data backup to ${USB1_MNT_PATH}..."
+cp -r ${CRITICAL_DATA_LOCAL_BACKUP_DIR}/* "${USB1_MNT_PATH}"
 
-# Decrypt backup_codes.txt
-BACKUP_CODES_PASSWORD=$(cat ${BACKUP_CODES_PASS_FILE})
-echo -e "${BACKUP_CODES_PASSWORD}\n:X\n\n\n:wq\n" | /usr/bin/vim backup_codes.txt
+return 1
+
+# Decrypt backup_codes.txt on usb1
+BACKUP_CODES_PASSWORD=$(cat "${BACKUP_CODES_PASS_FILE}")
+echo -e "${BACKUP_CODES_PASSWORD}\n:X\n\n\n:wq\n" | /usr/bin/vim "${USB1_MNT_PATH}/backup_codes.txt"
 unset BACKUP_CODES_PASSWORD
-
-# Decrypt + extract 2fa backup (get password from backup_codes.txt)
-MFA_BACKUP_PASSWORD=$(sed -n '5{s/^[[:space:]]*//;s/[[:space:]]*$//;p;q}' backup_codes.txt)
-echo -e "${MFA_BACKUP_PASSWORD}\n:X\n\n\n:wq\n" | /usr/bin/vim 2fa_backup.2fas
-unset MFA_BACKUP_PASSWORD
-
-cd /mnt
 
 ####################
 #       CLONE      #
 ####################
 # Clone final contents of usb1 to usb2
 echo
-echo "Cloning contents of usb1 to usb2..."
-cp -r ${USB1_MNT_PATH}/* ${USB2_MNT_PATH}/
+echo "Cloning contents of ${USB1_MNT_PATH} to ${USB2_MNT_PATH}..."
+cp -r "${USB1_MNT_PATH}"/* "${USB2_MNT_PATH}"
 
+# Verify that backups have been copied to both drives
 echo
-echo "Done! Contents of USBs:"
-ls -R ${USB1_MNT_PATH}
-ls -R ${USB2_MNT_PATH}
+if [ -z "$(ls -A "${USB1_MNT_PATH}")" ]; then
+  echo "ERROR: "${USB1_MNT_PATH}" is empty, backup failed..."
+  exit 1
+fi
+if [ -z "$(ls -A "${USB2_MNT_PATH}")" ]; then
+  echo "ERROR: "${USB2_MNT_PATH}" is empty, backup failed..."
+  exit 1
+fi
+echo "Done!"
+echo
 
 ####################
 #      CLEANUP     #
 ####################
 echo
 echo "Cleaning up..."
-umount ${USB1_MNT_PATH}
-umount ${USB2_MNT_PATH}
+umount "${USB1_MNT_PATH}"
+umount "${USB2_MNT_PATH}"
 
-rm -r ${USB1_MNT_PATH}
-rm -r ${USB2_MNT_PATH}
-
-cd ${STARTING_DIR}
+rm -r "${USB1_MNT_PATH}"
+rm -r "${USB2_MNT_PATH}"

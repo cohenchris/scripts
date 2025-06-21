@@ -10,7 +10,7 @@
 
 # Set up environment
 WORKING_DIR=$(dirname "$(realpath "$0")")
-source ${WORKING_DIR}/.env
+source "${WORKING_DIR}/.env"
 
 require var BATOCERA_HOST
 require var BATOCERA_MAC
@@ -19,11 +19,11 @@ require var BATOCERA_LOCAL_BACKUP_DIR
 require var BATOCERA_REMOTE_BACKUP_DIR
 
 # Attempt to wake batocera using Wake-On-LAN
-wakeonlan ${BATOCERA_MAC}
+wakeonlan "${BATOCERA_MAC}"
 
 # Check that batocera is up (this command will wait long enough for the device to boot)
 mail_log plain "Checking if Batocera host is up..."
-ssh ${BATOCERA_HOST} "ls"
+ssh "${BATOCERA_HOST}" "ls"
 mail_log check "Batocera host up check" $?
 
 if [[ "${batocera_host_up}" -eq 0 ]]; then
@@ -31,17 +31,17 @@ if [[ "${batocera_host_up}" -eq 0 ]]; then
   # Make a backup of batocera on local and remote backup directories
  
   #mail_log plain "Backup up Batocera locally..."
-  #rsync -r --delete --update --progress ${BATOCERA_HOST}:${BATOCERA_DIR}/ ${BATOCERA_HOST}:${BATOCERA_LOCAL_BACKUP_DIR}
+  #rsync -r --delete --update --progress "${BATOCERA_HOST}:${BATOCERA_DIR}/" "${BATOCERA_HOST}:${BATOCERA_LOCAL_BACKUP_DIR}"
   #
   #mail_log check "Batocera local backup" $?
 
   mail_log plain "Backing up Batocera to remote backup server..."
-  rsync -r --delete --update --progress ${BATOCERA_HOST}:${BATOCERA_DIR}/ ${BATOCERA_REMOTE_BACKUP_DIR}
+  rsync -r --delete --update --progress "${BATOCERA_HOST}:${BATOCERA_DIR}/" "${BATOCERA_REMOTE_BACKUP_DIR}"
   mail_log check "Batocera remote backup" $?
 
   # Power console off
   mail_log plain "Powering off Batocera..."
-  ssh ${BATOCERA_HOST} "poweroff"
+  ssh "${BATOCERA_HOST}" "poweroff"
   mail_log check "batocera host shutdown" $?
 fi
 
