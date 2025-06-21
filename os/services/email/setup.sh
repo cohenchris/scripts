@@ -8,7 +8,7 @@ fi
 # Install packages
 if command -v apt &> /dev/null; then
   echo "Installing packages for Raspbian..."
-  REALNAME="Backups Server"
+  REALNAME="Backup Server"
   apt-get update && apt-get upgrade
   apt install mutt msmtp msmtp-mta
 elif command -v pkg &> /dev/null; then
