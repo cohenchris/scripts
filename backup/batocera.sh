@@ -14,9 +14,16 @@ source "${WORKING_DIR}/.env"
 
 require var BATOCERA_HOST
 require var BATOCERA_MAC
-require var BATOCERA_DIR
 require var BATOCERA_LOCAL_BACKUP_DIR
 require var BATOCERA_REMOTE_BACKUP_DIR
+
+# Location of batocera directory to backup on batocera host
+# No reason for this to be user-configurable - Batocera is an immutable distro, thus all installations
+# will have data stored in the same place
+BATOCERA_DIR="/userdata"
+# By default, any downloaded Steam games will be included in this backup
+# Takes up way too much space and is completely unnecessary, so exclude it
+EXCLUDE_DOWNLOADED_STEAM_GAMES="${BATOCERA_DIR}/saves/flatpak/data/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps"
 
 # Attempt to wake batocera using Wake-On-LAN
 wakeonlan "${BATOCERA_MAC}"
@@ -27,16 +34,26 @@ ssh "${BATOCERA_HOST}" "ls"
 mail_log check "Batocera host up check" $?
 
 if [[ "${batocera_host_up}" -eq 0 ]]; then
-  # TODO: need to install a drive specifically for backups in this machine
   # Make a backup of batocera on local and remote backup directories
  
-  #mail_log plain "Backup up Batocera locally..."
-  #rsync -r --delete --update --progress "${BATOCERA_HOST}:${BATOCERA_DIR}/" "${BATOCERA_HOST}:${BATOCERA_LOCAL_BACKUP_DIR}"
-  #
-  #mail_log check "Batocera local backup" $?
+#  mail_log plain "Backup up Batocera locally..."
+#  rsync -r \
+#        --delete \
+#        --update \
+#        --progress \
+#        --exclude "${EXCLUDE_DOWNLOADED_STEAM_GAMES}" \
+#        "${BATOCERA_HOST}:${BATOCERA_DIR}/"
+#        "${BATOCERA_HOST}:${BATOCERA_LOCAL_BACKUP_DIR}"
+#  mail_log check "Batocera local backup" $?
 
   mail_log plain "Backing up Batocera to remote backup server..."
-  rsync -r --delete --update --progress "${BATOCERA_HOST}:${BATOCERA_DIR}/" "${BATOCERA_REMOTE_BACKUP_DIR}"
+  rsync -r \
+        --delete \
+        --update \
+        --progress \
+        --exclude "${EXCLUDE_DOWNLOADED_STEAM_GAMES}" \
+        "${BATOCERA_HOST}:${BATOCERA_DIR}/" \
+        "${BATOCERA_REMOTE_BACKUP_DIR}"
   mail_log check "Batocera remote backup" $?
 
   # Power console off
