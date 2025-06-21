@@ -106,8 +106,8 @@ fi
 # Clear both USBs
 echo
 echo "Clearing USBs..."
-rm -r ${USB1_MNT_PATH}/*
-rm -r ${USB2_MNT_PATH}/*
+rm -r "${USB1_MNT_PATH}"/*
+rm -r "${USB2_MNT_PATH}"/*
 
 ####################
 #  COPY + DECRYPT  #
@@ -115,9 +115,7 @@ rm -r ${USB2_MNT_PATH}/*
 # First, copy base critical data backup to usb1
 echo
 echo "Copying critical data backup to ${USB1_MNT_PATH}..."
-cp -r ${CRITICAL_DATA_LOCAL_BACKUP_DIR}/* "${USB1_MNT_PATH}"
-
-return 1
+cp -r "${CRITICAL_DATA_LOCAL_BACKUP_DIR}"/* "${USB1_MNT_PATH}"
 
 # Decrypt backup_codes.txt on usb1
 BACKUP_CODES_PASSWORD=$(cat "${BACKUP_CODES_PASS_FILE}")

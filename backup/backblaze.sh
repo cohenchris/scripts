@@ -18,7 +18,7 @@ function backblaze_sync() {
 
   # Check B2 auth
   mail_log plain "Checking Backblaze authorization for bucket ${backblaze_bucket}..."
-  ${B2_BIN} get-bucket "${backblaze_bucket}" > /dev/null 2>&1
+  "${B2_BIN}" get-bucket "${backblaze_bucket}" > /dev/null 2>&1
   mail_log check "Backblaze authorization" $?
 
   # If exclude_regex was provided, prepend a pipe character to properly format the variable for b2 sync exclude regex
@@ -29,7 +29,7 @@ function backblaze_sync() {
   # Always prevent hidden files from being included
   cd "${dir_to_sync}"
   mail_log plain "Syncing backup to Backblaze..."
-  ${B2_BIN} sync --delete --replaceNewer --excludeRegex "\..*${exclude_regex}" . b2://${backblaze_bucket}
+  "${B2_BIN}" sync --delete --replaceNewer --excludeRegex "\..*${exclude_regex}" . b2://${backblaze_bucket}
   mail_log check "Backblaze backup" $?
 
   cd "${WORKING_DIR}"
