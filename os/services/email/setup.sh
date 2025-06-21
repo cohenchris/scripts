@@ -119,23 +119,23 @@ fi
 
 # Configure mutt
 MUTTRC_PATH="/${USER}/.muttrc"
-mkdir -p $(dirname ${MUTTRC_PATH}) 2>/dev/null
+mkdir -p $(dirname "${MUTTRC_PATH}") 2>/dev/null
 cp ./muttrc "${MUTTRC_PATH}"
 
 # Splice muttrc fields into the final config file
 if [ "${REALNAME}" = "OPNSense" ]; then
   # sed works a bit differently on OPNSense
-  sed -i "" "s|<realname>|\"${REALNAME}\"|g" ${MUTTRC_PATH}
-  sed -i "" "s|<email_username>|${EMAIL_USERNAME}|g" ${MUTTRC_PATH}
-  sed -i "" "s|<msmtp_bin_location>|${MSMTP_BIN_LOCATION}|g" ${MUTTRC_PATH}
+  sed -i "" "s|<realname>|\"${REALNAME}\"|g" "${MUTTRC_PATH}"
+  sed -i "" "s|<email_username>|${EMAIL_USERNAME}|g" "${MUTTRC_PATH}"
+  sed -i "" "s|<msmtp_bin_location>|${MSMTP_BIN_LOCATION}|g" "${MUTTRC_PATH}"
 else
-  sed -i "s|<realname>|\"${REALNAME}\"|g" ${MUTTRC_PATH}
-  sed -i "s|<email_username>|${EMAIL_USERNAME}|g" ${MUTTRC_PATH}
-  sed -i "s|<msmtp_bin_location>|${MSMTP_BIN_LOCATION}|g" ${MUTTRC_PATH}
+  sed -i "s|<realname>|\"${REALNAME}\"|g" "${MUTTRC_PATH}"
+  sed -i "s|<email_username>|${EMAIL_USERNAME}|g" "${MUTTRC_PATH}"
+  sed -i "s|<msmtp_bin_location>|${MSMTP_BIN_LOCATION}|g" "${MUTTRC_PATH}"
 fi
 
 # Send test email with mutt
-echo "Test mutt email!" | mutt -s "Test mutt" -- ${EMAIL_USERNAME}
+echo "Test mutt email!" | mutt -s "Test mutt" -- "${EMAIL_USERNAME}"
 if [ $? -ne 0 ]; then
   echo
   echo "ERROR: Mutt setup failed, manual intervention required."

@@ -22,7 +22,7 @@ nameserver ::1
 EOF
 
 # Set up email notifications
-cd ${SCRIPTS_BASE_DIR}/os/services/email
+cd "${SCRIPTS_BASE_DIR}/os/services/email"
 ./setup.sh
 
 echo

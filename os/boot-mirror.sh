@@ -24,7 +24,7 @@ function boot_mirror()
   # Take output of command and feed into array
   ZFS_ROOT_POOL_DEVICES=($(zpool list -v "${ZFS_ROOT_POOL}" -H | awk '$1 !~ /(mirror|raidz|spare|log|cache|special)-?[0-9]*/ {print $1}' | tail -n +2))
 
-  if [ ${#ZFS_ROOT_POOL_DEVICES[@]} -ne 2 ]; then
+  if [ "${#ZFS_ROOT_POOL_DEVICES[@]}" -ne 2 ]; then
     echo "ERROR: this pool is not a mirrored pool with 2 devices."
     exit
   fi
@@ -47,7 +47,7 @@ function boot_mirror()
   done
 
   # The device mounted at /boot must be in the ZFS pool we're working on
-  if [[ ! " ${ZFS_ROOT_POOL_DEVICES[@]} " =~ " ${PRIMARY_BOOT_PARTITION} " ]]; then
+  if [[ ! "${ZFS_ROOT_POOL_DEVICES[@]}" =~ "${PRIMARY_BOOT_PARTITION}" ]]; then
     echo "ERROR: this pool does not contain the device mounted at /boot."
     exit
   fi
@@ -79,8 +79,8 @@ function boot_mirror()
   echo "Cloning primary drive EFI boot partition to secondary drive EFI boot partition..."
   umount /boot
   sync
-  dd if=${PRIMARY_BOOT_PARTITION} of=${SECONDARY_BOOT_PARTITION} status=progress
-  mount ${PRIMARY_BOOT_PARTITION} /boot
+  dd if="${PRIMARY_BOOT_PARTITION}" of="${SECONDARY_BOOT_PARTITION}" status=progress
+  mount "${PRIMARY_BOOT_PARTITION}" /boot
 
   echo
   echo "Done!"

@@ -11,11 +11,11 @@ fi
 
 SCRIPTS_BASE_DIR=$(realpath "$(dirname "$(realpath "$0")")/../../..")
 
-# Install Glances webserver FreeBSD service
+# Install Glances and Glances webserver FreeBSD service
 echo "Installing Glances webserver FreeBSD service..."
 pkg update
 pkg install py311-pip
-pip install glances bottle --user
+pip install 'glances[web]' --user
 cp ./glances /usr/local/etc/rc.d
 if ! grep -q 'glances_enable="YES"' /etc/rc.conf; then
   echo 'glances_enable="YES"' >> /etc/rc.conf
@@ -56,7 +56,7 @@ echo "Restarting config to index new OPNSense actions..."
 service configd restart
 
 # Set up email notifications
-cd ${SCRIPTS_BASE_DIR}/os/services/email
+cd "${SCRIPTS_BASE_DIR}/os/services/email"
 bash ./setup.sh
 
 echo

@@ -16,7 +16,7 @@ start_worker() {
   exit_code=$?
 
   # Check if the worker ran successfully
-  if [ ${exit_code} -eq 0 ]; then
+  if [ "${exit_code}" -eq 0 ]; then
       echo "Worker completed successfully."
       return 0  # Success
   else

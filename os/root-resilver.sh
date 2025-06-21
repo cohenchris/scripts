@@ -36,12 +36,12 @@ read -p "Please select the name of the desired target pool: " ZFS_POOL_NAME
 
 # Confirm pool choice
 echo
-zpool status ${ZFS_POOL_NAME}
+zpool status "${ZFS_POOL_NAME}"
 echo
 
 read -p "Is this pool choice correct? (y/N) " yn
 
-case $yn in
+case "${yn}" in
   [Yy]* ) ;;
   *     ) exit;;
 esac
@@ -53,12 +53,12 @@ read -p "Enter target device to resilver (in the format /dev/sdX): " ZFS_RESILVE
 
 # Confirm device choice
 echo
-fdisk -l ${ZFS_RESILVER_DEV_NAME}
+fdisk -l "${ZFS_RESILVER_DEV_NAME}"
 echo
 
 read -p "Is this device choice correct? (y/N) " yn
 
-case $yn in
+case "${yn}" in
   [Yy]* ) ;;
   *     ) exit;;
 esac
@@ -67,13 +67,13 @@ esac
 # DRIVE PARTITIONING #
 ######################
 # Destroy all existing partitions
-sgdisk --zap-all ${ZFS_RESILVER_DEV_NAME}
+sgdisk --zap-all "${ZFS_RESILVER_DEV_NAME}"
 # 
 # # Create boot partitions
-sgdisk -n1:0:+4G -t1:ef00 ${ZFS_RESILVER_DEV_NAME}
+sgdisk -n1:0:+4G -t1:ef00 "${ZFS_RESILVER_DEV_NAME}"
 # 
 # # Create ZFS partitions
-sgdisk -n2:0:0 -t2:bf00 ${ZFS_RESILVER_DEV_NAME}
+sgdisk -n2:0:0 -t2:bf00 "${ZFS_RESILVER_DEV_NAME}"
 # 
 # # Create boot filesystem for both drives
 mkfs.vfat "${ZFS_RESILVER_DEV_P1_NAME}"
@@ -89,16 +89,16 @@ echo
 zpool status
 
 # Replicate source
-ZFS_EXISTING_DEV_P2_ID=$(zpool status ${ZFS_POOL_NAME} | awk '/ONLINE/ {print $1}')
+ZFS_EXISTING_DEV_P2_ID=$(zpool status "${ZFS_POOL_NAME}" | awk '/ONLINE/ {print $1}')
 ZFS_EXISTING_DEV_NAME=$(readlink -f "/dev/disk/by-id/${ZFS_EXISTING_DEV_P2_ID}")
-ZFS_EXISTING_DEV_NAME="/dev/$(lsblk -no PKNAME ${ZFS_EXISTING_DEV_NAME})"
+ZFS_EXISTING_DEV_NAME="/dev/$(lsblk -no PKNAME "${ZFS_EXISTING_DEV_NAME}")"
 ZFS_EXISTING_DEV_P1_NAME=$(lsblk -nr -o NAME "${ZFS_EXISTING_DEV_NAME}" | awk 'NR==2 {print "/dev/"$1}')
 ZFS_EXISTING_DEV_P2_NAME=$(lsblk -nr -o NAME "${ZFS_EXISTING_DEV_NAME}" | awk 'NR==3 {print "/dev/"$1}')
 echo
 echo "---------- Surviving ZFS device to replicate ----------"
-echo "Device name: $ZFS_EXISTING_DEV_NAME"
-echo "Boot partition: $ZFS_EXISTING_DEV_P1_NAME"
-echo "ZFS partition: $ZFS_EXISTING_DEV_P2_NAME"
+echo "Device name: ${ZFS_EXISTING_DEV_NAME}"
+echo "Boot partition: ${ZFS_EXISTING_DEV_P1_NAME}"
+echo "ZFS partition: ${ZFS_EXISTING_DEV_P2_NAME}"
 echo "ZFS partition ID: ${ZFS_EXISTING_DEV_P2_ID}"
 
 # Replicate target
@@ -107,16 +107,16 @@ ZFS_RESILVER_DEV_P2_NAME=$(lsblk -nr -o NAME "${ZFS_RESILVER_DEV_NAME}" | awk 'N
 ZFS_RESILVER_DEV_P2_ID=$(ls -l /dev/disk/by-id/ | grep "$(basename $(readlink -f "${ZFS_RESILVER_DEV_P2_NAME}"))" | awk '{print "/dev/disk/by-id/" $9}')
 echo
 echo "---------- Target device to resilver ----------"
-echo "Device name: $ZFS_RESILVER_DEV_NAME"
-echo "Boot partition: $ZFS_RESILVER_DEV_P1_NAME"
-echo "ZFS partition: $ZFS_RESILVER_DEV_P2_NAME"
-echo "ZFS partition ID: $ZFS_RESILVER_DEV_P2_ID"
+echo "Device name: ${ZFS_RESILVER_DEV_NAME}"
+echo "Boot partition: ${ZFS_RESILVER_DEV_P1_NAME}"
+echo "ZFS partition: ${ZFS_RESILVER_DEV_P2_NAME}"
+echo "ZFS partition ID: ${ZFS_RESILVER_DEV_P2_ID}"
 
 # ZFS device GUID to replace
-ZFS_DEV_TO_REPLACE_GUID=$(zpool status ${ZFS_POOL_NAME} | awk '/UNAVAIL/ {print $1}')
+ZFS_DEV_TO_REPLACE_GUID=$(zpool status "${ZFS_POOL_NAME}" | awk '/UNAVAIL/ {print $1}')
 echo
 echo "---------- Unavailable ZFS drive to replace ----------"
-echo "GUID: $ZFS_DEV_TO_REPLACE_GUID"
+echo "GUID: ${ZFS_DEV_TO_REPLACE_GUID}"
 
 echo
 echo "---------- STEPS TO BE TAKEN ----------"
@@ -128,7 +128,7 @@ echo -e "\tzfs replace ${ZFS_POOL_NAME} ${ZFS_DEV_TO_REPLACE_GUID} ${ZFS_RESILVE
 echo
 read -p "Does this look correct? (y/N) " yn
 
-case $yn in
+case "${yn}" in
   [Yy]* ) ;;
   *     ) exit;;
 esac
@@ -143,8 +143,8 @@ echo "Cloning EFI boot partition on new drive..."
 umount /boot
 sync
 # Use dd to copy existing drive's EFI boot partition to new drive's EFI boot partition
-dd if=${ZFS_EXISTING_DEV_P1_NAME} of=${ZFS_RESILVER_DEV_P1_NAME} status=progress
-mount ${ZFS_EXISTING_DEV_P1_NAME} /boot
+dd if="${ZFS_EXISTING_DEV_P1_NAME}" of="${ZFS_RESILVER_DEV_P1_NAME}" status=progress
+mount "${ZFS_EXISTING_DEV_P1_NAME}" /boot
 
 echo
 echo "Updating systemd.mount file for EFI boot partition..."
@@ -175,7 +175,7 @@ systemctl enable boot.mount
 ##########################
 echo
 echo "Resilvering ZFS partition on new drive..."
-zpool replace ${ZFS_POOL_NAME} ${ZFS_DEV_TO_REPLACE_GUID} ${ZFS_RESILVER_DEV_P2_ID}
+zpool replace "${ZFS_POOL_NAME}" "${ZFS_DEV_TO_REPLACE_GUID}" "${ZFS_RESILVER_DEV_P2_ID}"
 
 echo
 echo "Done! Please wait for resilver to finish..."

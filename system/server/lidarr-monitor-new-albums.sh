@@ -7,7 +7,7 @@
 #
 # This functionality is built into Lidarr, but has been broken for a while
 
-num_days_to_monitor=${1}
+num_days_to_monitor=$1
 
 if [ -z "${num_days_to_monitor}" ]; then
   echo "Please specify the number of days to monitor"
@@ -19,7 +19,7 @@ fi
 
 # Initialize environment
 WORKING_DIR=$(dirname "$(realpath "$0")")
-source ${WORKING_DIR}/../.env
+source "${WORKING_DIR}/../.env"
 
 require var LIDARR_URL
 require var LIDARR_API_KEY
