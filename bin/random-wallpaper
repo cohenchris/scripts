@@ -16,7 +16,7 @@ cd "${WALLPAPER_DIR}"
 WALLPAPER=$(find $(pwd) -type f | grep -v '.git' | shuf -n 1)
 WALLPAPER=$(readlink -f "${WALLPAPER}")
 
-# Set .active.jpg to keep track of active wallpaper
+# Keep track of active wallpaper
 ln -sf "${WALLPAPER}" "${XDG_CACHE_HOME:-${HOME}/.cache}/active-wallpaper.jpg"
 
 MONITOR=$(hyprctl monitors | grep "Monitor" | awk '{print $2}')

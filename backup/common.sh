@@ -142,14 +142,14 @@ function send_email() {
 
 
 
-# borg_backup(dir_to_backup, dst_borg_repo, exclude_regex)
+# borg_backup(dir_to_backup, dst_borg_repo, borg_flags)
 #   dir_to_backup     - directory to backup with borg
 #   dst_borg_repo     - borg repository to backup into
 #   keep_daily        - number of daily archives to keep
 #   keep_weekly       - number of weekly archives to keep
 #   keep_monthly      - number of monthly archives to keep
-#   exclude_regex?... - regex to exclude certain files from backup (optional)
-#                       this is also a variadic argument, any number of exclude_regex entries may be provided
+#   borg_flags?...    - additional flags to be used with borg create (optional)
+#                       this is also a variadic argument, any number of borg_flags may be provided
 #
 # Creates a borg backup for the specified directory into the specified borg repository
 function borg_backup() {
@@ -159,9 +159,9 @@ function borg_backup() {
   local keep_weekly="$4"
   local keep_monthly="$5"
 
-  # Capture variadic argument exclude_regex
+  # Capture variadic argument borg_flags
   shift 5
-  local exclude_regex=("$@")
+  local borg_flags=("$@")
 
   require var dir_to_backup
   require var dst_borg_repo
@@ -178,7 +178,7 @@ function borg_backup() {
   export BORG_PASSPHRASE=$(cat "${BORG_PASS_FILE}")
 
   # Create archive
-  borg create "${exclude_regex[@]}" --log-json --progress --stats "::${BACKUP_NAME}" "${dir_to_backup}"
+  borg create "${borg_flags[@]}" --log-json --progress --stats "::${BACKUP_NAME}" "${dir_to_backup}"
   mail_log check "Borg backup" $?
 
   # Prune archives

@@ -25,12 +25,12 @@ mail_log check "Lidarr stop" $?
 
 # Create a borg backup on the local drive
 mail_log plain "Backing up music data locally..."
-borg_backup "${MUSIC_DIR}" "${MUSIC_LOCAL_BACKUP_DIR}" "${MUSIC_BACKUP_KEEP_DAILY}" "${MUSIC_BACKUP_KEEP_WEEKLY}" "${MUSIC_BACKUP_KEEP_MONTHLY}" "${MUSIC_EXCLUDE_REGEX[@]}"
+borg_backup "${MUSIC_DIR}" "${MUSIC_LOCAL_BACKUP_DIR}" "${MUSIC_BACKUP_KEEP_DAILY}" "${MUSIC_BACKUP_KEEP_WEEKLY}" "${MUSIC_BACKUP_KEEP_MONTHLY}" "${MUSIC_BORG_FLAGS[@]}"
 mail_log check "Music local backup" $?
 
 # Create a borg backup on the remote backup server
 mail_log plain "Backing up music data on remote backup server..."
-borg_backup "${MUSIC_DIR}" "${REMOTE_BACKUP_SERVER}:${MUSIC_REMOTE_BACKUP_DIR}" "${MUSIC_BACKUP_KEEP_DAILY}" "${MUSIC_BACKUP_KEEP_WEEKLY}" "${MUSIC_BACKUP_KEEP_MONTHLY}" "${MUSIC_EXCLUDE_REGEX[@]}"
+borg_backup "${MUSIC_DIR}" "${REMOTE_BACKUP_SERVER}:${MUSIC_REMOTE_BACKUP_DIR}" "${MUSIC_BACKUP_KEEP_DAILY}" "${MUSIC_BACKUP_KEEP_WEEKLY}" "${MUSIC_BACKUP_KEEP_MONTHLY}" "${MUSIC_BORG_FLAGS[@]}"
 mail_log check "Music remote backup" $?
 
 # Resume Lidarr
