@@ -26,6 +26,7 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 - [VPN Selection Menu](#VPN-Selection-Menu)
 - [Fuzzel Askpass](#Fuzzel-Askpass)
 - [Unicode Character Selection Menu](#Unicode-Character-Selection-Menu)
+- [Hyprlock Reload](#Hyprlock-Reload)
 
 
 
@@ -224,3 +225,13 @@ OR
   address-card; f2bb
   adjust; f042
 ```
+
+
+
+
+## Hyprlock Reload
+[`hyprlock-reload`](hyprlock-reload)
+
+Sometimes, when the screen is locked, hyprlock crashes and the user can no longer login.
+To remedy this, the user must login to a different TTY reload the program (run this script), and switch back to the original TTY to login.
+This script is meant to be run after the user switches to a different TTY.
