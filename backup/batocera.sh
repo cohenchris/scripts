@@ -34,18 +34,20 @@ ssh "${BATOCERA_HOST}" "ls"
 mail_log check "Batocera host up check" $?
 
 if [[ "${batocera_host_up}" -eq 0 ]]; then
-  # Make a backup of batocera on local and remote backup directories
+  # Make a backup of batocera on the local machine
   mail_log plain "Backup up Batocera locally..."
+  ssh -A "${BATOCERA_HOST}" \
   rsync -r \
         --delete \
         --update \
         --progress \
         --exclude "${EXCLUDE_DOWNLOADED_STEAM_GAMES}" \
         --delete-excluded \
-        "${BATOCERA_HOST}:${BATOCERA_DIR}/" \
-        "${BATOCERA_HOST}:${BATOCERA_LOCAL_BACKUP_DIR}"
+        "${BATOCERA_DIR}/" \
+        "${BATOCERA_LOCAL_BACKUP_DIR}"
   mail_log check "Batocera local backup" $?
 
+  # Make a backup of batocera on the remote backup server
   mail_log plain "Backing up Batocera to remote backup server..."
   rsync -r \
         --delete \
