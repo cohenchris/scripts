@@ -35,17 +35,16 @@ mail_log check "Batocera host up check" $?
 
 if [[ "${batocera_host_up}" -eq 0 ]]; then
   # Make a backup of batocera on local and remote backup directories
- 
-#  mail_log plain "Backup up Batocera locally..."
-#  rsync -r \
-#        --delete \
-#        --update \
-#        --progress \
-#        --exclude "${EXCLUDE_DOWNLOADED_STEAM_GAMES}" \
-#        --delete-excluded \
-#        "${BATOCERA_HOST}:${BATOCERA_DIR}/"
-#        "${BATOCERA_HOST}:${BATOCERA_LOCAL_BACKUP_DIR}"
-#  mail_log check "Batocera local backup" $?
+  mail_log plain "Backup up Batocera locally..."
+  rsync -r \
+        --delete \
+        --update \
+        --progress \
+        --exclude "${EXCLUDE_DOWNLOADED_STEAM_GAMES}" \
+        --delete-excluded \
+        "${BATOCERA_HOST}:${BATOCERA_DIR}/"
+        "${BATOCERA_HOST}:${BATOCERA_LOCAL_BACKUP_DIR}"
+  mail_log check "Batocera local backup" $?
 
   mail_log plain "Backing up Batocera to remote backup server..."
   rsync -r \
