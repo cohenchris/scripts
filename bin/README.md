@@ -18,7 +18,7 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 - [LF File Manager Wrapper](#LF-File-Manager-Wrapper)
 - [LaTeX Shortcuts](#LaTeX-Shortcuts)
 - [Music Video Downloader](#Music-Video-Downloader)
-- [Set Random Wallpaper](#Set-Random-Wallpaper)
+- [Set Wallpaper](#Set-Wallpaper)
 - [Email Lookup](#Email-Lookup)
 - [Custom Pinentry](#Custom-Pinentry)
 - [Notification Wrapper](#Notification-Wrapper)
@@ -126,10 +126,13 @@ This script is pretty hardcoded to my personal environment and directory structu
 
 
 
-## Set Random Wallpaper
-[`random-wallpaper`](random-wallpaper)
+## Set Wallpaper
+[`wallpaper [random,select <filepath>]`](wallpaper)
 
-Selects and random image from the `${XDG_DATA_HOME}/wallpapers` directory and sets it as the user's wallpaper.
+Sets the user's wallpaper.
+
+`wallpaper random` selects and random image from the `${XDG_DATA_HOME}/wallpapers` directory and sets it as the user's wallpaper.
+`wallpaper select <filepath>` sets the user's wallpaper to the image at `<filepath>`.
 
 
 

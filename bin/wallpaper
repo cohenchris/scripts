@@ -1,0 +1,56 @@
+#!/bin/bash
+
+if [ -z "${WAYLAND_DISPLAY}" ]; then
+  echo "Not running in a graphical environment, exiting..."
+  exit 1
+fi
+
+# Prepare global variables
+WALLPAPER_DIR="${XDG_DATA_HOME:-${HOME}/.local/share}/wallpapers"
+MONITOR=$(hyprctl monitors | grep "Monitor" | awk '{print $2}')
+
+if [ ! -d "${WALLPAPER_DIR}" ]; then
+  notify CRITICAL "ERROR" "Wallpapers directory not found at ${WALLPAPER_DIR}"
+  exit 1
+fi
+
+
+# display_wallpaper(selected_wallpaper)
+#   selected_wallpaper - name of wallpaper file to display
+#
+# This function changes the wallpaper to the provided image path
+function display_wallpaper()
+{
+  local selected_wallpaper=$(readlink -f "$1")
+  local mime_type=$(file --mime-type "${selected_wallpaper}" | awk '{print $2}')
+
+  if [[ -z "${selected_wallpaper}" ]]; then
+    echo "ERROR - 'selected_wallpaper' argument not provided to function 'display_wallpaper()'"
+    exit 1
+  fi
+
+  if ! [[ "${mime_type}" =~ ^image/ ]]; then
+    echo "ERROR - ${selected_wallpaper} is not an image"
+    exit 1
+  fi
+
+  # Keep track of active selected_wallpaper
+  ln -sf "${selected_wallpaper}" "${XDG_CACHE_HOME:-${HOME}/.cache}/active-wallpaper.jpg"
+
+  # Preload selected_wallpaper file
+  hyprctl hyprpaper preload "${selected_wallpaper}"
+
+  # Display selected_wallpaper
+  hyprctl hyprpaper wallpaper "${MONITOR},${selected_wallpaper}"
+}
+
+
+# Parse and handle arguments
+if [ "$1" == "random" ]; then
+  display_wallpaper "$(find "${WALLPAPER_DIR}" -type f | grep -v '.git' | shuf -n 1)"
+elif [ "$1" == "select" ]; then
+  display_wallpaper "$2"
+else
+  echo "Invalid argument - choose one of [random, select]."
+  exit 1
+fi
