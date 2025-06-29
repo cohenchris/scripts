@@ -26,7 +26,7 @@ function backblaze_sync() {
   # Always prevent hidden files from being included
   cd "${dir_to_sync}"
   mail_log plain "Syncing backup to Backblaze..."
-  "${BACKBLAZE_BIN}" sync --delete --replaceNewer "${exclude_regex}" . b2://${backblaze_bucket}
+  "${BACKBLAZE_BIN}" sync --delete --replaceNewer ${exclude_regex} . b2://${backblaze_bucket}
   mail_log check "Backblaze backup" $?
 
   cd "${WORKING_DIR}"
