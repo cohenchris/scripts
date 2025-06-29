@@ -43,7 +43,7 @@ require var BACKBLAZE_BUCKET
 # Construct the exclusion regex string
 # Should be in the format "\..*|somedir|anotherdir|somefile|anotherfile"
 if [[ -n "${BACKBLAZE_EXCLUDE_REGEX}" ]]; then
-  exclude_regex="--excludeRegex \..*"
+  exclude_regex="--excludeRegex ..*"
 
   for entry in "${BACKBLAZE_EXCLUDE_REGEX[@]}"; do
     exclude_regex="${exclude_regex}|${entry}"
