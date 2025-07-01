@@ -4,6 +4,7 @@ WORKING_DIR=$(dirname "$(realpath "$0")")
 source "${WORKING_DIR}/.env"
 
 require var BATOCERA_HOST
+require var BATOCERA_MAC
 
 
 # batocera_mount(mount_dir)
@@ -19,6 +20,9 @@ function batocera_mount()
     echo "ERROR: directory \"${mount_dir}\" is not empty, cannot mount..."
     exit 1
   fi
+
+  echo "Sending wake command to \"${BATOCERA_HOST}\""
+  wakeonlan "${BATOCERA_MAC}"
 
   echo "Mounting \"${BATOCERA_HOST}:/userdata\" at \"${mount_dir}\"..."
   mkdir -p "${mount_dir}"

@@ -10,11 +10,11 @@ function require() {
   # Check that both arguments are provided
   if [[ -z "${type}" ]]; then
     echo -e "ERROR - 'type' argument not provided to function 'require()'."
-    return 1
+    exit 1
   fi
   if [[ -z "${name}" ]]; then
     echo -e "ERROR - 'name' argument not provided to function 'require()'."
-    return 1
+    exit 1
   fi
 
   if [[ "${type}" == "var" ]]; then
@@ -23,7 +23,7 @@ function require() {
       # Log variable name and calling function name
       echo -e "ERROR - variable \"${name}\" is not set - required by ${FUNCNAME[1]:-env}"
       status="FAIL"
-      return 1
+      exit 1
     fi
 
   elif [[ "${type}" == "file" ]]; then
@@ -32,7 +32,7 @@ function require() {
       # Log variable name and calling function name
       echo -e "ERROR - file \"${name}\" does not exist - required by ${FUNCNAME[1]:-env}"
       status="FAIL"
-      return 1
+      exit 1
 
     # Check permissions on password files
     elif [[ "${name}" == *"pass"* ]]; then
@@ -79,7 +79,7 @@ function mail_log() {
       # Failure
       echo -e "[✘]    ${message}" >> "${MAIL_FILE}"
       STATUS="FAIL"
-      return 1
+      exit 1
     else
       # Success
       echo -e "[✔]    ${message}" >> "${MAIL_FILE}"
@@ -89,7 +89,7 @@ function mail_log() {
   else
     echo "ERROR: Invalid log_type provided to mail_log() - must be one of [check,plain]"
     status="FAIL"
-    return 1
+    exit 1
   fi
 }
 
@@ -131,7 +131,7 @@ function send_email() {
     if [[ "${max_mail_attempts}" -eq 0 ]]; then
       echo -e "send_email failed"
       status="FAIL"
-      return 1
+      exit 1
     fi
 
     sleep 5
