@@ -127,12 +127,12 @@ This script is pretty hardcoded to my personal environment and directory structu
 
 
 ## Set Wallpaper
-[`wallpaper [random,select <filepath>]`](wallpaper)
+[`set-wallpaper [random, <filepath>]`](set-wallpaper)
 
 Sets the user's wallpaper.
 
-`wallpaper random` selects and random image from the `${XDG_DATA_HOME}/wallpapers` directory and sets it as the user's wallpaper.
-`wallpaper select <filepath>` sets the user's wallpaper to the image at `<filepath>`.
+`set-wallpaper random` selects and random image from the `${XDG_DATA_HOME}/wallpapers` directory and sets it as the user's wallpaper.
+`set-wallpaper <filepath>` sets the user's wallpaper to the image at `<filepath>`.
 
 
 

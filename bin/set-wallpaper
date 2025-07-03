@@ -35,7 +35,7 @@ function display_wallpaper()
   fi
 
   # Keep track of active selected_wallpaper
-  ln -sf "${selected_wallpaper}" "${XDG_CACHE_HOME:-${HOME}/.cache}/active-wallpaper.jpg"
+  ln -sf "${selected_wallpaper}" "${XDG_CACHE_HOME:-${HOME}/.local/cache}/active-wallpaper.jpg"
 
   # Preload selected_wallpaper file
   hyprctl hyprpaper preload "${selected_wallpaper}"
@@ -48,9 +48,6 @@ function display_wallpaper()
 # Parse and handle arguments
 if [ "$1" == "random" ]; then
   display_wallpaper "$(find "${WALLPAPER_DIR}" -type f | grep -v '.git' | shuf -n 1)"
-elif [ "$1" == "select" ]; then
-  display_wallpaper "$2"
 else
-  echo "Invalid argument - choose one of [random, select]."
-  exit 1
+  display_wallpaper "$1"
 fi

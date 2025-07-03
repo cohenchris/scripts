@@ -8,9 +8,8 @@ fi
 # Initialize environment
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source ${WORKING_DIR}/.env
-DATE=$(date +"%Y%m%d")
-STATUS="SUCCESS"
-BODY=/tmp/body
+
+# require var TEST
 
 # On some systems, smartctl is installed in /usr/sbin
 export PATH="/usr/sbin:${PATH}"
@@ -62,32 +61,28 @@ function report_health()
 # Print out full S.M.A.R.T. summary for the externally SMART_DRIVES
 function smart_summarize()
 {
-  echo >> ${BODY}
-  echo "-----------------------------------------------------------------------" >> ${BODY}
-  echo "------------------------- SMARTCTL MONITORING -------------------------" >> ${BODY}
-  echo "-----------------------------------------------------------------------" >> ${BODY}
-  echo >> ${BODY}
+  mail_log plain "\n-----------------------------------------------------------------------"
+  mail_log plain "------------------------- SMARTCTL MONITORING -------------------------"
+  mail_log plain "-----------------------------------------------------------------------\n"
 
   # Summarize each declared smartctl drive
   for drive in ${SMART_DRIVES[@]}; do
-    echo "############################## /dev/${drive} ##############################" >> ${BODY}
+    mail_log plain "\n############################## /dev/${drive} ##############################"
 
     local smartctl_output_short=$(smartctl -H /dev/${drive})
 
     if [[ ${smartctl_output_short} == *"PASSED"* ]]; then
       # Print short-form health that basically only shows "PASSED"
-      echo ${smartctl_output_short} >> ${BODY}
+      mail_log plain "${smartctl_output_short}"
     elif [[ ${smartctl_output_short} == *"Unable to detect device type"* ]]; then
-      echo "/dev/${drive} is not S.M.A.R.T. capable, skipping..." >> ${BODY}
+      mail_log plain "/dev/${drive} is not S.M.A.R.T. capable, skipping..."
     else
       # There's something wrong, print a more comprehensive summary
       local smartctl_output_long=$(smartctl -a /dev/${drive})
 
-      echo ${smartctl_output_long} >> ${BODY}
+      mail_log plain "${smartctl_output_long}"
       STATUS="FAIL"
     fi
-
-    echo >> ${BODY}
 
   done
 }
@@ -98,23 +93,19 @@ function smart_summarize()
 # Print out full ZFS pool summary for the externally defined ZFS_POOLS
 function zfs_summarize()
 {
-  echo >> ${BODY}
-  echo "-----------------------------------------------------------------------" >> ${BODY}
-  echo "---------------------------- ZFS MONITORING ---------------------------" >> ${BODY}
-  echo "-----------------------------------------------------------------------" >> ${BODY}
-  echo >> ${BODY}
+  mail_log plain "\n-----------------------------------------------------------------------"
+  mail_log plain "---------------------------- ZFS MONITORING ---------------------------"
+  mail_log plain "-----------------------------------------------------------------------\n"
 
   # Summarize each declared ZFS pool
   for pool in ${ZFS_POOLS[@]}; do
-    echo "############################## ${pool} ##############################" >> ${BODY}
+    mail_log plain "\n############################## ${pool} ##############################"
 
-    zpool status ${pool} >> ${BODY}
+    mail_log plain "$(zpool status ${pool})"
 
     if [[ $? -ne 0 ]]; then
       status="FAIL"
     fi
-
-    echo >> ${BODY}
 
   done
 }
@@ -131,6 +122,8 @@ if [ "$1" == "test" ]; then
 elif [ "$1" == "report" ]; then
   report_health
 else
-  echo "Invalid argument - choose one of [test, report]."
-  exit 1
+  mail_log plain "Invalid argument - choose one of [test, report]."
+  status="FAIL"
 fi
+
+finish
