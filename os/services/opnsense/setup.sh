@@ -14,14 +14,6 @@ SCRIPTS_BASE_DIR=$(realpath "$(dirname "$(realpath "$0")")/../../..")
 echo "Updating packages and repositories..."
 pkg update
 
-# Install NetData system monitor
-echo "Installing NetData system monitoring service..."
-pkg update
-pkg install netdata
-sysrc netdata_enable="YES"
-service netdata enable
-service netdata start
-
 # Install smartmontools
 pkg install smartmontools
 cp /usr/local/etc/smartd.conf.sample /usr/local/etc/smartd.conf
