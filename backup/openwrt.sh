@@ -11,6 +11,7 @@ require var REMOTE_BACKUP_SERVER
 
 # Backup
 mail_log plain "Backing up OpenWRT data locally..."
+mkdir -p "${OPENWRT_LOCAL_BACKUP_DIR}"
 sysupgrade -v -b "${OPENWRT_LOCAL_BACKUP_DIR}/${BACKUP_NAME}.tar.gz"
 mail_log check "Local OpenWRT backup" $?
 
