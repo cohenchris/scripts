@@ -11,24 +11,21 @@ fi
 
 SCRIPTS_BASE_DIR=$(realpath "$(dirname "$(realpath "$0")")/../../..")
 
-# Install Glances and Glances webserver FreeBSD service
-echo "Installing Glances webserver FreeBSD service..."
+echo "Updating packages and repositories..."
 pkg update
-pkg install py311-pip
-pip install 'glances[web]' --user
-cp ./glances /usr/local/etc/rc.d
-if ! grep -q 'glances_enable="YES"' /etc/rc.conf; then
-  echo 'glances_enable="YES"' >> /etc/rc.conf
-fi
-service glances enable
-service glances start
+
+# Install NetData system monitor
+echo "Installing NetData system monitoring service..."
+pkg update
+pkg install netdata
+sysrc netdata_enable="YES"
+service netdata enable
+service netdata start
 
 # Install smartmontools
 pkg install smartmontools
 cp /usr/local/etc/smartd.conf.sample /usr/local/etc/smartd.conf
-if ! grep -q 'smartd_enable="YES"' /etc/rc.conf; then
-  echo 'smartd_enable="YES"' >> /etc/rc.conf
-fi
+sysrc smartd_enable="YES"
 service smartd enable
 service smartd start
 
@@ -37,12 +34,6 @@ echo
 echo "Installing and configuring OPNSense backup OPNSense action..."
 cp ./actions_backupopnsense.conf /usr/local/opnsense/service/conf/actions.d
 sed -i "" "s|<scriptsdir>|${SCRIPTS_BASE_DIR}|g" /usr/local/opnsense/service/conf/actions.d/actions_backupopnsense.conf
-
-# Install Glances auto-restart action
-echo
-echo "Installing and configuring Glances auto-restart OPNSense action..."
-cp ./actions_restartglances.conf /usr/local/opnsense/service/conf/actions.d
-sed -i "" "s|<scriptsdir>|${SCRIPTS_BASE_DIR}|g" /usr/local/opnsense/service/conf/actions.d/actions_restartglances.conf
 
 # Install drive health monitoring action
 echo
