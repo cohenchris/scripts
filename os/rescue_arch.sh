@@ -21,7 +21,10 @@ arch-chroot /mnt
 su phrog
 paru -Syu linux-lts mkinitcpio
 
-# Exit chroot
+# Exit back to root in chroot
+exit
+
+# Exit back to arch ISO
 exit
 
 # Unmount everything and export ZFS pools
