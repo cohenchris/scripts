@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# NOTE: please run these steps manually
+exit
+
 # Hardcode boot partitions here in the form /dev/sdX or /dev/nvmeXnXpX
 BOOT_PARTITION_1=""
 BOOT_PARTITION_2=""
