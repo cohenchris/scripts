@@ -25,7 +25,7 @@ paru -Syu linux-lts mkinitcpio
 exit
 
 # Unmount everything and export ZFS pools
-zfs umount -arch
+zfs umount -a
 umount -R /mnt
 zpool export -a
 
