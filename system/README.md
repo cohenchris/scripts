@@ -19,15 +19,18 @@ For example, one of the scripts in here nukes a Docker container stack, cleans t
 - [Batocera Quick Mount + Unmount via SSHFS](#Batocera-Quick-Mount-+-Unmount-via-SSHFS)
   - [Prerequisites](#Prerequisites-1)
   - [Use](#Use-1)
-- [Drive Health Monitoring + Notifications](#Drive-Health-Monitoring-+-Notifications)
+- [Borg Repository Maintenance](#Borg-Repository-Maintenance)
   - [Prerequisites](#Prerequisites-2)
   - [Use](#Use-2)
-- [Restart Glances Webserver](#Restart-Glances-Webserver)
+- [Drive Health Monitoring + Notifications](#Drive-Health-Monitoring-+-Notifications)
   - [Prerequisites](#Prerequisites-3)
   - [Use](#Use-3)
-- [Set Proper Permissions on Media Files](#Set-Proper-Permissions-on-Media-Files)
+- [Restart Glances Webserver](#Restart-Glances-Webserver)
   - [Prerequisites](#Prerequisites-4)
   - [Use](#Use-4)
+- [Set Proper Permissions on Media Files](#Set-Proper-Permissions-on-Media-Files)
+  - [Prerequisites](#Prerequisites-5)
+  - [Use](#Use-5)
 - [Server Automation](#Server-Automation)
 
 
@@ -81,7 +84,21 @@ Mounts Batocera's `/userdata` directory to a newly created `./batocera` director
 
 Unmounts and removes the local `./batocera` directory.
 
+## Borg Repository Maintenance
+[`borg-maintenance.sh`](borg-maintenance.sh)
 
+This script will run some health checks on each targeted borg repository.
+Each repository's contents will first be checked for data corruption.
+Afterwards, the repository is defragmented by deleting stale segment files.
+
+### Prerequisites
+This script assumes that:
+- You have filled out the [`.env`](sample.env) file
+
+### Use
+This script should be run manually periodically, maybe once per month or less.
+It may take a while to complete, and may require manual intervention depending on the health of the targeted borg repositories.
+You should avoid modifying any of the targeted repositories while this script is running.
 
 
 ## Drive Health Monitoring + Notifications

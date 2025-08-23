@@ -10,7 +10,7 @@ import time
 
 
 if len(sys.argv) != 3:
-    print("Usage: plex-server-maintenance-broadcast.py <plex URL> <plex token>")
+    print("Usage: music-rating-progress-sheet.py <plex URL> <plex token>")
     exit(1)
 
 
@@ -121,12 +121,12 @@ print(artist_rating_sheet)
 
 # Start xlsx sheet
 wb = openpyxl.Workbook()
-sheet = wb.active
+ws = wb.active
 
 for i, row in enumerate(artist_rating_sheet):
     for j, item in enumerate(row):
         coord = openpyxl.utils.get_column_letter(j+1) + str(i+1)
-        sheet[coord] = item
+        ws[coord] = item
 
         if i == 0:
             # Skip the headers column
@@ -135,24 +135,43 @@ for i, row in enumerate(artist_rating_sheet):
         if (j+1) == 2:  # Completeness column
             if "100.0%" in item:
                 # If cell value contains "100.0%", set background color to #CCFFCC
-                sheet[coord].fill = greenFill
+                ws[coord].fill = greenFill
                 pass
             else:
                 # If cell value does NOT contain "100.0%", set background color to #FFCCCC
-                sheet[coord].fill = redFill
+                ws[coord].fill = redFill
                 pass
         elif (j+1) > 2:   # Albums for each artist
             artist = row[0]
             album = row[j]
             if artist_ratings[artist][album]: # True means fully rated
                 # If album is fully rated, set background color to #CCFFCC
-                sheet[coord].fill = greenFill
+                ws[coord].fill = greenFill
                 pass
             else:
                 # If album is NOT fully rated, set background color to #FFCCCC
-                sheet[coord].fill = redFill
+                ws[coord].fill = redFill
                 pass
 
+# Auto-size columns only if they contain data
+for col_cells in ws.iter_cols(min_row=1, max_row=ws.max_row):
+    max_length = 0
+    column_letter = openpyxl.utils.get_column_letter(col_cells[0].column)
+    
+    # Check if column has any non-empty cells
+    has_data = any(cell.value not in (None, "") for cell in col_cells)
+    if not has_data:
+        continue  # Skip resizing this column
+
+    # Find max length of content in the column
+    for cell in col_cells:
+        if cell.value:
+            max_length = max(max_length, len(str(cell.value)))
+    
+    ws.column_dimensions[column_letter].width = max_length
+
+
+# Save spreadsheet to a file
 file_path = os.path.join(os.path.expanduser("~"), "musicRatingProgress.xlsx")
 wb.save(filename=file_path)
 

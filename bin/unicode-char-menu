@@ -7,7 +7,7 @@ CHARS_DIR="${XDG_DATA_HOME:-${HOME}/.local/share}/chars"
 
 if ! [[ -d "${CHARS_DIR}" ]] || [[ -z "$(ls -A ${CHARS_DIR})" ]]; then
   # Directory does not exist or is empty
-  notify CRITICAL "ERROR" "No characters to choose from in ${CHARS_DIR}"
+  notify CRITICAL "  ERROR" "No characters to choose from in ${CHARS_DIR}"
   exit 1
 fi
 
@@ -16,7 +16,7 @@ choice=$(cut -d ';' -f1 "${CHARS_DIR}"/* | fuzzel --dmenu | sed "s/ .*//")
 
 if [ -z "${choice}" ]; then
   # No choice
-  notify CRITICAL "ERROR" "No emoji selected"
+  notify CRITICAL "  ERROR" "No emoji selected"
   exit 1
 else
   # Copy emoji to clipboard

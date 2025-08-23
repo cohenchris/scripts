@@ -1,6 +1,6 @@
 #!/bin/bash
 
-notify NORMAL "Loading available wireless connections..." "Please wait..."
+notify NORMAL "  Loading available wireless connections..." "Please wait..."
 
 availableNetworks="$(nmcli -f SSID device wifi list | tail -n +2 | awk '$1 != "--" {print}' | uniq)"
 
@@ -9,19 +9,19 @@ echo "${availableNetworks}"
 networkChoice=$(echo "${availableNetworks}" | awk '{$1=$1};1' | fuzzel --dmenu -p "Select wireless network: ")
 
 if [[ -z "${networkChoice}" ]]; then
-  notify CRITICAL "ERROR" "Must select a wireless network"
+  notify CRITICAL "  ERROR" "Must select a wireless network"
   exit
 fi
 
 networkPassword=$(fuzzel --password --dmenu -p "Enter password for wireless network \"${networkChoice}\": ")
-notify NORMAL "Attempting to connect to wireless network \"${networkChoice}\""
+notify NORMAL "  Attempting to connect to wireless network \"${networkChoice}\""
 
 errorCode=$(nmcli device wifi connect "${networkChoice}" password "${networkPassword}")
 
 if echo "${errorCode}" | grep -q "successfully activated"; then
-  notify GOOD "Connection to wireless network \"${networkChoice}\" succeeded."
+  notify GOOD "  Connection to wireless network \"${networkChoice}\" succeeded."
 else
-  notify CRITICAL "Connection to wireless network \"${networkChoice}\" failed." "Error code ${errorCode}"
+  notify CRITICAL "  Connection to wireless network \"${networkChoice}\" failed." "Error code ${errorCode}"
 fi
 
 unset networkPassword

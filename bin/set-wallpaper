@@ -10,7 +10,7 @@ WALLPAPER_DIR="${XDG_DATA_HOME:-${HOME}/.local/share}/wallpapers"
 MONITOR=$(hyprctl monitors | grep "Monitor" | awk '{print $2}')
 
 if [ ! -d "${WALLPAPER_DIR}" ]; then
-  notify CRITICAL "ERROR" "Wallpapers directory not found at ${WALLPAPER_DIR}"
+  notify CRITICAL "  ERROR" "Wallpapers directory not found at ${WALLPAPER_DIR}"
   exit 1
 fi
 

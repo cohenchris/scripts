@@ -2,22 +2,22 @@
 
 query="$1"
 
-notify NORMAL "Searching contacts..." "Attempting to find a matching email for query \"${query}\""
+notify NORMAL "󰥡  Searching contacts..." "Attempting to find a matching email for query \"${query}\""
 
-results=$(khard email --parsable -- "${query}")
+results=$(khard email --parsable -- "${query}" 2> /dev/null)
 num_results=$(echo "${results}" | wc -l)
 num_results=$((num_results - 1))
 
 if [ $? -eq 0 ]; then
   # Success
   if [ "${num_results}" -eq 1 ]; then
-    notify GOOD "Match found!" "Search completed with ${num_results} match"
+    notify GOOD "  Match found!" "Search completed with ${num_results} match"
   else
-    notify GOOD "Match found!" "Search completed with ${num_results} matches"
+    notify GOOD "  Match found!" "Search completed with ${num_results} matches"
   fi
 else
   # Failure
-  notify CRITICAL "Lookup failed!" "No matching email found in your contacts"
+  notify CRITICAL "  Lookup failed!" "No matching email found in your contacts"
 fi
 
 echo "${results}"

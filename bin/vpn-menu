@@ -6,33 +6,33 @@ SCRIPTS_DIR="${WORKING_DIR}/.."
 VPN_CONFIGS_LOCATION="${XDG_CONFIG_HOME:-${HOME}/.config}/wireguard"
 
 if ! [[ -e "${VPN_CONFIGS_LOCATION}" && -n "$(ls -A "${VPN_CONFIGS_LOCATION}")" ]]; then
-  notify CRITICAL "ERROR" "No VPN configuration files found at \"${VPN_CONFIGS_LOCATION}\""
+  notify CRITICAL "  ERROR" "No VPN configuration files found at \"${VPN_CONFIGS_LOCATION}\""
   exit 1
 fi
 
 function connect_vpn()
 {
   # Which VPN server should we connect to?
-  notify NORMAL "Please select your preferred VPN server"
+  notify NORMAL "󰦝  Please select your preferred VPN server"
 
   serverChoice=$(ls "${VPN_CONFIGS_LOCATION}" | sed 's/\.conf$//' | fuzzel --dmenu -p "Select a VPN server: ")
 
   if [[ -z "${serverChoice}" ]]; then
-    notify CRITICAL "ERROR" "Must select a VPN server"
+    notify CRITICAL "  ERROR" "Must select a VPN server"
     exit 1
   fi
 
   # Attempt to connect to user choice of VPN server
-  notify NORMAL "Connecting..." "Attempting to connect to VPN server \"${serverChoice}\""
+  notify NORMAL "󰦝  Connecting..." "Attempting to connect to VPN server \"${serverChoice}\""
 
   export SUDO_ASKPASS="${SCRIPTS_DIR}/bin/fuzzel-askpass"
   sudo -A wg-quick up "${VPN_CONFIGS_LOCATION}/${serverChoice}.conf"
   wgStatus=$?
 
   if [[ "${wgStatus}" -eq 0 ]]; then
-    notify GOOD "Success!" "Connection to VPN server \"${serverChoice}\" succeeded."
+    notify GOOD "  Success!" "Connection to VPN server \"${serverChoice}\" succeeded."
   else
-    notify CRITICAL "ERROR" "Connection to VPN server \"${serverChoice}\" failed."
+    notify CRITICAL "  ERROR" "Connection to VPN server \"${serverChoice}\" failed."
     exit 1
   fi
 }
@@ -40,7 +40,7 @@ function connect_vpn()
 function disconnect_vpn()
 {
   # Are you sure you would like to disconnect from VPN?
-  notify NORMAL "Please Confirm" "Are you sure you would like to disconnect from VPN server \"${CONNECTION_NAME}\""
+  notify NORMAL "󰦝  Please Confirm" "Are you sure you would like to disconnect from VPN server \"${CONNECTION_NAME}\""
   yn=$(printf 'Yes\nNo' | fuzzel --dmenu --prompt "Really disconnect from VPN? ")
 
   case "${yn}" in
@@ -48,22 +48,22 @@ function disconnect_vpn()
     ;;
 
     *)
-      notify CRITICAL "Aborting VPN disconnection"
+      notify CRITICAL "  Aborting VPN disconnection"
       exit
     ;;
   esac
 
   # Disconnect from VPN
-  notify NORMAL "Disconnecting..." "Attempting to disconnect from VPN server \"${CONNECTION_NAME}\""
+  notify NORMAL "󰦝  Disconnecting..." "Attempting to disconnect from VPN server \"${CONNECTION_NAME}\""
 
   export SUDO_ASKPASS="${SCRIPTS_DIR}/bin/fuzzel-askpass"
   sudo -A wg-quick down "${VPN_CONFIGS_LOCATION}/${CONNECTION_NAME}.conf"
   wgStatus=$?
 
   if [[ "${wgStatus}" -eq 0 ]]; then
-    notify GOOD "Disconnected!" "Successfully disconnected from VPN server \"${CONNECTION_NAME}\""
+    notify GOOD "  Disconnected!" "Successfully disconnected from VPN server \"${CONNECTION_NAME}\""
   else
-    notify CRITICAL "ERROR" "Failed to disconnect from VPN server \"${CONNECTION_NAME}\""
+    notify CRITICAL "  ERROR" "Failed to disconnect from VPN server \"${CONNECTION_NAME}\""
     exit 1
   fi
 }
