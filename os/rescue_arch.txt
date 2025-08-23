@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# NOTE: please run these steps manually
+exit
+
+# Hardcode boot partitions here in the form /dev/sdX or /dev/nvmeXnXpX
+BOOT_PARTITION_1=""
+BOOT_PARTITION_2=""
+
+if [ -z "${BOOT_PARTITION_1:-}" ] || [ -z "${BOOT_PARTITION_2:-}" ]; then
+  echo "ERROR! Please set boot partitions in this script"
+fi
+
+# Import ZFS pools and mount all partitions
+zpool import -d /dev/disk/by-id -R /mnt zroot -N
+zfs mount zroot/ROOT/arch
+zfs mount -a
+mount "${BOOT_PARTITION_1}" /mnt/boot
+
+# Chroot to mounted partitions
+arch-chroot /mnt
+
+# Switch to main lab user and re-install kernel
+su phrog
+paru -Syu linux-lts mkinitcpio
+
+# Exit back to root in chroot
+exit
+
+# Exit back to arch ISO
+exit
+
+# Unmount everything and export ZFS pools
+zfs umount -a
+umount -R /mnt
+zpool export -a
+
+# Use dd to copy first drive's EFI boot partition to second drive's EFI boot partition
+sudo dd if="${BOOT_PARTITION_1}" "${BOOT_PARTITION_2}" status=progress
