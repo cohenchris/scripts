@@ -189,10 +189,13 @@ function borg_backup() {
 
 
 
-# finish()
+# finish(subject?)
+#   subject?  - optional subject override field
 #
 # Logs, notifies me via HomeAssistant, emails me the backup status, and cleans up
 function finish() {
+  local subject="$1"
+
   # Log and notify backup status
   if [[ "${STATUS}" == "FAIL" ]]; then
     bash "${SCRIPTS_DIR}/system/server/ha-notify.sh" "${BACKUP_TYPE} backup" "ERROR - ${BACKUP_TYPE} backup failed - ${DATE}..."
@@ -202,7 +205,11 @@ function finish() {
     echo -e "Backup succeeded!"
   fi
  
-  local subject="${STATUS} - ${BACKUP_TYPE} backup ${DATE}"
+  # If subject is not provided, construct one here
+  if [[ -z "${subject}" ]]; then
+    local subject="${STATUS} - ${BACKUP_TYPE} backup ${DATE}"
+  fi
+
   send_email "${EMAIL}" "${subject}" "${MAIL_FILE}" "${LOG_FILE}"
 
   # Clean up
