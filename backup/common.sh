@@ -79,7 +79,7 @@ function mail_log() {
       # Failure
       echo -e "[✘]    ${message}" >> "${MAIL_FILE}"
       STATUS="FAIL"
-      exit 1
+      #exit 1
     else
       # Success
       echo -e "[✔]    ${message}" >> "${MAIL_FILE}"
