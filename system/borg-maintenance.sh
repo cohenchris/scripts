@@ -11,7 +11,7 @@ source "${WORKING_DIR}/.env"
 
 require var BORG_REPOSITORIES
 
-export BORG_PASSPHRASE=$(cat /home/phrog/scripts/backup/.borgpass)
+export BORG_PASSPHRASE=$(cat "${SCRIPTS_DIR}"/backup/.borgpass)
 
 # borg check --verify-data /path/to/repo
 # borg compact /path/to/repo
