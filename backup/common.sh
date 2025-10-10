@@ -1,52 +1,63 @@
-# require(type, name)
-#   type - type of check ("var" or "file")
-#   name - name of variable or file to check
+# require(type, thing)
+#   type  - type of check (variable, file, or directory)
+#   thing - thing which we will check the existence of
 #
-# This function will throw an error if the provided variable is not set
+# if type == "var"    - interpret *thing* as a variable name, check that the variable is set in the environment
+# if type == "file"   - interpret *thing* as a file path, check that the file exists
+# if type == "dir"    - interpret *thing* as a directory path, check that the directory exists
 function require() {
   local type="$1"
-  local name="$2"
+  local thing="$2"
 
   # Check that both arguments are provided
   if [[ -z "${type}" ]]; then
     echo -e "ERROR - 'type' argument not provided to function 'require()'."
     exit 1
   fi
-  if [[ -z "${name}" ]]; then
-    echo -e "ERROR - 'name' argument not provided to function 'require()'."
+  if [[ -z "${thing}" ]]; then
+    echo -e "ERROR - 'thing' argument not provided to function 'require()'."
     exit 1
   fi
 
   if [[ "${type}" == "var" ]]; then
-    # Variable type - check if this exists in the env
-    if [[ -z "${!name}" ]]; then
-      # Log variable name and calling function name
-      echo -e "ERROR - variable \"${name}\" is not set - required by ${FUNCNAME[1]:-env}"
+    # Check for the existence of a variable in the environment
+    if [[ -z "${!thing}" ]]; then
+      # Log variable thing and calling function name
+      echo -e "ERROR - variable \"${thing}\" is not set - required by ${FUNCNAME[1]:-env}"
+      status="FAIL"
+      exit 1
+    fi
+
+  elif [[ "${type}" == "dir" ]]; then
+    # Check for the existence of a directory
+    if ! [[ -d "${thing}" ]]; then
+      # Log variable thing and calling function name
+      echo -e "ERROR - directory \"${thing}\" does not exist - required by ${FUNCNAME[1]:-env}"
       status="FAIL"
       exit 1
     fi
 
   elif [[ "${type}" == "file" ]]; then
-    # File type - check if this file path exists
-    if ! [[ -f "${name}" ]]; then
-      # Log variable name and calling function name
-      echo -e "ERROR - file \"${name}\" does not exist - required by ${FUNCNAME[1]:-env}"
+    # Check for the existence of a file
+    if ! [[ -f "${thing}" ]]; then
+      # Log variable thing and calling function name
+      echo -e "ERROR - file \"${thing}\" does not exist - required by ${FUNCNAME[1]:-env}"
       status="FAIL"
       exit 1
 
     # Check permissions on password files
-    elif [[ "${name}" == *"pass"* ]]; then
+    elif [[ "${thing}" == *"pass"* ]]; then
 
       # Check ownership
-      if [[ $(stat -c "%U:%G" "${name}") != "root:root" ]]; then
-        echo "WARNING: Unsafe permissions are set on password file \"${name}\"."
-        echo "Recommended to run 'chown root:root ${name}'"
+      if [[ $(stat -c "%U:%G" "${thing}") != "root:root" ]]; then
+        echo "WARNING: Unsafe permissions are set on password file \"${thing}\"."
+        echo "Recommended to run 'chown root:root ${thing}'"
       fi
 
       # Check permission bits
-      if [[ $(stat -c "%a" "${name}") -ne 400 ]]; then
-        echo "WARNING: Unsafe permissions are set on password file \"${name}\"."
-        echo "Recommended to run 'chmod 400 ${name}'"
+      if [[ $(stat -c "%a" "${thing}") -ne 400 ]]; then
+        echo "WARNING: Unsafe permissions are set on password file \"${thing}\"."
+        echo "Recommended to run 'chmod 400 ${thing}'"
       fi
 
     fi
@@ -56,6 +67,7 @@ function require() {
     echo "Invalid type passed to ${FUNCNAME[1]:-env} - \"${type}\""
   fi
 }
+
 
 
 # mail_log(log_type, message, code)
@@ -116,10 +128,10 @@ function send_email() {
   # Handle optional attachment argument
   if [ -n "${attachment}" ]; then
     # attachment provided
-    local MUTT_CMD="mutt -F ${MUTTRC_LOCATION} -s \"${subject}\" -a ${attachment} -- ${email} < ${body}"
+    local MUTT_CMD="mutt -s \"${subject}\" -a ${attachment} -- ${email} < ${body}"
   else
     # attachment not provided
-    local MUTT_CMD="mutt -F ${MUTTRC_LOCATION} -s \"${subject}\" -- ${email} < ${body}"
+    local MUTT_CMD="mutt -s \"${subject}\" -- ${email} < ${body}"
   fi
 
   # Poll email send

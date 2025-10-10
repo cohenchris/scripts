@@ -22,7 +22,7 @@ For example, one of the scripts in here nukes a Docker container stack, cleans t
 - [Borg Repository Maintenance](#Borg-Repository-Maintenance)
   - [Prerequisites](#Prerequisites-2)
   - [Use](#Use-2)
-- [Drive Health Monitoring + Notifications](#Drive-Health-Monitoring-+-Notifications)
+- [Data Integrity Check](#Data-Integrity-Check)
   - [Prerequisites](#Prerequisites-3)
   - [Use](#Use-3)
 - [Restart Glances Webserver](#Restart-Glances-Webserver)
@@ -101,10 +101,15 @@ It may take a while to complete, and may require manual intervention depending o
 You should avoid modifying any of the targeted repositories while this script is running.
 
 
-## Drive Health Monitoring + Notifications
-[`drive-health.sh {test | report}`](drive-health.sh)
+## Data Integrity Check
+[`data-integrity.sh {test | report}`](data-integrity.sh)
 
-This script is used for the monitoring of drive health using smartctl and built-in ZFS monitoring
+This script is used for the monitoring of data integrity.
+It uses multiple facets, including:
+- smartctl
+- ZFS scrubbing and trimming
+- borg data verification and compaction
+
 There are two different functions:
 1. `test` - full smartctl test, ZFS trim, and ZFS scrub for each drive
 2. `report` - email a smartctl and ZFS report for each drive

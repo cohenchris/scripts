@@ -5,7 +5,6 @@
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source "${WORKING_DIR}/.env"
 
-
 require var SERVER_USER
 
 MAIL_PERIOD=7
@@ -112,7 +111,7 @@ while IFS= read -r -d '' file; do
     backup_status=$(echo "${subject}" | awk '{print $1}')
     count_backup_type "${backup_type}" "${backup_status}"
   fi
-done < <(find ${MAILDIR} -type f -mtime -${MAIL_PERIOD} -print0)
+done < <(find ${MONITOR_MAILBOX} -type f -mtime -${MAIL_PERIOD} -print0)
 
 
 mail_log plain "-- BACKBLAZE-- "

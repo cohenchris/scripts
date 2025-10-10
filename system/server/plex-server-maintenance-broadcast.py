@@ -43,7 +43,7 @@ for session in sessions:
 
     # Stop the session
     try:
-        session.stop(reason="Going down for daily automated backup, should be back up in a few minutes!")
+        session.stop(reason="Sorry! Going down for daily automated backup, should only take a few minutes!")
     except AttributeError as e:
         # Attempting to stop a PlexAmp session always throws a weird error here, seems to be a bug in plexapi.
         # Just ignore it.
