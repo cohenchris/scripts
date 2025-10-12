@@ -6,7 +6,6 @@ source "${WORKING_DIR}/.env"
 require var "${BATOCERA_HOST}"
 require var "${BATOCERA_MAC}"
 
-
 # batocera_mount(mount_dir)
 #   mount_dir - directory at which we should mount the Batocera userdata directory
 #
