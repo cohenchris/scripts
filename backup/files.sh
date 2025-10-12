@@ -6,14 +6,15 @@
 # Set up environment
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source "${WORKING_DIR}/.env"
+source "${WORKING_DIR}/common.sh"
 
-require var FILES_DIR
-require var FILES_LOCAL_BACKUP_DIR
-require var REMOTE_BACKUP_SERVER
-require var FILES_REMOTE_BACKUP_DIR
-require var FILES_BACKUP_KEEP_DAILY
-require var FILES_BACKUP_KEEP_WEEKLY
-require var FILES_BACKUP_KEEP_MONTHLY
+require var "${FILES_DIR}" || exit 1
+require var "${FILES_LOCAL_BACKUP_DIR}" || exit 1
+require var "${REMOTE_BACKUP_SERVER}" || exit 1
+require var "${FILES_REMOTE_BACKUP_DIR}" || exit 1
+require var "${FILES_BACKUP_KEEP_DAILY}" || exit 1
+require var "${FILES_BACKUP_KEEP_WEEKLY}" || exit 1
+require var "${FILES_BACKUP_KEEP_MONTHLY}" || exit 1
 
 # Put Nextcloud in maintenance mode to prevent file changes
 mail_log plain "Enabling Nextcloud maintenance mode..."
@@ -35,4 +36,4 @@ mail_log plain "Disabling Nextcloud maintenance mode..."
 docker exec -u www-data nextcloud php occ maintenance:mode --off
 mail_log check "Nextcloud maintenance off" $?
 
-finish
+backup_finish

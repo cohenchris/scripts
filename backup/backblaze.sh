@@ -12,9 +12,9 @@ function backblaze_sync() {
   local backblaze_bucket="$2"
   local exclude_regex="$3"
 
-  require var dir_to_sync
-  require var backblaze_bucket
-  require var BACKBLAZE_BIN
+  require dir "${dir_to_sync}" || exit 1
+  require var "${backblaze_bucket}" || exit 1
+  require var "${BACKBLAZE_BIN}" || exit 1
 
   # Check B2 auth
   mail_log plain "Checking Backblaze authorization for bucket ${backblaze_bucket}..."
@@ -36,9 +36,10 @@ function backblaze_sync() {
 # Set up environment
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source "${WORKING_DIR}/.env"
+source "${WORKING_DIR}/common.sh"
 
-require var BACKBLAZE_BACKUPS_DIR
-require var BACKBLAZE_BUCKET
+require var "${BACKBLAZE_BACKUPS_DIR}" || exit 1
+require var "${BACKBLAZE_BUCKET}" || exit 1
 
 # Construct the exclusion regex string
 # Should be in the format "\..*|somedir|anotherdir|somefile|anotherfile"
@@ -53,4 +54,4 @@ fi
 # Sync backups directory to Backblaze
 backblaze_sync "${BACKBLAZE_BACKUPS_DIR}" "${BACKBLAZE_BUCKET}" "${exclude_regex}"
 
-finish
+backup_finish

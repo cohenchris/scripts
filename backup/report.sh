@@ -1,21 +1,25 @@
 #!/bin/bash
 # Send a report over admin mail from the last ${MAIL_PERIOD} days
 
+# Exit immediately if a command exits with a non-zero status
+set -e
+
 # Set up environment
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source "${WORKING_DIR}/.env"
 
-require var SERVER_USER
+require var "${SERVER_USER}"
 
 MAIL_PERIOD=7
 MAIL_PERIOD_S=$(( MAIL_PERIOD * 86400 ))
 MAILDIR=$(sudo -iu ${SERVER_USER} bash -c 'echo "${MAILDIR}"')
 MONITOR_MAILBOX=${MAILDIR}"/INBOX/Admin/cur"
 
-require var MAIL_PERIOD
-require var MAIL_PERIOD_S
-require var MAILDIR
-require var MONITOR_MAILBOX
+require var "${EMAIL}"
+require var "${MAIL_PERIOD}"
+require var "${MAIL_PERIOD_S}"
+require var "${MAILDIR}"
+require var "${MONITOR_MAILBOX}"
 
 # Keep count each backup type
 backblaze_success=0
@@ -44,8 +48,8 @@ function count_backup_type() {
   local backup_type="$1"
   local backup_status="$2"
 
-  require var backup_type 
-  require var backup_status
+  require var "${backup_type}"
+  require var "${backup_status}"
 
   if [[ "${backup_type}" = "backblaze" ]]; then
     if [[ "${backup_status}" = "SUCCESS" ]]; then
@@ -99,76 +103,80 @@ function count_backup_type() {
 }
 
 
-mail_log plain "\n-----------------------------------------------------------------------"
-mail_log plain "-------------------------- WEEKLY STATUS REPORT -----------------------"
-mail_log plain "-----------------------------------------------------------------------\n"
+# backup_report()
+#
+# Print out a report over the last week's worth of backups
+function backup_report() {
+  echo -e "\n-----------------------------------------------------------------------"
+  echo -e "-------------------------- WEEKLY STATUS REPORT -----------------------"
+  echo -e "-----------------------------------------------------------------------\n"
 
-while IFS= read -r -d '' file; do
-  subject=$(grep -m1 '^Subject:' "${file}" | sed 's/^Subject:[[:space:]]*//')
+  while IFS= read -r -d '' file; do
+    subject=$(grep -m1 '^Subject:' "${file}" | sed 's/^Subject:[[:space:]]*//')
 
-  if [[ "${subject}" == *SUCCESS* || "${subject}" == *FAIL* ]]; then
-    backup_type=$(echo "${subject}" | cut -d'-' -f2 | awk '{print $1}')
-    backup_status=$(echo "${subject}" | awk '{print $1}')
-    count_backup_type "${backup_type}" "${backup_status}"
-  fi
-done < <(find ${MONITOR_MAILBOX} -type f -mtime -${MAIL_PERIOD} -print0)
-
-
-mail_log plain "-- BACKBLAZE-- "
-mail_log plain "SUCCESS:    ${backblaze_success}"
-mail_log plain "FAIL:       ${backblaze_fail}"
-mail_log plain "TOTAL:      $((backblaze_success + backblaze_fail))"
-mail_log plain "EXPECTED:   7"
-mail_log plain "\n"
-
-mail_log plain "-- BATOCERA-- "
-mail_log plain "SUCCESS:    ${batocera_success}"
-mail_log plain "FAIL:       ${batocera_fail}"
-mail_log plain "TOTAL:      $((batocera_success + batocera_fail))"
-mail_log plain "EXPECTED:   1"
-mail_log plain "\n"
-
-mail_log plain "-- CRITICAL DATA -- "
-mail_log plain "SUCCESS:    ${critical_data_success}"
-mail_log plain "FAIL:       ${critical_data_fail}"
-mail_log plain "TOTAL:      $((critical_data_success + critical_data_fail))"
-mail_log plain "EXPECTED:   1"
-mail_log plain "\n"
-
-mail_log plain "-- FILES -- "
-mail_log plain "SUCCESS:    ${files_success}"
-mail_log plain "FAIL:       ${files_fail}"
-mail_log plain "TOTAL:      $((files_success + files_fail))"
-mail_log plain "EXPECTED:   7"
-mail_log plain "\n"
-
-mail_log plain "-- MUSIC -- "
-mail_log plain "SUCCESS:    ${music_success}"
-mail_log plain "FAIL:       ${music_fail}"
-mail_log plain "TOTAL:      $((music_success + music_fail))"
-mail_log plain "EXPECTED:   1"
-mail_log plain "\n"
-
-mail_log plain "-- OPENWRT -- "
-mail_log plain "SUCCESS:    ${openwrt_success}"
-mail_log plain "FAIL:       ${openwrt_fail}"
-mail_log plain "TOTAL:      $((openwrt_success + openwrt_fail))"
-mail_log plain "EXPECTED:   1"
-mail_log plain "\n"
-
-mail_log plain "-- OPNSENSE -- "
-mail_log plain "SUCCESS:    ${opnsense_success}"
-mail_log plain "FAIL:       ${opnsense_fail}"
-mail_log plain "TOTAL:      $((opnsense_success + opnsense_fail))"
-mail_log plain "EXPECTED:   1"
-mail_log plain "\n"
-
-mail_log plain "-- SERVER -- "
-mail_log plain "SUCCESS:    ${server_success}"
-mail_log plain "FAIL:       ${server_fail}"
-mail_log plain "TOTAL:      $((server_success + server_fail))"
-mail_log plain "EXPECTED:   7"
-mail_log plain "\n"
+    if [[ "${subject}" == *SUCCESS* || "${subject}" == *FAIL* ]]; then
+      backup_type=$(echo "${subject}" | cut -d'-' -f2 | awk '{print $1}')
+      backup_status=$(echo "${subject}" | awk '{print $1}')
+      count_backup_type "${backup_type}" "${backup_status}"
+    fi
+  done < <(find ${MONITOR_MAILBOX} -type f -mtime -${MAIL_PERIOD} -print0)
 
 
-finish "WEEKLY JOB REPORT"
+  echo -e "-- BACKBLAZE-- "
+  echo -e "SUCCESS:    ${backblaze_success}"
+  echo -e "FAIL:       ${backblaze_fail}"
+  echo -e "TOTAL:      $((backblaze_success + backblaze_fail))"
+  echo -e "EXPECTED:   7"
+  echo -e "\n"
+
+  echo -e "-- BATOCERA-- "
+  echo -e "SUCCESS:    ${batocera_success}"
+  echo -e "FAIL:       ${batocera_fail}"
+  echo -e "TOTAL:      $((batocera_success + batocera_fail))"
+  echo -e "EXPECTED:   1"
+  echo -e "\n"
+
+  echo -e "-- CRITICAL DATA -- "
+  echo -e "SUCCESS:    ${critical_data_success}"
+  echo -e "FAIL:       ${critical_data_fail}"
+  echo -e "TOTAL:      $((critical_data_success + critical_data_fail))"
+  echo -e "EXPECTED:   1"
+  echo -e "\n"
+
+  echo -e "-- FILES -- "
+  echo -e "SUCCESS:    ${files_success}"
+  echo -e "FAIL:       ${files_fail}"
+  echo -e "TOTAL:      $((files_success + files_fail))"
+  echo -e "EXPECTED:   7"
+  echo -e "\n"
+
+  echo -e "-- MUSIC -- "
+  echo -e "SUCCESS:    ${music_success}"
+  echo -e "FAIL:       ${music_fail}"
+  echo -e "TOTAL:      $((music_success + music_fail))"
+  echo -e "EXPECTED:   1"
+  echo -e "\n"
+
+  echo -e "-- OPENWRT -- "
+  echo -e "SUCCESS:    ${openwrt_success}"
+  echo -e "FAIL:       ${openwrt_fail}"
+  echo -e "TOTAL:      $((openwrt_success + openwrt_fail))"
+  echo -e "EXPECTED:   1"
+  echo -e "\n"
+
+  echo -e "-- OPNSENSE -- "
+  echo -e "SUCCESS:    ${opnsense_success}"
+  echo -e "FAIL:       ${opnsense_fail}"
+  echo -e "TOTAL:      $((opnsense_success + opnsense_fail))"
+  echo -e "EXPECTED:   1"
+  echo -e "\n"
+
+  echo -e "-- SERVER -- "
+  echo -e "SUCCESS:    ${server_success}"
+  echo -e "FAIL:       ${server_fail}"
+  echo -e "TOTAL:      $((server_success + server_fail))"
+  echo -e "EXPECTED:   7"
+  echo -e "\n"
+}
+
+backup_report | send-email "${EMAIL}" "Weekly Backup Report"

@@ -11,6 +11,8 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 
 # Table of Contents
 
+- [Require Var, File, or Dir](#Require-Var,-File,-or-Dir)
+- [Send Email](#Send-Email)
 - [System Update](#System-Update)
 - [WiFi Selection Menu](#WiFi-Selection-Menu)
 - [Archive Extraction](#Archive-Extraction)
@@ -27,6 +29,32 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 - [Fuzzel Askpass](#Fuzzel-Askpass)
 - [Unicode Character Selection Menu](#Unicode-Character-Selection-Menu)
 - [Hyprlock Reload](#Hyprlock-Reload)
+- [Backblaze Bucket Quick Mount + Unmount via RClone](#Backblaze-Bucket-Quick-Mount-+-Unmount-via-RClone)
+  - [Use](#Use)
+
+
+
+
+## Require Var, File, or Dir
+[`require [TYPE] [THING]`](require)
+
+Check for the existence of something.
+
+if TYPE == "var"    - interpret *THING* as a variable, check that the variable is not empty
+if TYPE == "file"   - interpret *THING* as a file path, check that the file exists
+if TYPE == "dir"    - interpret *THING* as a directory path, check that the directory exists
+
+
+
+
+## Send Email
+[`send-email [ADDRESS] [SUBJECT] [ATTACHMENT?]`](send-email)
+
+Handy wrapper to send emails from the terminal.
+The body of the email is read from stdin. For example:
+
+`echo "This is the body of an email" | send-email "test@example.com" "Email SUBJECT" /path/to/attachment`
+
 
 
 
@@ -238,3 +266,26 @@ OR
 Sometimes, when the screen is locked, hyprlock crashes and the user can no longer login.
 To remedy this, the user must login to a different TTY reload the program (run this script), and switch back to the original TTY to login.
 This script is meant to be run after the user switches to a different TTY.
+
+
+
+
+## Backblaze Bucket Quick Mount + Unmount via RClone
+[`mount-b2 [mount, unmount]`](mount-b2)
+
+I store all of my remote backups (the "1" in 3-2-1 backups) in a Backblaze B2 buckets.
+Sometimes, it's useful to navigate this bucket manually to check out its contents.
+RClone is a fantastic tool that allows mounting of a Backblaze B2 bucket to your local machine, and this script streamlines the rclone mount/unmount process.
+
+This scripts assumes that:
+- `rclone` is installed on your machine
+- There is an rclone remote configured which is named `backblaze`
+
+### Use
+`mount-b2 mount <bucketname> <dirname>`
+
+Mounts the Backblaze bucket with name <bucketname> to the directory specified by <dirname>.
+
+`mount-b2 unmount <dirname>`
+
+Unmounts the mounted Backblaze bucket at the location specified by <dirname>.

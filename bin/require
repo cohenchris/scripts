@@ -1,0 +1,70 @@
+#!/bin/bash
+
+# Check for the existence of something
+#
+# require [TYPE] [THING]
+#   TYPE  - type of check (variable, file, or directory)
+#   THING - thing which we will check the existence of
+#
+# if TYPE == "var"    - interpret *THING* as a variable, check that the variable is not empty
+# if TYPE == "file"   - interpret *THING* as a file path, check that the file exists
+# if TYPE == "dir"    - interpret *THING* as a directory path, check that the directory exists
+#
+# Example commands:
+#   require dir /path/to/dir
+#   require file /path/to/file.txt
+#   require var "${ENV_VAR}"
+
+TYPE="${1}"
+THING="${2}"
+
+# Check that both arguments are provided
+if [[ -z "${TYPE}" ]]; then
+  echo "Usage: require [TYPE] [THING]"
+  exit 1
+fi
+
+if [[ "${TYPE}" == "var" ]]; then
+  # Check for the existence of an environment variable
+  if [[ -z "${THING}" ]]; then
+    # Log thing and calling function name
+    echo -e "ERROR - variable \"${THING}\" is not set - required by ${FUNCNAME[1]:-env}"
+    exit 1
+  fi
+
+elif [[ "${TYPE}" == "dir" ]]; then
+  # Check for the existence of a directory
+  if ! [[ -d "${THING}" ]]; then
+    # Log thing and calling function name
+    echo -e "ERROR - directory \"${THING}\" does not exist - required by ${FUNCNAME[1]:-env}"
+    exit 1
+  fi
+
+elif [[ "${TYPE}" == "file" ]]; then
+  # Check for the existence of a file
+  if ! [[ -f "${THING}" ]]; then
+    # Log thing and calling function name
+    echo -e "ERROR - file \"${THING}\" does not exist - required by ${FUNCNAME[1]:-env}"
+    exit 1
+
+  # Check permissions on password files
+  elif [[ "${THING}" == *"pass"* ]]; then
+
+    # Check ownership
+    if [[ $(stat -c "%U:%G" "${THING}") != "root:root" ]]; then
+      echo "WARNING: Unsafe ownership for password file \"${THING}\"."
+      echo "Recommended to run 'chown root:root ${THING}'"
+    fi
+
+    # Check permission bits
+    if [[ $(stat -c "%a" "${THING}") -ne 400 ]]; then
+      echo "WARNING: Unsafe permissions set for password file \"${THING}\"."
+      echo "Recommended to run 'chmod 400 ${THING}'"
+    fi
+
+  fi
+
+else
+  # Invalid type provided
+  echo "Invalid type passed to ${FUNCNAME[1]:-env} - \"${TYPE}\""
+fi

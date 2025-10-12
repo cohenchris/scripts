@@ -8,9 +8,9 @@ MAX_NOTIFICATION_ATTEMPTS=100
 title=$1
 body=$2
 
-require var title
-require var body
-require var HA_NOTIFY_WEBHOOK_ENDPOINT
+require var "${title}"
+require var "${body}"
+require var "${HA_NOTIFY_WEBHOOK_ENDPOINT}"
 
 # Send the POST request until it succeeds
 for (( attempt=1; attempt<=MAX_NOTIFICATION_ATTEMPTS; attempt++ ))

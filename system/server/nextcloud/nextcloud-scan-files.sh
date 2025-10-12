@@ -3,7 +3,7 @@
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source "${WORKING_DIR}/../../.env"
 
-require var NEXTCLOUD_FILES_DIR
+require var "${NEXTCLOUD_FILES_DIR}"
 
 echo "Working on ${NEXTCLOUD_FILES_DIR}"
 

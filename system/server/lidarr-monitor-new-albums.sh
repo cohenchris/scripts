@@ -21,8 +21,8 @@ fi
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source "${WORKING_DIR}/../.env"
 
-require var LIDARR_URL
-require var LIDARR_API_KEY
+require var "${LIDARR_URL}"
+require var "${LIDARR_API_KEY}"
 
 # Define constants
 lidarr_api_url="${LIDARR_URL}:8686/api/v1"

@@ -3,7 +3,7 @@
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source "${WORKING_DIR}/.env"
 
-require var MEDIA_FILES_DIR
+require var "${MEDIA_FILES_DIR}"
 
 echo "Working on ${MEDIA_FILES_DIR}"
 

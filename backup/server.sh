@@ -6,19 +6,20 @@
 # Set up environment
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source "${WORKING_DIR}/.env"
+source "${WORKING_DIR}/common.sh"
 
-require var SERVER_DIR
-require var SERVER_USER
-require var WORKING_DIR
-require var SERVER_DIR
-require var SERVER_LOCAL_BACKUP_DIR
-require var REMOTE_BACKUP_SERVER
-require var SERVER_REMOTE_BACKUP_DIR
-require var PLEX_URL
-require var PLEX_TOKEN
-require var SERVER_BACKUP_KEEP_DAILY
-require var SERVER_BACKUP_KEEP_WEEKLY
-require var SERVER_BACKUP_KEEP_MONTHLY
+require var "${SERVER_DIR}" || exit 1
+require var "${SERVER_USER}" || exit 1
+require var "${WORKING_DIR}" || exit 1
+require var "${SERVER_DIR}" || exit 1
+require var "${SERVER_LOCAL_BACKUP_DIR}" || exit 1
+require var "${REMOTE_BACKUP_SERVER}" || exit 1
+require var "${SERVER_REMOTE_BACKUP_DIR}" || exit 1
+require var "${PLEX_URL}" || exit 1
+require var "${PLEX_TOKEN}" || exit 1
+require var "${SERVER_BACKUP_KEEP_DAILY}" || exit 1
+require var "${SERVER_BACKUP_KEEP_WEEKLY}" || exit 1
+require var "${SERVER_BACKUP_KEEP_MONTHLY}" || exit 1
 
 # Stop all Plex playback sessions with an informational message
 mail_log plain "Stopping Plex to prevent conflicts with server files..."
@@ -65,4 +66,4 @@ cd "${WORKING_DIR}"
 # https://github.com/linuxserver/docker-homeassistant/issues/116
 sleep 15m
 
-finish
+backup_finish

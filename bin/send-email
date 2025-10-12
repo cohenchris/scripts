@@ -1,0 +1,56 @@
+#!/bin/bash
+
+# Exit immediately if a command exits with a non-zero status
+set -e
+
+# Send an email
+#
+# send-email [ADDRESS] [SUBJECT] [ATTACHMENT?]
+#   ADDRESS     - destination email address
+#   SUBJECT     - subject of outgoing email
+#   ATTACHMENT? - path to log file which will be sent as an attachment (optional)
+# The email body is read from stdin
+#
+# Example command:
+#   echo "This is the body of an email" | send-email "test@example.com" "Email SUBJECT" /path/to/attachment
+
+# Number of times to attempt sending
+MAX_MAIL_ATTEMPTS=50
+
+# Parse arguments
+ADDRESS="${1}"
+SUBJECT="${2}"
+ATTACHMENT="${3}"
+
+# Read in body from piped in data and write to a temp file
+BODY=$(cat)
+BODY_TEMPFILE=$(mktemp)
+printf "%s\n" "${BODY}" > "${BODY_TEMPFILE}"
+
+require var "${ADDRESS}"
+require var "${SUBJECT}"
+require var "${BODY}"
+
+# Handle optional attachment argument
+if [ -n "${ATTACHMENT}" ]; then
+  # attachment provided
+  MUTT_CMD="mutt -s \"${SUBJECT}\" -a ${ATTACHMENT} -- ${ADDRESS} < ${BODY_TEMPFILE}"
+else
+  # attachment not provided
+  MUTT_CMD="mutt -s \"${SUBJECT}\" -- ${ADDRESS} < ${BODY_TEMPFILE}"
+fi
+
+# Poll email send
+while ! eval "${MUTT_CMD}"; do
+  # Limit attempts. If it goes infinitely, it could fill up the disk.
+  MAX_MAIL_ATTEMPTS=$((MAX_MAIL_ATTEMPTS-1))
+  if [[ "${MAX_MAIL_ATTEMPTS}" -eq 0 ]]; then
+    echo -e "send-email failed"
+    exit 1
+  fi
+
+  sleep 5
+done
+
+# Remove body tempfile
+rm "${BODY_TEMPFILE}"

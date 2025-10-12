@@ -3,7 +3,7 @@
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source "${WORKING_DIR}/../.env"
 
-require var SERVER_DIR
+require var "${SERVER_DIR}"
 
 # Query vpn container to get public IP
 PUBLIC_IP=$(curl -s localhost:8001/v1/publicip/ip | jq -r ".public_ip")

@@ -1,9 +1,7 @@
 #!/bin/bash
 
-WORKING_DIR=$(dirname "$(realpath "$0")")
-source "${WORKING_DIR}/.env"
-
-require var BACKBLAZE_BUCKET
+# Exit immediately if a command exits with a non-zero status
+set -e
 
 # b2_mount(mount_dir)
 #   mount_dir - directory at which we should mount the Backblaze bucket
@@ -11,9 +9,11 @@ require var BACKBLAZE_BUCKET
 # Mount remote Backblaze bucket to a local directory
 function b2_mount()
 {
-  local mount_dir="$1"
+  local mount_bucket="${1}"
+  local mount_dir="${2}"
 
-  require var mount_dir
+  require var "${mount_bucket}"
+  require var "${mount_dir}"
 
   # Ensure that there is a proper config for "backblaze" with rclone
   local remotes=$(rclone listremotes)
@@ -39,8 +39,8 @@ function b2_mount()
 
   mkdir -p "${mount_dir}"
 
-  echo "Mounting Backblaze bucket ${BACKBLAZE_BUCKET}..."
-  rclone mount "backblaze:${BACKBLAZE_BUCKET}" "${mount_dir}" --daemon --vfs-cache-mode full
+  echo "Mounting Backblaze bucket ${mount_bucket}..."
+  rclone mount "backblaze:${mount_bucket}" "${mount_dir}" --daemon --vfs-cache-mode full
 
   if [ $? -ne 0 ]; then
     echo "ERROR: Backblaze mounting failed, please check rclone and .env configuration..."
@@ -54,7 +54,7 @@ function b2_mount()
     exit 1
   fi
 
-  echo "Backblaze bucket \"${BACKBLAZE_BUCKET}\" successfully mounted at \"${mount_dir}\"!"
+  echo "Backblaze bucket \"${mount_bucket}\" successfully mounted at \"${mount_dir}\"!"
 }
 
 
@@ -65,14 +65,14 @@ function b2_mount()
 function b2_unmount()
 {
   local mount_dir="$1"
-  require var mount_dir
+  require var "${mount_dir}"
 
   if [ ! -d "${mount_dir}" ]; then
     echo "Failed to unmount - directory \"${mount_dir}\" does not exist..."
     exit 1
   fi
 
-  echo "Unmounting Backblaze bucket ${BACKBLAZE_BUCKET}..."
+  echo "Unmounting Backblaze bucket..."
   fusermount3 -u "${mount_dir}"
 
   if [ $? -ne 0 ]; then
@@ -88,20 +88,20 @@ function b2_unmount()
   fi
 }
 
+CMD="${1}"
 
-B2_FUSE_CMD=$1
-B2_MOUNT_DIR=$2
-
-if ! [[ -n "${B2_FUSE_CMD}" && -n "${B2_MOUNT_DIR}" ]]; then
-  echo "Usage: b2-fuse.sh [mount,unmount/umount] [mount_dir]"
+if ! [[ -n "${CMD}" ]]; then
+  echo "Usage: b2-fuse.sh mount [bucket] [mount_dir]"
+  echo "       b2-fuse.sh unmount [mount_dir]"
   exit 1
 fi
 
-if [ "${B2_FUSE_CMD}" == "mount" ]; then
-  b2_mount "${B2_MOUNT_DIR}"
-elif [ "${B2_FUSE_CMD}" == "unmount" ] || [ "${B2_FUSE_CMD}" == "umount" ]; then
-  b2_unmount "${B2_MOUNT_DIR}"
+if [ "${CMD}" == "mount" ]; then
+  b2_mount "${2}" "${3}"
+elif [ "${CMD}" == "unmount" ] || [ "${CMD}" == "umount" ]; then
+  b2_unmount "${2}"
 else
-  echo "Usage: b2-fuse.sh [mount,unmount/umount] [mount_dir]"
+  echo "Usage: b2-fuse.sh mount [bucket] [mount_dir]"
+  echo "       b2-fuse.sh unmount [mount_dir]"
   exit 1
 fi

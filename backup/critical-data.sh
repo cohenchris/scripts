@@ -3,17 +3,18 @@
 # Set up environment
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source "${WORKING_DIR}/.env"
+source "${WORKING_DIR}/common.sh"
 
-require var CRITICAL_DATA_LOCAL_BACKUP_DIR
-require var DATE
-require var WORKING_DIR
-require var REMOTE_BACKUP_SERVER
-require var CRITICAL_DATA_REMOTE_BACKUP_DIR
-require var FILES_DIR
-require var FILES_DIR
-require var SCRIPTS_DIR
-require var BW_PASS_FILE
-require file "${BW_PASS_FILE}"
+require var "${CRITICAL_DATA_LOCAL_BACKUP_DIR}" || exit 1
+require var "${DATE}" || exit 1
+require var "${WORKING_DIR}" || exit 1
+require var "${REMOTE_BACKUP_SERVER}" || exit 1
+require var "${CRITICAL_DATA_REMOTE_BACKUP_DIR}" || exit 1
+require var "${FILES_DIR}" || exit 1
+require var "${FILES_DIR}" || exit 1
+require var "${SCRIPTS_DIR}" || exit 1
+require var "${BW_PASS_FILE}" || exit 1
+require file "${BW_PASS_FILE}" || exit 1
 
 ########################################
 #      Backup Bitwarden database       #
@@ -56,4 +57,4 @@ rsync -r --delete --update --progress "${CRITICAL_DATA_LOCAL_BACKUP_DIR}/" "${FI
 mail_log check "Nextcloud backup" $?
 "${SCRIPTS_DIR}/system/server/nextcloud/nextcloud-scan-files.sh"
 
-finish
+backup_finish

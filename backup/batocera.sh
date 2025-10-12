@@ -10,11 +10,12 @@
 # Set up environment
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source "${WORKING_DIR}/.env"
+source "${WORKING_DIR}/common.sh"
 
-require var BATOCERA_HOST
-require var BATOCERA_MAC
-require var BATOCERA_LOCAL_BACKUP_DIR
-require var BATOCERA_REMOTE_BACKUP_DIR
+require var "${BATOCERA_HOST}" || exit 1
+require var "${BATOCERA_MAC}" || exit 1
+require var "${BATOCERA_LOCAL_BACKUP_DIR}" || exit 1
+require var "${BATOCERA_REMOTE_BACKUP_DIR}" || exit 1
 
 
 # Location of batocera directory to backup on batocera host
@@ -34,7 +35,7 @@ EXCLUDE_DOWNLOADED_STEAM_GAMES="saves/flatpak/data/.var/app/com.valvesoftware.St
 function is_device_on()
 {
   local host="$1"
-  require var host
+  require var "${host}" || exit 1
 
   ssh "${host}" "ls" &> /dev/null && echo 0 || echo 1
 }
@@ -100,4 +101,4 @@ else
   mail_log plain "ERROR: Magic Wake-On-LAN packet was unable to wake up batocera"
 fi
 
-finish
+backup_finish

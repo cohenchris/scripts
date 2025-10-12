@@ -13,56 +13,25 @@ For example, one of the scripts in here nukes a Docker container stack, cleans t
 
 # Table of Contents
 
-- [Backblaze Bucket Quick Mount + Unmount via RClone](#Backblaze-Bucket-Quick-Mount-+-Unmount-via-RClone)
-  - [Prerequisites](#Prerequisites)
-  - [Use](#Use)
 - [Batocera Quick Mount + Unmount via SSHFS](#Batocera-Quick-Mount-+-Unmount-via-SSHFS)
   - [Prerequisites](#Prerequisites-1)
   - [Use](#Use-1)
-- [Borg Repository Maintenance](#Borg-Repository-Maintenance)
+- [Data Integrity Check](#Data-Integrity-Check)
   - [Prerequisites](#Prerequisites-2)
   - [Use](#Use-2)
-- [Data Integrity Check](#Data-Integrity-Check)
+- [Restart Glances Webserver](#Restart-Glances-Webserver)
   - [Prerequisites](#Prerequisites-3)
   - [Use](#Use-3)
-- [Restart Glances Webserver](#Restart-Glances-Webserver)
+- [Set Proper Permissions on Media Files](#Set-Proper-Permissions-on-Media-Files)
   - [Prerequisites](#Prerequisites-4)
   - [Use](#Use-4)
-- [Set Proper Permissions on Media Files](#Set-Proper-Permissions-on-Media-Files)
-  - [Prerequisites](#Prerequisites-5)
-  - [Use](#Use-5)
 - [Server Automation](#Server-Automation)
 
 
 
 
-## Backblaze Bucket Quick Mount + Unmount via RClone
-[`b2-fuse.sh [mount, unmount]`](b2-fuse.sh)
-
-I store all of my remote backups (the "1" in 3-2-1 backups) in a Backblaze B2 buckets.
-Sometimes, it's useful to navigate this bucket manually to check out its contents.
-RClone is a fantastic tool that allows mounting of a Backblaze B2 bucket to your local machine, and this script streamlines the rclone mount/unmount process.
-
-### Prerequisites
-This scripts assumes that:
-- `rclone` is installed on your machine
-- There is an rclone remote configured which is named `backblaze`
-- You have populated the [`.env`](sample.env) file
-
-### Use
-`b2-fuse.sh mount <dirname>`
-
-Mounts the Backblaze bucket at the location specified by <dirname>.
-
-`b2-fuse.sh unmount <dirname>`
-
-Unmounts the Backblaze bucket at the location specified by <dirname>.
-
-
-
-
 ## Batocera Quick Mount + Unmount via SSHFS
-[`batocera.sh [mount, unmount]`](batocera.sh)
+[`batocera-mount.sh [mount, unmount]`](batocera-mount.sh)
 
 I have an Intel NUC [Batocera](https://batocera.org/) emulation station in my living room.
 From their website, "Batocera.linux is an open-source and completely free retro-gaming distribution that can be copied to a USB stick or an SD card with the aim of turning any computer/nano computer into a gaming console during a game or permanently."
@@ -75,12 +44,12 @@ This scripts assumes that:
 - You have filled out the [`.env`](sample.env) file
 
 ### Use
-`batocera.sh mount`
+`batocera-mount.sh mount`
 
 Mounts Batocera's `/userdata` directory to a newly created `./batocera` directory in the current working directory.
 
 
-`batocera.sh unmount`
+`batocera-mount.sh unmount`
 
 Unmounts and removes the local `./batocera` directory.
 
