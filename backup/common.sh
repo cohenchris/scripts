@@ -1,3 +1,11 @@
+# General settings
+WORKING_DIR=$(dirname "$(realpath "$0")")
+BACKUP_TYPE=$(basename $0 | cut -d "." -f 1)
+SCRIPTS_DIR="${WORKING_DIR}"/..
+DATE=$(date +"%Y%m%d-%H%M")
+BACKUP_NAME="${BACKUP_TYPE}-backup-${DATE}"
+STATUS="SUCCESS"
+
 # Logging and mail
 LOG_DIR="/var/log/backups"
 LOG_FILE="${LOG_DIR}/${BACKUP_TYPE}-backup-${DATE}.log.txt"
@@ -7,6 +15,7 @@ touch "${LOG_FILE}"
 touch "${MAIL_BODY_FILE}"
 exec 1>"${LOG_FILE}"
 exec 2>&1
+
 
 # mail_log(log_type, message, code)
 #   log_type  - whether to log as plaintext or checkmark
@@ -29,7 +38,6 @@ function mail_log() {
       # Failure
       echo -e "[✘]    ${message}" >> "${MAIL_BODY_FILE}"
       STATUS="FAIL"
-      #exit 1
     else
       # Success
       echo -e "[✔]    ${message}" >> "${MAIL_BODY_FILE}"
@@ -38,7 +46,6 @@ function mail_log() {
     echo -e "${message}" >> "${MAIL_BODY_FILE}"
   else
     echo "ERROR: Invalid log_type provided to mail_log() - must be one of [check,plain]"
-    status="FAIL"
     exit 1
   fi
 }
