@@ -13,7 +13,7 @@ cat <<EOF | crontab -
 PATH=/usr/sbin:/usr/bin:/sbin:/bin:${SCRIPTS_BASE_DIR}/bin
 
 # Backup config every Sunday at 3 am
-0 3 * * 0 (${SCRIPTS_BASE_DIR}/backup/openwrt.sh)"
+0 3 * * 0 (${SCRIPTS_BASE_DIR}/backup/openwrt.sh)
 EOF
 
 # Point system DNS to router over localhost
