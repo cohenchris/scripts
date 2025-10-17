@@ -8,10 +8,13 @@ fi
 SCRIPTS_BASE_DIR=$(realpath "$(dirname "$(realpath "$0")")/../../..")
 
 # Install crontab
-BACKUP_CRON_JOB="# Backup config every Sunday at 3 am\n0 3 * * 0 (${SCRIPTS_BASE_DIR}/backup/openwrt.sh)"
-
 echo "Installing OpenWRT backup cron job..."
-echo -e "${BACKUP_CRON_JOB}" | crontab -
+cat <<EOF | crontab -
+PATH=/usr/sbin:/usr/bin:/sbin:/bin:${SCRIPTS_BASE_DIR}/bin
+
+# Backup config every Sunday at 3 am
+0 3 * * 0 (${SCRIPTS_BASE_DIR}/backup/openwrt.sh)"
+EOF
 
 # Point system DNS to router over localhost
 echo "Installing custom DNS settings pointing to router..."
