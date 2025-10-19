@@ -35,7 +35,7 @@ function mytex_compile()
   pdflatex "${tex_filename}"
 
   # Removes all extraneous files from compilation
-  rm *.out *.aux *.blg *.bbl *.log *.bcf *.run.xml > /dev/null 2>&1
+  rm *.out *.aux *.blg *.bbl *.log *.bcf *.run.xml .log > /dev/null 2>&1
 }
 
 
@@ -111,7 +111,7 @@ function mytex_edit()
   fi
 
   "${PDF_VIEWER}" *.pdf &
-  "${EDITOR}" "${FILENAME}"
+  "${EDITOR}" "${filename_to_edit}"
 }
 
 mytex_command="$1"

@@ -1,7 +1,8 @@
 #!/bin/bash
 
+# Configure the program to execute when sudo requires password entry
 WORKING_DIR=$(dirname "$(realpath "$0")")
-SCRIPTS_DIR="${WORKING_DIR}/.."
+export SUDO_ASKPASS="${WORKING_DIR}/fuzzel-askpass"
 
 VPN_CONFIGS_LOCATION="${XDG_CONFIG_HOME:-${HOME}/.config}/wireguard"
 
@@ -25,7 +26,6 @@ function connect_vpn()
   # Attempt to connect to user choice of VPN server
   notify NORMAL "󰦝  Connecting..." "Attempting to connect to VPN server \"${serverChoice}\""
 
-  export SUDO_ASKPASS="${SCRIPTS_DIR}/bin/fuzzel-askpass"
   sudo -A wg-quick up "${VPN_CONFIGS_LOCATION}/${serverChoice}.conf"
   wgStatus=$?
 
@@ -56,7 +56,6 @@ function disconnect_vpn()
   # Disconnect from VPN
   notify NORMAL "󰦝  Disconnecting..." "Attempting to disconnect from VPN server \"${CONNECTION_NAME}\""
 
-  export SUDO_ASKPASS="${SCRIPTS_DIR}/bin/fuzzel-askpass"
   sudo -A wg-quick down "${VPN_CONFIGS_LOCATION}/${CONNECTION_NAME}.conf"
   wgStatus=$?
 
