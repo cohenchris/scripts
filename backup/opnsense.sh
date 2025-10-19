@@ -5,6 +5,12 @@ WORKING_DIR=$(dirname "$(realpath "$0")")
 source "${WORKING_DIR}/.env"
 source "${WORKING_DIR}/common.sh"
 
+# Add my custom PATH to the user's environment
+# This would usually be set in the environment itself (either cron or the user's profile).
+# OPNSense takes control of crontab and we cannot set the correct PATH for cron.
+# Therefore, we set it manually here.
+export PATH="${PATH}:${WORKING_DIR}/bin"
+
 require var "${OPNSENSE_LOCAL_BACKUP_DIR}" || exit 1
 require var "${OPNSENSE_REMOTE_BACKUP_DIR}" || exit 1
 require var "${REMOTE_BACKUP_SERVER}" || exit 1
