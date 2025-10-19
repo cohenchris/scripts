@@ -271,25 +271,14 @@ function post_chroot_setup() {
   echo "Installing core basic packages..."
   pacman-key --init
   pacman-key --populate archlinux
-  pacman -Syu --noconfirm \
-    efibootmgr \
-    networkmanager \
-    network-manager-applet \
-    wireless_tools \
-    wpa_supplicant \
-    dialog \
-    os-prober \
-    mtools \
-    dosfstools \
-    linux-lts-headers \
-    git \
-    pipewire-pulse \
-    pipewire-alsa \
-    bluez \
-    bluez-utils \
-    xdg-utils \
-    xdg-user-dirs \
-    rsync \
+
+  if [[ ! -s ./arch-packages ]]; then
+    echo "arch-packages empty or not found, cannot continue..."
+    exit 1
+  fi
+
+  local ARCH_PACKAGES=$(cat "./arch-packages" | tr '\n' ' ')
+  pacman -Syu --noconfirm "${ARCH_PACKAGES}"
 
   # Enable internet
   echo
