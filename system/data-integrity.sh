@@ -9,6 +9,20 @@ fi
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source ${WORKING_DIR}/.env
 
+# FreeBSD workarounds
+if [ "$(uname)" = "FreeBSD" ]; then
+  # Add my custom PATH to the user's environment
+  # This would usually be set in the environment itself (either cron or the user's profile).
+  # OPNSense takes control of crontab and we cannot set the correct PATH for cron.
+  # Therefore, we set it manually here.
+  export PATH="${PATH}:${WORKING_DIR}/../bin"
+
+  # FreeBSD installs bash at /usr/local/bin/bash by default
+  # My personal scripts use the interpreter /bin/bash
+  # To prevent bad interpreter errors, link /bin/bash to /usr/local/bin/bash
+  ln -s /usr/local/bin/bash /bin/bash
+fi
+
 # Exit immediately if a command exits with a non-zero status
 set -e
 

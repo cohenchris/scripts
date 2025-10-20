@@ -9,7 +9,12 @@ source "${WORKING_DIR}/common.sh"
 # This would usually be set in the environment itself (either cron or the user's profile).
 # OPNSense takes control of crontab and we cannot set the correct PATH for cron.
 # Therefore, we set it manually here.
-export PATH="${PATH}:${WORKING_DIR}/bin"
+export PATH="${PATH}:${WORKING_DIR}/../bin"
+
+# FreeBSD installs bash at /usr/local/bin/bash by default
+# My personal scripts use the interpreter /bin/bash
+# To prevent bad interpreter errors, link /bin/bash to /usr/local/bin/bash
+ln -s /usr/local/bin/bash /bin/bash
 
 require var "${OPNSENSE_LOCAL_BACKUP_DIR}" || exit 1
 require var "${OPNSENSE_REMOTE_BACKUP_DIR}" || exit 1

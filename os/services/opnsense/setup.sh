@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 
 if ! command -v bash &> /dev/null; then
   pkg install bash
