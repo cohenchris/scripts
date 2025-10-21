@@ -115,9 +115,9 @@ function pinentry_gui()
 }
 
 
-# If there is a graphical environment, use custom fuzzel pinentry
-# Otherwise, fall back to normal CLI pinentry
-if [ -z "${WAYLAND_DISPLAY}" ]; then
+# If running in a TTY or without a GUI, use normal CLI pinentry
+# Otherwise, use custom fuzzel pinentry
+if [[ -n "${SSH_TTY}" ]] || [[ -z "${WAYLAND_DISPLAY}" ]]; then
   pinentry_cli
 else
   pinentry_gui

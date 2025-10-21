@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -z "${WAYLAND_DISPLAY}" ]; then
+if [[ -n "${SSH_TTY}" ]] || [[ -z "${WAYLAND_DISPLAY}" ]]; then
   echo "Not running in a graphical environment, exiting..."
   exit 1
 fi
