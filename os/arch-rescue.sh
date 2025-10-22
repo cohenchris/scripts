@@ -1,32 +1,50 @@
 #!/bin/bash
 
-# Hardcode boot partitions here in the form /dev/sdX or /dev/nvmeXnXpX
+
+# Exit immediately if a command exits with a non-zero status
+set -e
+
+
+########## DEFINES ##########
+#############################
+# Your username on the target OS
 MAIN_USER=""
-ZPOOL_DISK_1=""
-ZPOOL_DISK_2=""
 
-if [ -z "${MAIN_USER}" ] || [ -z "${ZPOOL_DISK_1}" ] || [ -z "${ZPOOL_DISK_2}" ]; then
+# Hardcode boot drives EFI partitions here in the form /dev/sdX or /dev/nvmeXnXpX
+# If you only have one drive, leave the second define blank
+# *_EFI is for the EFI boot partition path
+ZPOOL_DISK_1_EFI=""
+ZPOOL_DISK_2_EFI=""
+
+
+# TODO: check vars
+if [ -z "${MAIN_USER}" ] || [ -z "${ZPOOL_DISK_1_EFI}" ]; then
   echo "ERROR! Please set all variables before running this script"
+  exit 1
 fi
+#############################
 
-# Import root ZFS pools and mount all partitions
+
+# 1. Mount the ZFS pools and the first EFI boot partition
+mkdir -p /mnt/boot
 zpool import -f -d /dev/disk/by-id -R /mnt zroot -N
 zfs mount zroot/ROOT/arch
 zfs mount -a
-mount "${ZPOOL_DISK_1}" /mnt/boot
+mount "${ZPOOL_DISK_1_EFI}" /mnt/boot
 
-# Chroot to mounted partitions
-# Switch to main user and re-install kernel
-arch-chroot /mnt /bin/bash <<EOF
-su - "${MAIN_USER}" -c 'paru -Syu --noconfirm linux-lts mkinitcpio'
-EOF
+# 2. Chroot into /mnt and re-install kernel
+arch-chroot /mnt su - "${MAIN_USER}" -c 'paru -Syu --noconfirm linux-lts mkinitcpio'
 
-# Unmount everything and export ZFS pools
+# 3. Unmount everything and export ZFS pools
 zfs umount -a
 umount -R /mnt
 zpool export -a
 
-# Use dd to copy first drive's EFI boot partition to second drive's EFI boot partition
-sudo dd if="${ZPOOL_DISK_1}" "${ZPOOL_DISK_2}" status=progress
+# 4. Use dd to clone the first EFI boot partition to the second EFI boot partition
+if [ -z "${ZPOOL_DISK_2_EFI}" ]; then
+  echo "No second disk specified for the pool zroot, skipping..."
+else
+  sudo dd if="${ZPOOL_DISK_1_EFI}" "${ZPOOL_DISK_2_EFI}" status=progress
+fi
 
 echo "Done!"

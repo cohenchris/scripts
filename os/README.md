@@ -17,6 +17,9 @@ Some may have CATASTROPHIC consequences if used incorrectly, so they should be r
 - [Replace/Resilver a Drive in ZFS Root Pool](#Replace/Resilver-a-Drive-in-ZFS-Root-Pool)
   - [Prerequisites](#Prerequisites-2)
   - [Use](#Use-2)
+- [Rescue Corrupted EFI Boot Partition](#Rescue-Corrupted-EFI-Boot-Partition)
+  - [Prerequisites](#Prerequisites-3)
+  - [Use](#Use-3)
 - [System Services Configuration](#System-Services-Configuration)
 
 
@@ -81,6 +84,7 @@ This means that the script is called whether the EFI boot partition data is upda
 
 
 
+
 ## Replace/Resilver a Drive in ZFS Root Pool
 [`root-resilver.sh`](root-resilver.sh)
 
@@ -96,6 +100,28 @@ It will resilver the ZFS partition, clone the EFI boot partition to the new driv
 ### Use
 To use this script, simply boot from the surviving drive in your ZFS root pool.
 This script is intended to be used when directly booted from the surviving drive, but may work fine if you need to rescue the system by chrooting from a live USB.
+
+
+
+
+## Rescue Corrupted EFI Boot Partition
+[`arch-rescue.sh`](arch-rescue.sh)
+
+Since I have a ZFS root pool set up with two mirrored drives, there is some complication with maintaining the EFI boot partitions.
+Sometimes, they just break after an update if I'm not careful.
+This script is meant to help get the system up and running more quickly than if you were to manually do so.
+
+### Prerequisites
+- You have a ZFS root pool
+- You have set the relevant variables inside of the script
+- You have a live Arch USB with ZFS installed.
+
+### Use
+To use this script, boot into the live USB stick with Arch + ZFS.
+Then, simply run it!
+Everything should be taken care of, and if all commands ran successfully, you will have a working system on next reboot.
+
+
 
 
 
