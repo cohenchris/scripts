@@ -68,9 +68,6 @@ This is a single device on my network that stores backups for my entire network.
 - [Server Backup](#Server-Backup)
   - [Prerequisites](#Prerequisites-8)
   - [Use](#Use-9)
-- [Weekly Job Report](#Weekly-Job-Report)
-  - [Prerequisites](#Prerequisites-9)
-  - [Use](#Use-10)
 - [Interacting With Borg](#Interacting-With-Borg)
   - [Resources](#Resources)
 
@@ -296,23 +293,6 @@ If I ever need to restore my configuration, I can simply extract a backup from t
 
 ### Use
 On the local machine running your docker-compose stack, this script should be set up as a cron job.
-
-
-
-
-## Weekly Job Report
-[`report.sh`](report.sh)
-
-This script scans the Admin mailbox in your email for backup job emails.
-It manually tallies up all jobs run in the last week, then displays the results in a readable format.
-
-### Prerequisites
-- Variables for this script are filled out in [`.env`](sample.env) file
-- The environment variable MAILDIR is set to the path of your locally synced e-mail
-- `msmtp` and `mutt` packages are installed and configured under the root user
-
-### Use
-Run this script as a cron job (or manually) on any machine which has your mailboxes synced locally.
 
 
 
