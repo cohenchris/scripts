@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Backup music
 # To restore: borg extract /backups/music::<backup_name>
 #   note: execute this where you would like the 'music' folder to be placed

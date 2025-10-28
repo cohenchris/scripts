@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Default save to ${HOME}/Downloads
 # Create if it does not already exist

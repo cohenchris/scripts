@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Backup Batocera gaming console
 
 # NOTE: Batocera is an immutable firmware image and cannot be modified (no installing new packages).

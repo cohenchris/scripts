@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if ! dpkg -s ffmpeg &> /dev/null; then
   # Install ffmpeg if not present

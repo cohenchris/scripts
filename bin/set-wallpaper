@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [[ -n "${SSH_TTY}" ]] || [[ -z "${WAYLAND_DISPLAY}" ]]; then
   echo "Not running in a graphical environment, exiting..."

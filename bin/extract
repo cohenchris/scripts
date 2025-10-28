@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 for file in "$@"; do
   echo "Attempting to extract ${file}..."

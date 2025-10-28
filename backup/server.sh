@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Backup important server files
 # To restore: borg extract /backups/server::<backup_name>
 #   note: execute this where you would like the 'server' folder to be placed
@@ -30,8 +30,8 @@ sleep 30
 # Shutdown server
 mail_log plain "Stopping all Docker containers..."
 cd "${SERVER_DIR}"
-docker-compose down
-mail_log check "Docker-compose down" $?
+./stacks.sh stop all
+mail_log check "Stop all Docker stacks" $?
 # Export crontab
 mail_log plain "Exporting crontab for ${SERVER_USER}..."
 crontab -l -u "${SERVER_USER}" > crontab.txt
@@ -53,11 +53,11 @@ borg_backup "${SERVER_DIR}" "${REMOTE_BACKUP_SERVER}:${SERVER_REMOTE_BACKUP_DIR}
 mail_log check "Server remote backup" $?
 
 # Start services back up
-mail_log plain "Restarting all Docker containers..."
+mail_log plain "Starting all Docker containers..."
 cd "${SERVER_DIR}"
 rm crontab.txt sudo_crontab.txt
-docker-compose up -d
-mail_log check "Docker-compose up" $?
+./stacks.sh start all
+mail_log check "Start all Docker stacks" $?
 cd "${WORKING_DIR}"
 
 # Due to some Python permission issues, the container will take 15+ mins to

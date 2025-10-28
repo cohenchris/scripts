@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Configure the program to execute when sudo requires password entry
 WORKING_DIR=$(dirname "$(realpath "$0")")

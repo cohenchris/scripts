@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Backup everything to Backblaze
 
 # backblaze_sync(dir_to_sync, backblaze_bucket, exclude_regex)

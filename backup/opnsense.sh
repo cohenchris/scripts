@@ -11,11 +11,6 @@ source "${WORKING_DIR}/common.sh"
 # Therefore, we set it manually here.
 export PATH="${PATH}:${WORKING_DIR}/../bin"
 
-# FreeBSD installs bash at /usr/local/bin/bash by default
-# My personal scripts use the interpreter /bin/bash
-# To prevent bad interpreter errors, link /bin/bash to /usr/local/bin/bash
-ln -s /usr/local/bin/bash /bin/bash
-
 require var "${OPNSENSE_LOCAL_BACKUP_DIR}" || exit 1
 require var "${OPNSENSE_REMOTE_BACKUP_DIR}" || exit 1
 require var "${REMOTE_BACKUP_SERVER}" || exit 1

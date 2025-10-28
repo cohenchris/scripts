@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source "${WORKING_DIR}/../../.env"

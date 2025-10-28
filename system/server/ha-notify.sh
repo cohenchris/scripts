@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Load environment variables
 WORKING_DIR=$(dirname "$(realpath "$0")")

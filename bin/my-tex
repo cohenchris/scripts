@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # mytex_compile(filename_to_compile)
 #   filename_to_compile - name/prefix of file to compile with LaTeX

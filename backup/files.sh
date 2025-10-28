@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Backup files
 # To restore: borg extract /backups/files::<backup_name>
 #   note: execute this where you would like the 'files' folder to be placed

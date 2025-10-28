@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source "${WORKING_DIR}/../.env"
@@ -8,7 +8,7 @@ require var "${SERVER_DIR}"
 # Query vpn container to get public IP
 PUBLIC_IP=$(curl -s localhost:8001/v1/publicip/ip | jq -r ".public_ip")
 # Query vpn container to get forwarded port
-PORT=$(grep "VPN_PORTS" "${SERVER_DIR}/.env" | cut -d '=' -f 2)
+PORT=$(grep "VPN_PORTS" "${SERVER_DIR}/media/.env" | cut -d '=' -f 2)
 
 nc -z "${PUBLIC_IP}" "${PORT}"
 

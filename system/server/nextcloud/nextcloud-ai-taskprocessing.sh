@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # start_worker(worker_name)
 #   worker_name - name of the Nextcloud AI systemd worker to start

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 
 # This script takes a file of youtube URLs, separated by newlines, as input

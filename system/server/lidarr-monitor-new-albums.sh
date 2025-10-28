@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # This script monitors albums if:
 # 1. The artist is monitored
