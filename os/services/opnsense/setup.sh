@@ -27,11 +27,11 @@ echo "Installing and configuring OPNSense backup OPNSense action..."
 cp ./actions_backupopnsense.conf /usr/local/opnsense/service/conf/actions.d
 sed -i "" "s|<scriptsdir>|${SCRIPTS_BASE_DIR}|g" /usr/local/opnsense/service/conf/actions.d/actions_backupopnsense.conf
 
-# Install drive health monitoring action
+# Install data integrity monitoring action
 echo
-echo "Installing and configuring drive health monitoring OPNSense action..."
-cp ./actions_drivehealth.conf /usr/local/opnsense/service/conf/actions.d
-sed -i "" "s|<scriptsdir>|${SCRIPTS_BASE_DIR}|g" /usr/local/opnsense/service/conf/actions.d/actions_drivehealth.conf
+echo "Installing and configuring data integrity monitoring OPNSense action..."
+cp ./actions_dataintegrity.conf /usr/local/opnsense/service/conf/actions.d
+sed -i "" "s|<scriptsdir>|${SCRIPTS_BASE_DIR}|g" /usr/local/opnsense/service/conf/actions.d/actions_dataintegrity.conf
 
 # Restart configd to index new OPNSense actions
 echo
