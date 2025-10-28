@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Set up environment
 WORKING_DIR=$(dirname "$(realpath "$0")")
