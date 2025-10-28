@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# Exit immediately if a command exits with a non-zero status
+set -e
+# Bail if attempting to substitute an unset variable
+set -u
+
 # User must run as root
 if [[ "$(id -u)" -ne 0 ]]; then
     echo "This script must be run as root" 

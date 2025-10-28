@@ -2,6 +2,8 @@
 
 # Exit immediately if a command exits with a non-zero status
 set -e
+# Bail if attempting to substitute an unset variable
+set -u
 
 # Sourcing .env will redirect all output to a log file
 # We do NOT want this here, so save the original file

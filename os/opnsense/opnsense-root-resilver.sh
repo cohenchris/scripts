@@ -4,7 +4,7 @@
 set -u
 
 # Name of target ZFS pool
-ZFS_POOL_NAME="zroot"
+ZFS_POOL_NAME=""
 
 # Do not use full paths, just use device name (e.g. ada0 or ada1)
 

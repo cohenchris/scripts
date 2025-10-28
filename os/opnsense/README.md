@@ -1,6 +1,6 @@
 # OPNSense Services
 
-Custom services and scripts for a FreeBSD-based OPNSense distribution.
+Custom scripts, services, and configuration files for a FreeBSD-based OPNSense distribution.
 
 
 
@@ -13,6 +13,9 @@ Custom services and scripts for a FreeBSD-based OPNSense distribution.
 - [OPNSense Action to Check Data Integrity](#OPNSense-Action-to-Check-Data-Integrity)
   - [Prerequisites](#Prerequisites-1)
   - [Use](#Use-1)
+- [Replace/Resilver a Drive in ZFS Root Pool](#Replace/Resilver-a-Drive-in-ZFS-Root-Pool)
+  - [Prerequisites](#Prerequisites-2)
+  - [Use](#Use-2)
 
 
 
@@ -48,7 +51,7 @@ configctl backupopnsense backup
 
 
 
-2. Automated setup using [`setup.sh`](setup.sh)
+2. Automated setup using [`email-setup.sh`](email-setup.sh)
 
 
 
@@ -86,4 +89,23 @@ configctl dataintegrity backup
 
 
 
-2. Automated setup using [`setup.sh`](setup.sh)
+2. Automated setup using [`email-setup.sh`](email-setup.sh)
+
+
+
+
+## Replace/Resilver a Drive in ZFS Root Pool
+[`opnsense-root-resilver.sh`](opnsense-root-resilver.sh)
+
+In case of a drive failure on your mirrored ZFS root pool, this script assists in seamlessly resilvering a replacement drive.
+It will clone the EFI boot partition to the new drive, clone the FreeBSD-Boot partition to the new drive, and resilver the ZFS partition.
+
+### Prerequisites
+- You have a mirrored ZFS root pool
+- You have physically removed the defective ZFS boot drive from your system
+- You have physically attached the replacement drive to your system
+- You are booted from the remaining ZFS boot drive
+- The variables within this script have been set
+
+### Use
+To resilver, boot from the surviving drive in your ZFS root pool and run this script.

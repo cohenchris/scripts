@@ -1,6 +1,6 @@
 # Setup Email Notifications
 
-Install and configure a system which allows the host machine to send email notifications.
+Install and configure email notifications on the host machine.
 
 
 
@@ -45,7 +45,7 @@ chown root:root /etc/msmtprc
 chmod 600 /etc/msmtprc
 ```
 
-2. Automated setup using [`setup.sh`](setup.sh)
+2. Automated setup using [`email-setup.sh`](email-setup.sh)
 
 This script will prompt you for your SMTP URL, email, and password.
 Once provided, it will copy the config file so that it's visible to MSMTP, fill in your details, and set proper permissions.
@@ -75,7 +75,7 @@ Then, copy into the proper location
 cp ./muttrc /root/.muttrc
 ```
 
-2. Automated setup using [`setup.sh`](setup.sh)
+2. Automated setup using [`email-setup.sh`](email-setup.sh)
 
 This script will prompt you for your SMTP URL, email, and password.
 Once provided, it will copy the config file so that it's visible to Mutt and fill in your details.

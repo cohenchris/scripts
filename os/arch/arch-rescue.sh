@@ -3,6 +3,8 @@
 
 # Exit immediately if a command exits with a non-zero status
 set -e
+# Bail if attempting to substitute an unset variable
+set -u
 
 
 ########## DEFINES ##########
@@ -17,7 +19,6 @@ ZPOOL_DISK_1_EFI=""
 ZPOOL_DISK_2_EFI=""
 
 
-# TODO: check vars
 if [ -z "${MAIN_USER}" ] || [ -z "${ZPOOL_DISK_1_EFI}" ]; then
   echo "ERROR! Please set all variables before running this script"
   exit 1

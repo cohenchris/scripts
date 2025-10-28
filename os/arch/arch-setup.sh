@@ -57,7 +57,7 @@ for i in {1..4}; do systemctl enable --now nextcloud-ai-worker@$i.service; done
 
 # Set up email notifications
 cd "${SCRIPTS_BASE_DIR}/os/services/email"
-./setup.sh
+./email-setup.sh
 
 echo
 echo "Setup complete!"

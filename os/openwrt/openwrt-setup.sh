@@ -26,7 +26,7 @@ EOF
 
 # Set up email notifications
 cd "${SCRIPTS_BASE_DIR}/os/services/email"
-./setup.sh
+./email-setup.sh
 
 echo
 echo "Setup complete!"

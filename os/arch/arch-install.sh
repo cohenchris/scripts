@@ -4,6 +4,8 @@
 # 3. Reboot
 # 4. YADM dotfiles restore + bootstrap
 
+# Bail if attempting to substitute an unset variable
+set -u
 
 # pre_chroot_setup()
 #
