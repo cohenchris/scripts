@@ -10,16 +10,32 @@ if [[ "$(id -u)" -ne 0 ]]; then
 fi
 
 
-# Name of the server
-REALNAME=""
+# Determine which client is running this script
+# Raspbian Backup Server
+if command -v apt &> /dev/null; then
+  REALNAME="Backup Server"
+# OpenWRT
+elif command -v opkg &> /dev/null; then
+  REALNAME="OpenWRT"
+# Arch Linux Lab
+elif command -v pacman &> /dev/null; then
+  REALNAME="Phrog"
+# OPNSense (FreeBSD)
+elif command -v pkg &> /dev/null; then
+  REALNAME="OPNSense"
+# Unknown system
+else
+    echo "Unable to auto-detect system"
+    exit 1
+fi
+
+
 # URL to an SMTP server
 SMTP_HOST_URL=""
 # Username from which email notifications will be sent
 EMAIL_USERNAME=""
 # Password for EMAIL_USERNAME
 EMAIL_PASWORD=""
-
-find_realname
 
 if [ "${REALNAME}" = "OPNSense" ]; then
   # FreeBSD paths
@@ -35,32 +51,6 @@ else
   TLS_TRUST_FILE="/etc/ssl/certs/ca-certificates.crt"
 fi
 
-
-# Determine which client is running this script
-function find_realname()
-{
-  # Raspbian Backup Server
-  if command -v apt &> /dev/null; then
-    REALNAME="Backup Server"
-
-  # OpenWRT
-  elif command -v opkg &> /dev/null; then
-    REALNAME="OpenWRT"
-
-  # Arch Linux Lab
-  elif command -v pacman &> /dev/null; then
-    REALNAME="Phrog"
-
-  # OPNSense (FreeBSD)
-  elif command -v pkg &> /dev/null; then
-    REALNAME="OPNSense"
-
-  # Unknown system
-  else
-      echo "Unable to auto-detect system"
-      exit 1
-  fi
-}
 
 # Install packages which are required for email to be sent
 # 1. mutt  - mail user agent
