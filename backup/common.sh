@@ -1,7 +1,6 @@
 # General settings
 WORKING_DIR=$(dirname "$(realpath "$0")")
 BACKUP_TYPE=$(basename $0 | cut -d "." -f 1)
-SCRIPTS_DIR="${WORKING_DIR}"/..
 DATE=$(date +"%Y%m%d-%H%M")
 BACKUP_NAME="${BACKUP_TYPE}-backup-${DATE}"
 STATUS="SUCCESS"
@@ -60,10 +59,10 @@ function backup_finish() {
 
   # Log and notify backup status
   if [[ "${STATUS}" == "FAIL" ]]; then
-    bash "${SCRIPTS_DIR}/system/server/ha-notify.sh" "${BACKUP_TYPE} backup" "ERROR - ${BACKUP_TYPE} backup failed - ${DATE}..."
+    bash "${SERVER_DIR}/misc/scripts/ha-notify.sh" "${BACKUP_TYPE} backup" "ERROR - ${BACKUP_TYPE} backup failed - ${DATE}..."
     echo -e "Backup failed..."
   else
-    bash "${SCRIPTS_DIR}/system/server/ha-notify.sh" "${BACKUP_TYPE} backup" "SUCCESS - ${BACKUP_TYPE} backup succeeded - ${DATE}!"
+    bash "${SERVER_DIR}/misc/scripts/ha-notify.sh" "${BACKUP_TYPE} backup" "SUCCESS - ${BACKUP_TYPE} backup succeeded - ${DATE}!"
     echo -e "Backup succeeded!"
   fi
  

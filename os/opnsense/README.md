@@ -51,7 +51,7 @@ configctl backupopnsense backup
 
 
 
-2. Automated setup using [`email-setup.sh`](email-setup.sh)
+2. Automated setup using [`email-env-setup.sh`](email-env-setup.sh)
 
 
 
@@ -89,7 +89,7 @@ configctl dataintegrity backup
 
 
 
-2. Automated setup using [`email-setup.sh`](email-setup.sh)
+2. Automated setup using [`email-env-setup.sh`](email-env-setup.sh)
 
 
 

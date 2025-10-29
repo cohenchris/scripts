@@ -7,14 +7,14 @@ Custom scripts, services, and configuration files for a Linux-based OpenWRT dist
 
 # Table of Contents
 
-- [OpenWRT Fresh Install Setup](#OpenWRT-Fresh-Install-Setup)
+- [OpenWRT Fresh Install Setup](#OpenWRT-Fresh-Install-env-setup)
   - [Use](#Use)
 
 
 
 
 ## OpenWRT Fresh Install Setup
-[`openwrt-setup.sh`](openwrt-setup.sh)
+[`openwrt-env-setup.sh`](openwrt-env-setup.sh)
 
 Most settings will be restored from an OpenWRT backup.
 This script completes a fresh install by modifying system settings which are not restored via OpenWRT backup restore.
@@ -22,5 +22,5 @@ This script completes a fresh install by modifying system settings which are not
 ### Use
 Simply call this script from the command line:
 ```sh
-./openwrt-setup.sh
+./openwrt-env-setup.sh
 ```

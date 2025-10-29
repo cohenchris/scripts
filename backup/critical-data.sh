@@ -12,7 +12,7 @@ require var "${REMOTE_BACKUP_SERVER}" || exit 1
 require var "${CRITICAL_DATA_REMOTE_BACKUP_DIR}" || exit 1
 require var "${FILES_DIR}" || exit 1
 require var "${FILES_DIR}" || exit 1
-require var "${SCRIPTS_DIR}" || exit 1
+require var "${SERVER_DIR}" || exit 1
 require var "${BW_PASS_FILE}" || exit 1
 require file "${BW_PASS_FILE}" || exit 1
 
@@ -55,6 +55,6 @@ mail_log check "Sync to backup server" $?
 mail_log plain "Backing up all critical data to Nextcloud..."
 rsync -r --delete --update --progress "${CRITICAL_DATA_LOCAL_BACKUP_DIR}/" "${FILES_DIR}/etc/backups/critical-data"
 mail_log check "Nextcloud backup" $?
-"${SCRIPTS_DIR}/system/server/nextcloud/nextcloud-scan-files.sh"
+"${SERVER_DIR}/cloud/scripts/nextcloud-scan-files.sh"
 
 backup_finish

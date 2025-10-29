@@ -15,15 +15,13 @@ require var "${SERVER_DIR}" || exit 1
 require var "${SERVER_LOCAL_BACKUP_DIR}" || exit 1
 require var "${REMOTE_BACKUP_SERVER}" || exit 1
 require var "${SERVER_REMOTE_BACKUP_DIR}" || exit 1
-require var "${PLEX_URL}" || exit 1
-require var "${PLEX_TOKEN}" || exit 1
 require var "${SERVER_BACKUP_KEEP_DAILY}" || exit 1
 require var "${SERVER_BACKUP_KEEP_WEEKLY}" || exit 1
 require var "${SERVER_BACKUP_KEEP_MONTHLY}" || exit 1
 
 # Stop all Plex playback sessions with an informational message
 mail_log plain "Stopping Plex to prevent conflicts with server files..."
-"${SCRIPTS_DIR}/system/server/plex-server-maintenance-broadcast.py" "${PLEX_URL}" "${PLEX_TOKEN}"
+"${SERVER_DIR}/media/scripts/plex-server-maintenance-broadcast.py"
 mail_log check "Stop Plex" $?
 sleep 30
 

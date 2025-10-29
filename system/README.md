@@ -4,7 +4,6 @@ System scripts with dependencies (must fill out .env file) which help manage and
 
 These focus on automations which can be quite system-specific.
 Think of these as scripts that would require a solid amount of effort to port to another system.
-For example, one of the scripts in here nukes a Docker container stack, cleans things up, and restarts them all - obviously, not all systems will be running a Docker container stack, so this is not immediately portable across different systems.
 
 **NOTE: You MUST run `cp sample.env .env` and fill out the required variables for each script you will be running.**
 
@@ -14,18 +13,14 @@ For example, one of the scripts in here nukes a Docker container stack, cleans t
 # Table of Contents
 
 - [Batocera Quick Mount + Unmount via SSHFS](#Batocera-Quick-Mount-+-Unmount-via-SSHFS)
+  - [Prerequisites](#Prerequisites)
+  - [Use](#Use)
+- [Data Integrity Check](#Data-Integrity-Check)
   - [Prerequisites](#Prerequisites-1)
   - [Use](#Use-1)
-- [Data Integrity Check](#Data-Integrity-Check)
+- [Restart Glances Webserver](#Restart-Glances-Webserver)
   - [Prerequisites](#Prerequisites-2)
   - [Use](#Use-2)
-- [Restart Glances Webserver](#Restart-Glances-Webserver)
-  - [Prerequisites](#Prerequisites-3)
-  - [Use](#Use-3)
-- [Set Proper Permissions on Media Files](#Set-Proper-Permissions-on-Media-Files)
-  - [Prerequisites](#Prerequisites-4)
-  - [Use](#Use-4)
-- [Server Automation](#Server-Automation)
 
 
 
@@ -96,7 +91,7 @@ If running ZFS, please be wary of excessive trim/scrub commands - I personally r
 
 
 ## Restart Glances Webserver
-[`restart-glances.sh`](restart-glances.sh)
+[`glances-restart.sh`](glances-restart.sh)
 
 This script checks if the Glances system monitoring service has crashed.
 If it has, it will restart the service.
@@ -114,27 +109,3 @@ This script assumes that:
 
 ### Use
 While it can be run manually, I highly recommend running this script as a scheduled cron job.
-
-
-
-
-## Set Proper Permissions on Media Files
-[`scan-media-files.sh`](scan-media-files.sh)
-
-This simple script sets correct file ownership/permissions for all of my media files
-
-### Prerequisites
-This script assumes that:
-- You have a directory mounted which contains all of your media files
-- You have created and filled out the .env file in `scripts/system`
-
-### Use
-While not required for most day-to-day use, you should run this manually whenever you have manually modified anything on your media drive.
-
-
-
-
-## Server Automation
-[`server/`](server/)
-
-Scripts relating to server services running on the host machine.
