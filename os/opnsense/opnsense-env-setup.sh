@@ -9,7 +9,7 @@ if [[ "$(id -u)" -ne 0 ]]; then
     exit 1
 fi
 
-SCRIPTS_BASE_DIR=$(realpath "$(dirname "$(realpath "$0")")/../../..")
+SCRIPTS_BASE_DIR=$(realpath "$(dirname "$(realpath "$0")")/../..")
 
 echo "Updating packages and repositories..."
 pkg update
