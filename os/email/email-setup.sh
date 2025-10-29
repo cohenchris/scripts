@@ -19,6 +19,8 @@ EMAIL_USERNAME=""
 # Password for EMAIL_USERNAME
 EMAIL_PASWORD=""
 
+find_realname
+
 if [ "${REALNAME}" = "OPNSense" ]; then
   # FreeBSD paths
   MSMTPRC_PATH="/usr/local/etc/msmtprc"
@@ -34,6 +36,32 @@ else
 fi
 
 
+# Determine which client is running this script
+function find_realname()
+{
+  # Raspbian Backup Server
+  if command -v apt &> /dev/null; then
+    REALNAME="Backup Server"
+
+  # OpenWRT
+  elif command -v opkg &> /dev/null; then
+    REALNAME="OpenWRT"
+
+  # Arch Linux Lab
+  elif command -v pacman &> /dev/null; then
+    REALNAME="Phrog"
+
+  # OPNSense (FreeBSD)
+  elif command -v pkg &> /dev/null; then
+    REALNAME="OPNSense"
+
+  # Unknown system
+  else
+      echo "Unable to auto-detect system"
+      exit 1
+  fi
+}
+
 # Install packages which are required for email to be sent
 # 1. mutt  - mail user agent
 # 2. msmtp - SMTP client
@@ -43,31 +71,27 @@ function install_dependencies()
   # Exit immediately if a command exits with a non-zero status
   set -e
 
-  # Raspbian
-  if command -v apt &> /dev/null; then
-    echo "Installing packages for Raspbian..."
-    REALNAME="Backup Server"
+  # Raspbian Backup Server
+  if [[ "${REALNAME}" = "Backup Server" ]]; then
+    echo "Installing packages for Raspbian backup server..."
     apt-get update && apt-get upgrade
     apt install mutt msmtp msmtp-mta
 
   # OpenWRT
-  elif command -v opkg &> /dev/null; then
+  elif [[ "${REALNAME}" = "OpenWRT" ]]; then
     echo "Installing packages for OpenWRT..."
-    REALNAME="OpenWRT"
     opkg update
     opkg install coreutils-realpath curl mutt msmtp msmtp-mta
 
-  # Arch
-  elif command -v pacman &> /dev/null; then
-    echo "Installing packages for Arch..."
-    REALNAME="Phrog"
+  # Arch Linux Lab
+  elif [[ "${REALNAME}" = "Phrog" ]]; then
+    echo "Installing packages for lab..."
     pacman -Syu
     pacman -S msmtp msmtp-mta mutt
 
   # OPNSense (FreeBSD)
-  elif command -v pkg &> /dev/null; then
+  elif [[ "${REALNAME}" = "OPNSense" ]]; then
     echo "Installing packages for OPNSense..."
-    REALNAME="OPNSense"
     pkg install git autoconf automake libtool gettext texinfo pkgconf gnutls gmake
 
     # Install msmtp from source
@@ -97,7 +121,7 @@ function install_dependencies()
       exit 1
   fi
 
-  # Reset Exit immediately if a command exits with a non-zero status
+  # Reset setting which exits immediately if a command exits with a non-zero status
   set +e
 }
 
