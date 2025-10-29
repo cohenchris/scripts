@@ -58,10 +58,4 @@ rm crontab.txt sudo_crontab.txt
 mail_log check "Start all Docker stacks" $?
 cd "${WORKING_DIR}"
 
-# Due to some Python permission issues, the container will take 15+ mins to
-# start back up. The HomeAssistant notification script has a hard dependency
-# on this, so we wait.
-# https://github.com/linuxserver/docker-homeassistant/issues/116
-sleep 15m
-
 backup_finish
