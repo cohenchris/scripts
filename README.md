@@ -4,37 +4,37 @@ One-stop shop for various homelab scripts.
 
 I've categorized these into a few different categories:
 
-1. Scripts that are run once
-     - Operations that you need to perform only once on a fresh install.
-     - Think OS install/configuration, systemd services, etc.
+1. Scripts that are specialized for backing up various facets of my network
+   - This could have gone under #3, but I've written enough of these scripts that they deserve their own category.
 2. Ultra-portable scripts that are run arbitrarily
     - Operations that any computer can run regardless of how it is being used
     - Think file management, package updates, display configuration, etc
     - No configuration required from the user - could be placed directly in `/usr/bin` on any system
-3. Scripts that are run arbitrarily, but must be configured to your specific environment
+3. OS-specific scripts that are run once
+     - Operations that you need to perform only once on a fresh install.
+     - Think OS install/configuration, systemd services, etc.
+4. Scripts that are run arbitrarily, but must be configured to your specific environment
     - Operations that may be semi-generic, but require the user to specify exactly how they are using their system
     - Think service management, automations to mount/unmount very specific drives/devices, etc.
-4. Scripts that are specialized for backing up various facets of my network
-   - This could have gone under #3, but I've written enough of these scripts that they deserve their own category.
 
 
 
 
 # Table of Contents
 
-- [OS Configuration](#OS-Configuration)
-- [Generic Bin](#Generic-Bin)
-- [System Automation](#System-Automation)
 - [Backups](#Backups)
+- [Generic Bin](#Generic-Bin)
+- [OS Configuration](#OS-Configuration)
+- [System Automation](#System-Automation)
 
 
 
 
-## OS Configuration
-[`os/`](os/)
+## Backups
+[`backup/`](backup/)
 
-One-time use scripts intended to help manage various OS-level components, including a fresh Arch install, ZFS pool management, and services for various systems.
-Some may have CATASTROPHIC consequences if used incorrectly, so they should be read and fully understood before use.
+Scripts which backup various devices and services.
+They are heavily driven by the .env file, but all generally assume a backup system which includes 1 backup on the local machine and 1 backup on a remote backup server (whether this be another computer on your network or a remote Backblaze storage bucket).
 
 
 
@@ -51,6 +51,15 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 
 
 
+## OS Configuration
+[`os/`](os/)
+
+One-time use scripts intended to help manage various OS-level components, including a fresh Arch install, ZFS pool management, and services for various systems.
+Some may have CATASTROPHIC consequences if used incorrectly, so they should be read and fully understood before use.
+
+
+
+
 ## System Automation
 [`system/`](system/)
 
@@ -62,8 +71,3 @@ Think of these as scripts that would require a solid amount of effort to port to
 
 
 
-## Backups
-[`backup/`](backup/)
-
-Scripts which backup various devices and services.
-They are heavily driven by the .env file, but all generally assume a backup system which includes 1 backup on the local machine and 1 backup on a remote backup server (whether this be another computer on your network or a remote Backblaze storage bucket).
