@@ -162,7 +162,7 @@ function configure_mutt()
   echo "Configuring system-wide muttrc..."
   mkdir -p $(dirname "${MUTTRC_PATH}") 2>/dev/null
   cp ./muttrc "${MUTTRC_PATH}"
-  chmod 600 "${MUTTRC_PATH}"
+  chmod 644 "${MUTTRC_PATH}"
 
   # Splice muttrc fields into the final config file
   if [ "${REALNAME}" = "OPNSense" ]; then
