@@ -58,7 +58,7 @@ function borg_maintenance()
 
   # create temp logfile
   temp_repo_logfile=$(mktemp)
-  echo "\n############################## ${repo_path} ##############################" > "${temp_repo_logfile}"
+  echo -e "\n############################## ${repo_path} ##############################" > "${temp_repo_logfile}"
 
   # verify contents
   # for a full integrity verification, add the --verify-data flag here
@@ -68,10 +68,10 @@ function borg_maintenance()
   time borg -v check "${repo_path}" >> "${temp_repo_logfile}" 2>&1
 
   # compact segment files
-  echo "\nCompacting segment files for borg repository \"${repo_path}\"" >> "${temp_repo_logfile}"
+  echo -e "\nCompacting segment files for borg repository \"${repo_path}\"" >> "${temp_repo_logfile}"
   time borg -v compact "${repo_path}" >> "${temp_repo_logfile}" 2>&1
 
-  echo "\nFinished maintenance on borg repository \"${repo_path}\"!" >> "${temp_repo_logfile}"
+  echo -e "\nFinished maintenance on borg repository \"${repo_path}\"!" >> "${temp_repo_logfile}"
 
   # Print all logs for this repo at once
   echo >> "${BORG_LOGFILE}"
