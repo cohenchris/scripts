@@ -21,18 +21,18 @@ fi
 # Exit immediately if a command exits with a non-zero status
 set -e
 
-# On some systems, smartctl is installed in /usr/sbin
-export PATH="/usr/sbin:/home/phrog/scripts/bin:${PATH}"
-
 # If BORG_REPOSITORIES is set, configure related environment variables
 if [[ -n "${BORG_REPOSITORIES[*]}" ]]; then
+  # Ensure borg-related variables are set
   require var "${BORG_PASS_FILE}"
   require file "${BORG_PASS_FILE}"
   require var "${BORG_REPOSITORIES}"
   require var "${EMAIL}"
 
+  # Create borg logfile
   export BORG_PASSPHRASE=$(cat "${BORG_PASS_FILE}")
   BORG_LOGFILE=${XDG_CACHE_HOME:-${HOME}/.local/cache}/borg_maintenance.txt
+  mkdir -p $(dirname "${BORG_LOGFILE}")
 fi
 
 ############################## INTEGRITY CHECKING ##############################
