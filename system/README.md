@@ -18,9 +18,7 @@ Think of these as scripts that would require a solid amount of effort to port to
 - [Data Integrity Check](#Data-Integrity-Check)
   - [Prerequisites](#Prerequisites-1)
   - [Use](#Use-1)
-- [Restart Glances Webserver](#Restart-Glances-Webserver)
-  - [Prerequisites](#Prerequisites-2)
-  - [Use](#Use-2)
+- [System Update](#System-Update)
 
 
 
@@ -90,22 +88,14 @@ If running ZFS, please be wary of excessive trim/scrub commands - I personally r
 
 
 
-## Restart Glances Webserver
-[`glances-restart.sh`](glances-restart.sh)
+## System Update
+[`system-update`](system-update)
 
-This script checks if the Glances system monitoring service has crashed.
-If it has, it will restart the service.
+This script is meant to run on a system running the `paru` AUR helper package manager (likely Arch Linux).
+It also assumes that the user has a docker-compose stack located at `/home/${USER}/server.
 
-Both FreeBSD and Linux systems are supported.
-
-This is really intended to be run on FreeBSD, as there is a known issue with Glances crashing when using the sensor monitoring function.
-
-### Prerequisites
-This script assumes that:
-- `glances` package is installed
-- Glances is running in webserver mode
-- Glances webserver is running on port 61208
-
-
-### Use
-While it can be run manually, I highly recommend running this script as a scheduled cron job.
+1. Synchronize, install, and upgrade all packages
+2. Clean the package cache to remove unused packages
+3. Update all docker-compose images
+4. Remove all dangling docker container images
+5. Mirror EFI boot partitions on mirrored ZFS root pool

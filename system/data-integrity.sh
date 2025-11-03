@@ -9,6 +9,9 @@ fi
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source ${WORKING_DIR}/.env
 
+# Current date
+DATE=$(date +"%m/%d/%Y")
+
 # FreeBSD workarounds
 if [ "$(uname)" = "FreeBSD" ]; then
   # Add my custom PATH to the user's environment

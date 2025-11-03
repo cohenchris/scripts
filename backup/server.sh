@@ -23,7 +23,7 @@ require var "${SERVER_BACKUP_KEEP_MONTHLY}" || exit 1
 mail_log plain "Stopping Plex to prevent conflicts with server files..."
 "${SERVER_DIR}/media/scripts/plex-server-maintenance-broadcast.py"
 mail_log check "Stop Plex" $?
-sleep 20
+sleep 15
 
 # Shutdown server
 mail_log plain "Stopping all Docker containers..."

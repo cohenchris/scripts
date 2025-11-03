@@ -14,6 +14,8 @@ function batocera_mount()
 {
   local mount_dir=$1
   require var "${mount_dir}"
+  require dir "${mount_dir}"
+  mount_dir=$(realpath "${mount_dir}")
 
   if [ -n "$(ls -A "${mount_dir}" 2>/dev/null)" ]; then
     echo "ERROR: directory \"${mount_dir}\" is not empty, cannot mount..."
@@ -24,7 +26,6 @@ function batocera_mount()
   wakeonlan "${BATOCERA_MAC}"
 
   echo "Mounting \"${BATOCERA_HOST}:/userdata\" at \"${mount_dir}\"..."
-  mkdir -p "${mount_dir}"
   sshfs "${BATOCERA_HOST}:/userdata" "${mount_dir}"
 
   if [ $? -ne 0 ]; then
@@ -51,6 +52,8 @@ function batocera_unmount()
 {
   local mount_dir=$1
   require var "${mount_dir}"
+  require dir "${mount_dir}"
+  mount_dir=$(realpath "${mount_dir}")
   
   if [ ! -d "${mount_dir}" ]; then
     echo "Failed to unmount - directory \"${mount_dir} does not exist..."
@@ -65,12 +68,7 @@ function batocera_unmount()
     exit 1
   fi
 
-  if [ -n "$(ls -A "${mount_dir}" 2>/dev/null)" ]; then
-    echo "WARNING: directory \"${mount_dir}\" is not empty, cannot remove..."
-  else
-    echo "Removing directory \"${mount_dir}\"..."
-    rm -r "${mount_dir}"
-  fi
+  echo "Batocera successfully umounted from \"${mount_dir}\"!"
 }
 
 

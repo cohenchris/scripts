@@ -2,8 +2,8 @@
 
 # Default save to ${HOME}/Downloads
 # Create if it does not already exist
-SCREENSHOT_SAVE_DIR=$(realpath ${HOME}/Downloads)
-! [ -d "${SCREENSHOT_SAVE_DIR}" ] && mkdir "${SCREENSHOT_SAVE_DIR}"
+SCREENSHOT_SAVE_DIR=$(realpath "${XDG_DOWNLOAD_DIR:-${HOME}/Downloads}")
+! [ -d "${SCREENSHOT_SAVE_DIR}" ] && mkdir -p "${SCREENSHOT_SAVE_DIR}"
 
 DATE=$(date +"%Y%m%d-%H%M")
 SCREENSHOT_NAME="${SCREENSHOT_SAVE_DIR}/screenshot-${DATE}.jpg"

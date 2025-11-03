@@ -13,8 +13,6 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 
 - [Require Var, File, or Dir](#Require-Var,-File,-or-Dir)
 - [Send Email](#Send-Email)
-- [System Update](#System-Update)
-- [WiFi Selection Menu](#WiFi-Selection-Menu)
 - [Archive Extraction](#Archive-Extraction)
 - [Local E-Mail Sync](#Local-E-Mail-Sync)
 - [LF File Manager Wrapper](#LF-File-Manager-Wrapper)
@@ -54,29 +52,6 @@ Handy wrapper to send emails from the terminal.
 The body of the email is read from stdin. For example:
 
 `echo "This is the body of an email" | send-email "test@example.com" "Email SUBJECT" /path/to/attachment`
-
-
-
-
-## System Update
-[`update`](update)
-
-This script is meant to run on a system running the `paru` AUR helper package manager (likely Arch Linux).
-It also assumes that the user has a docker-compose stack located at `/home/${USER}/server.
-
-1. Synchronize, install, and upgrade all packages
-2. Clean the package cache to remove unused packages
-3. Update all docker-compose images
-4. Remove all dangling docker container images
-5. Mirror EFI boot partitions on mirrored ZFS root pool
-
-
-## WiFi Selection Menu
-[`wifi-menu`](wifi-menu)
-
-Fuzzel-based wifi network selection menu.
-Utilizes `nmcli` to scan for available networks and presents them in a friendly list.
-The user may then navigate this list using arrow keys or vim directional bindings (h/j/k/l) and select the desired network by pressing Enter.
 
 
 
