@@ -18,23 +18,6 @@ if [ "$(uname)" = "FreeBSD" ]; then
   export PATH="${PATH}:${WORKING_DIR}/../bin"
 fi
 
-# Exit immediately if a command exits with a non-zero status
-set -e
-
-# If BORG_REPOSITORIES is set, configure related environment variables
-if [[ -n "${BORG_REPOSITORIES[*]}" ]]; then
-  # Ensure borg-related variables are set
-  require var "${BORG_PASS_FILE}"
-  require file "${BORG_PASS_FILE}"
-  require var "${BORG_REPOSITORIES}"
-  require var "${EMAIL}"
-
-  # Create borg logfile
-  export BORG_PASSPHRASE=$(cat "${BORG_PASS_FILE}")
-  BORG_LOGFILE=${XDG_CACHE_HOME:-${HOME}/.local/cache}/borg_maintenance.txt
-  mkdir -p $(dirname "${BORG_LOGFILE}")
-fi
-
 ############################## INTEGRITY CHECKING ##############################
 
 # integrity_test()
@@ -71,7 +54,7 @@ function integrity_test() {
 function borg_maintenance()
 {
   local repo_path="$1"
-  require dir repo_path
+  require dir "${repo_path}"
 
   # create temp logfile
   temp_repo_logfile=$(mktemp)
@@ -194,12 +177,26 @@ function zfs_summarize()
 
 
 ############################## MAIN ##############################
+# If BORG_REPOSITORIES is set, configure related environment variables
+if [[ -n "${BORG_REPOSITORIES[*]}" ]]; then
+  # Ensure borg-related variables are set
+  require var "${BORG_PASS_FILE}"
+  require file "${BORG_PASS_FILE}"
+  require var "${BORG_REPOSITORIES}"
+  require var "${EMAIL}"
+
+  # Create borg logfile
+  export BORG_PASSPHRASE=$(cat "${BORG_PASS_FILE}")
+  BORG_LOGFILE=${XDG_CACHE_HOME:-${HOME}/.local/cache}/borg_maintenance.txt
+  mkdir -p $(dirname "${BORG_LOGFILE}")
+fi
 
 # Create array of all drives
 SMART_DRIVES=$(ls /dev | grep -E '^(sd[a-z]+|nvme[0-9]+n[0-9]+|ada[0-9]+|da[0-9]+)$' | sort)
 
 # Create array of all ZFS pools
 ZFS_POOLS=($(zpool list -H -o name))
+
 
 # Parse and handle arguments
 if [ "$1" == "test" ]; then
