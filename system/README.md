@@ -89,7 +89,7 @@ If running ZFS, please be wary of excessive trim/scrub commands - I personally r
 
 
 ## System Update
-[`system-update`](system-update)
+[`system-update.sh`](system-update.sh)
 
 This script is meant to run on a system running the `paru` AUR helper package manager (likely Arch Linux).
 It also assumes that the user has a docker-compose stack located at `/home/${USER}/server.
