@@ -34,18 +34,19 @@ zfs mount -a
 mount "${ZPOOL_DISK_1_EFI}" /mnt/boot
 
 # 2. Chroot into /mnt and re-install kernel
-arch-chroot /mnt su - "${MAIN_USER}" -c 'paru -Syu --noconfirm linux-lts mkinitcpio'
+arch-chroot /mnt sudo -u "${MAIN_USER}" sudo paru -Syu --noconfirm linux-lts mkinitcpio
 
 # 3. Unmount everything and export ZFS pools
 zfs umount -a
 umount -R /mnt
 zpool export -a
+rm -r /mnt/boot
 
 # 4. Use dd to clone the first EFI boot partition to the second EFI boot partition
 if [ -z "${ZPOOL_DISK_2_EFI}" ]; then
   echo "No second disk specified for the pool zroot, skipping..."
 else
-  sudo dd if="${ZPOOL_DISK_1_EFI}" "${ZPOOL_DISK_2_EFI}" status=progress
+  dd if="${ZPOOL_DISK_1_EFI}" "${ZPOOL_DISK_2_EFI}" status=progress
 fi
 
 echo "Done!"

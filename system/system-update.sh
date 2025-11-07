@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
 # Location of this scripts git repository
-SCRIPTS_DIR=$(dirname $(dirname "$(realpath "$0")"))
+
+WORKING_DIR=$(dirname "$(realpath "$0")")
+source "${WORKING_DIR}/.env"
+
+SCRIPTS_DIR=$(dirname "${WORKING_DIR}")
 
 function update_arch()
 {
