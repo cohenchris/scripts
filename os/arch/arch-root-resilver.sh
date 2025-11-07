@@ -274,7 +274,7 @@ EOF
 install_dependencies
 get_drive_information
 find_good_device_paths
-#clone_partitions
+clone_partitions
 find_new_device_paths
 summarize_changes
 replace_failed_drive
