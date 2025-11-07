@@ -119,7 +119,7 @@ function clone_partitions()
 
   echo -e "\nRunning the following:"
   echo -e "\t# Clone partition table from old device to new device"
-  echo -e "\tsgdisk "${ZFS_GOOD_DEVICE}" -R "${ZFS_REPLACEMENT_DEVICE}""
+  echo -e "\tsgdisk --replicate "${ZFS_REPLACEMENT_DEVICE}" "${ZFS_GOOD_DEVICE}""
 
   echo -e "\t# Randomize GUIDs on the new disk"
   echo -e "\tsgdisk -G "${ZFS_REPLACEMENT_DEVICE}""
@@ -135,7 +135,7 @@ function clone_partitions()
   esac
 
   # Clone partition table from old device to new device
-  sgdisk "${ZFS_GOOD_DEVICE}" -R "${ZFS_REPLACEMENT_DEVICE}"
+  sgdisk --replicate "${ZFS_REPLACEMENT_DEVICE}" "${ZFS_GOOD_DEVICE}"
 
   # Randomize GUIDs on the new disk
   sgdisk -G "${ZFS_REPLACEMENT_DEVICE}"
@@ -144,7 +144,7 @@ function clone_partitions()
   sgdisk -p "${ZFS_REPLACEMENT_DEVICE}"
 
   # Create boot filesystem for new device
-  #mkfs.vfat "${ZFS_REPLACEMENT_DEVICE_EFI_PARTITION}"
+  mkfs.vfat "${ZFS_REPLACEMENT_DEVICE_EFI_PARTITION}"
 }
 
 find_new_device_paths()
@@ -234,29 +234,12 @@ function replace_failed_drive()
   dd if="${ZFS_GOOD_DEVICE_EFI_PARTITION}" of="${ZFS_REPLACEMENT_DEVICE_EFI_PARTITION}" status=progress
   mount "${ZFS_GOOD_DEVICE_EFI_PARTITION}" /boot
 
-  echo
-  echo "Updating systemd.mount file for EFI boot partition..."
-  # Create systemd.mount file for boot partition on main drive
-  BOOT_DRIVE_UUID=$(findmnt -no UUID /boot)
-  cat <<EOF > /etc/systemd/system/boot.mount
-[Unit]
-Description=Mount Boot Partition
-Wants=local-fs-pre.target
-Before=local-fs.target
-
-[Mount]
-What=UUID=${BOOT_DRIVE_UUID}
-Where=/boot
-Type=vfat
-Options=defaults,noatime
-
-[Install]
-WantedBy=multi-user.target
-EOF
-    
-  # Enable systemd auto-mounting for boot drive by default
-  systemctl enable boot.mount
-
+  # Install bootloader on new drive
+  mkdir -p /replacement_boot
+  mount "${ZFS_REPLACEMENT_DEVICE_EFI_PARTITION}" /replacement_boot
+  bootctl --path=/replacement_boot install
+  umount /replacement_boot
+  rm -r /replacement_boot
 
   ##########################
   # RESILVER ZFS PARTITION #
