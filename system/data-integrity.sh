@@ -41,7 +41,7 @@ function integrity_test() {
   # Perform maintenance on borg repositories
   for repo_path in "${BORG_REPOSITORIES[@]}"; do
     borg_maintenance "${repo_path}" &
-    sleep 1
+    sleep 30
   done
 }
 
@@ -188,10 +188,11 @@ if [[ -n "${BORG_REPOSITORIES[*]}" ]]; then
   require var "${BORG_REPOSITORIES}"
   require var "${EMAIL}"
 
-  # Create borg logfile
+  # Create borg logfile (and remove existing)
   export BORG_PASSPHRASE=$(cat "${BORG_PASS_FILE}")
   BORG_LOGFILE=${XDG_CACHE_HOME:-${HOME}/.local/cache}/borg_maintenance.txt
   mkdir -p $(dirname "${BORG_LOGFILE}")
+  rm -f "${BORG_LOGFILE}"
 fi
 
 # Create array of all drives

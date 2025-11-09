@@ -14,57 +14,151 @@
 #   require dir /path/to/dir
 #   require file /path/to/file.txt
 #   require var "${ENV_VAR}"
+#   require dir user@host:/path/to/dir
+#   require file user@host:/path/to/file.txt
 
-TYPE="${1}"
-THING="${2}"
 
-# Check that both arguments are provided
-if [[ -z "${TYPE}" ]]; then
-  echo "Usage: require [TYPE] [THING]"
-  exit 1
-fi
+# Type of check to perform
+TYPE=""
+# Variable, file, or directory to check
+THING=""
+# Remote host where the check will be performed
+# If empty, check locally
+REMOTE_HOST=""
 
-if [[ "${TYPE}" == "var" ]]; then
+
+function parse_for_remote_format()
+{
+  # Parse for remote (SSH) format
+  # For example, if THING is in the format "user@host:/path/to/thing",
+  # REMOTE_HOST="user@host"
+  # THING="/path/to/thing"
+  if [[ "${THING}" =~ ^([^@]+@[^:]+):(.+)$ ]]; then
+    REMOTE_HOST="${BASH_REMATCH[1]}"
+    THING="${BASH_REMATCH[2]}"
+  fi
+
+  # If remote host is set, check that it is accessible
+  if [[ -n "${REMOTE_HOST}" ]]; then
+    ssh -o ConnectTimeout=5 "${REMOTE_HOST}" ls > /dev/null 2>&1
+    if [[ $? -ne 0 ]]; then
+      echo "ERROR: Host ${REMOTE_HOST} is not accessible"
+      exit 1
+    fi
+  fi
+}
+
+
+function check_var()
+{
   # Check for the existence of an environment variable
   if [[ -z "${THING}" ]]; then
     # Log thing and calling function name
     echo -e "ERROR - variable \"${THING}\" is not set - required by ${FUNCNAME[1]:-env}"
     exit 1
   fi
+}
 
-elif [[ "${TYPE}" == "dir" ]]; then
-  # Check for the existence of a directory
-  if ! [[ -d "${THING}" ]]; then
-    # Log thing and calling function name
-    echo -e "ERROR - directory \"${THING}\" does not exist - required by ${FUNCNAME[1]:-env}"
-    exit 1
+
+function check_dir()
+{
+  local check_dir_cmd=""
+  local display_path=""
+
+  if [[ -z "${REMOTE_HOST}" ]]; then
+    # Remote host is empty, check for file locally
+    check_dir_cmd="[[ -d ${THING} ]]"
+    display_path="${THING}"
+  else
+    # Check for file remotely
+    check_dir_cmd="ssh -o BatchMode=yes -o ConnectTimeout=5 \"${REMOTE_HOST}\" \"[[ -d ${THING} ]]\""
+    display_path="${REMOTE_HOST}:${THING}"
   fi
 
-elif [[ "${TYPE}" == "file" ]]; then
-  # Check for the existence of a file
-  if ! [[ -f "${THING}" ]]; then
+  # Check for the existence of a directory
+  if ! eval "${check_dir_cmd}" 2>/dev/null; then
     # Log thing and calling function name
-    echo -e "ERROR - file \"${THING}\" does not exist - required by ${FUNCNAME[1]:-env}"
+    echo -e "ERROR - directory \"${display_path}\" does not exist - required by ${FUNCNAME[1]:-env}"
+    exit 1
+  fi
+}
+
+
+function check_file()
+{
+  local check_file_cmd=""
+  local check_ownership_cmd=""
+  local ownership=""
+  local check_permissions_cmd=""
+  local permissions=""
+  local display_path=""
+
+  if [[ -z "${REMOTE_HOST}" ]]; then
+    # Remote host is empty, check for file locally
+    check_file_cmd="[[ -f \"${THING}\" ]]"
+    check_ownership_cmd="stat -c \"%U:%G\" \"${THING}\""
+    check_permissions_cmd="stat -c \"%a\" \"${THING}\""
+    display_path="${THING}"
+  else
+    # Check for file remotely
+    check_file_cmd="ssh -o BatchMode=yes -o ConnectTimeout=5 \"${REMOTE_HOST}\" \"[[ -f ${THING} ]]\""
+    check_ownership_cmd="ssh -o BatchMode=yes \"${REMOTE_HOST}\" \"stat -c '%U:%G' ${THING}\""
+    check_permissions_cmd="ssh -o BatchMode=yes \"${REMOTE_HOST}\" \"stat -c '%a' ${THING}\""
+    display_path="${REMOTE_HOST}:${THING}"
+  fi
+
+  # Check for the existence of a file
+  if ! eval "${check_file_cmd}" 2>/dev/null; then
+    # Log thing and calling function name
+    echo -e "ERROR - file \"${display_name}\" does not exist - required by ${FUNCNAME[1]:-env}"
     exit 1
 
-  # Check permissions on password files
+  # Additional checks for password files
   elif [[ "${THING}" == *"pass"* ]]; then
-
     # Check ownership
-    if [[ $(stat -c "%U:%G" "${THING}") != "root:root" ]]; then
-      echo "WARNING: Unsafe ownership for password file \"${THING}\"."
-      echo "Recommended to run 'chown root:root ${THING}'"
+    ownership=$(eval "${check_ownership_cmd}" 2>/dev/null)
+    if [[ "${ownership}" != "root:root" ]]; then
+      echo "WARNING: Unsafe ownership for password file \"${display_path}\"."
+      echo "Recommended to run 'chown root:root' on file"
     fi
 
     # Check permission bits
-    if [[ $(stat -c "%a" "${THING}") -ne 400 ]]; then
-      echo "WARNING: Unsafe permissions set for password file \"${THING}\"."
-      echo "Recommended to run 'chmod 400 ${THING}'"
+    permissions=$(eval "${check_permissions_cmd}" 2>/dev/null)
+    if [[ "${permissions}" -ne 400 ]]; then
+      echo "WARNING: Unsafe permissions set for password file \"${display_path}\"."
+      echo "Recommended to run 'chmod 400' on file"
     fi
-
   fi
+}
 
+
+function handle_require_command()
+{
+  TYPE="${1}"
+  THING="${2}"
+
+  if [[ "${TYPE}" == "var" ]]; then
+    check_var
+
+  elif [[ "${TYPE}" == "dir" ]]; then
+    parse_for_remote_format
+    check_dir
+
+  elif [[ "${TYPE}" == "file" ]]; then
+    parse_for_remote_format
+    check_file
+
+  else
+    # Invalid type provided
+    echo "Invalid type passed to ${FUNCNAME[1]:-env} - \"${TYPE}\""
+    exit 1
+  fi
+}
+
+
+if [[ "$#" -eq 2 ]]; then
+  handle_require_command "${1}" "${2}"
 else
-  # Invalid type provided
-  echo "Invalid type passed to ${FUNCNAME[1]:-env} - \"${TYPE}\""
+  echo "Usage: require [TYPE] [THING]"
+  exit 1
 fi

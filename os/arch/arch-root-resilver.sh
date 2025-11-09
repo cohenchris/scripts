@@ -67,15 +67,14 @@ function get_drive_information()
   zpool status "${ZFS_POOL_NAME}"
   echo
 
-  read -p "Is this pool choice correct? (y/N) " yn
+  read -p "Is this the correct pool? (y/N) " yn
 
   case "${yn}" in
     [Yy]* ) ;;
-    *     ) exit;;
+    *     ) exit 1 ;;
   esac
 
   # Ask for device name to resilver
-  fdisk -l
   echo
   read -p "Enter target device to resilver (in the format /dev/sdX): " ZFS_REPLACEMENT_DEVICE
 
@@ -84,11 +83,11 @@ function get_drive_information()
   fdisk -l "${ZFS_REPLACEMENT_DEVICE}"
   echo
 
-  read -p "Is this device choice correct? (y/N) " yn
+  read -p "Is this the correct device? (y/N) " yn
 
   case "${yn}" in
     [Yy]* ) ;;
-    *     ) exit;;
+    *     ) exit 1 ;;
   esac
 }
 
@@ -99,39 +98,41 @@ function find_good_device_paths()
   ZFS_GOOD_DEVICE_ZFS_PARTITION=$(zpool status -P "${ZFS_POOL_NAME}" | awk '/ONLINE/ {print $1}')
   ZFS_GOOD_DEVICE=$(lsblk -no PKNAME "${ZFS_GOOD_DEVICE_ZFS_PARTITION}" | xargs -I{} echo "/dev/{}")
 
-  echo "Auto-detected good ZFS device to clone"
+  echo
+  echo "Auto-detected good ZFS device to clone:"
   echo
   echo "Device name: ${ZFS_GOOD_DEVICE}"
   echo "EFI partition: ${ZFS_GOOD_DEVICE_EFI_PARTITION}"
   echo "ZFS partition: ${ZFS_GOOD_DEVICE_ZFS_PARTITION}"
   echo
-  read -p "Does this look correct? (y/N) " yn
+  read -p "Is this the correct device? (y/N) " yn
 
   case "${yn}" in
     [Yy]* ) ;;
-    *     ) exit;;
+    *     ) exit 1 ;;
   esac
 }
 
 function clone_partitions()
 {
   echo "Cloning partition table from old device to new device..."
-
-  echo -e "\nRunning the following:"
-  echo -e "\t# Clone partition table from old device to new device"
+  echo -e "\n\t# Clone partition table from old device to new device"
   echo -e "\tsgdisk --replicate "${ZFS_REPLACEMENT_DEVICE}" "${ZFS_GOOD_DEVICE}""
 
-  echo -e "\t# Randomize GUIDs on the new disk"
+  echo -e "\n\t# Randomize GUIDs on the new disk"
   echo -e "\tsgdisk -G "${ZFS_REPLACEMENT_DEVICE}""
 
-  echo -e "\t# Verify the partition table"
-  echo -e "\tsgdisk -p "${ZFS_REPLACEMENT_DEVICE}"\n"
+  echo -e "\n\t# Verify the partition table"
+  echo -e "\tsgdisk -p "${ZFS_REPLACEMENT_DEVICE}""
 
-  read -p "Does this look correct? (y/N) " yn
+  echo -e "\n\t# Create boot filesystem for new device"
+  echo -e "\tmkfs.vfat ${ZFS_REPLACEMENT_DEVICE_EFI_PARTITION}\n"
+
+  read -p "Do these steps look correct? (y/N) " yn
 
   case "${yn}" in
     [Yy]* ) ;;
-    *     ) exit;;
+    *     ) exit 1 ;;
   esac
 
   # Clone partition table from old device to new device
@@ -167,11 +168,11 @@ find_new_device_paths()
   echo "EFI partition: ${ZFS_REPLACEMENT_DEVICE_EFI_PARTITION}"
   echo "ZFS partition: ${ZFS_REPLACEMENT_DEVICE_ZFS_PARTITION}"
   echo
-  read -p "Does this look correct? (y/N) " yn
+  read -p "Are these device details correct? (y/N) " yn
 
   case "${yn}" in
     [Yy]* ) ;;
-    *     ) exit;;
+    *     ) exit 1 ;;
   esac
 }
 
@@ -185,22 +186,24 @@ function summarize_changes()
   echo "Please look over the following settings and confirm correctness:"
   echo
 
+  echo
+  echo "---------- Target ZFS Pool ----------"
   zpool status "${ZFS_POOL_NAME}"
 
   echo
-  echo "---------- Surviving ZFS device to replicate ----------"
+  echo "---------- Surviving ZFS Device to Replicate ----------"
   echo "Device name: ${ZFS_GOOD_DEVICE}"
   echo "EFI partition: ${ZFS_GOOD_DEVICE_EFI_PARTITION}"
   echo "ZFS partition: ${ZFS_GOOD_DEVICE_ZFS_PARTITION}"
 
   echo
-  echo "---------- Target device to resilver ----------"
+  echo "---------- Target Device to Resilver ----------"
   echo "Device name: ${ZFS_REPLACEMENT_DEVICE}"
   echo "EFI partition: ${ZFS_REPLACEMENT_DEVICE_EFI_PARTITION}"
   echo "ZFS partition: ${ZFS_REPLACEMENT_DEVICE_ZFS_PARTITION}"
 
   echo
-  echo "---------- Unavailable ZFS drive to replace ----------"
+  echo "---------- Unavailable ZFS Drive to Replace ----------"
   echo "GUID: ${ZFS_BAD_DEVICE_GUID}"
 
   echo
@@ -216,7 +219,7 @@ function summarize_changes()
 
   case "${yn}" in
     [Yy]* ) ;;
-    *     ) exit;;
+    *     ) exit 1 ;;
   esac
 }
 
@@ -250,7 +253,6 @@ function replace_failed_drive()
 
   echo
   echo "Done! Please wait for resilver to finish..."
-  zpool status
 }
 
 

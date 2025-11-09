@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+if [[ $# -eq 1 ]] && [[ -f "${1}" ]]; then
+  # One argument is passed and it's a file, copy the contents of the file
+  cat "${1}" | waycopy
+else
+  # Copy the output of the provided command
+  "$@" | waycopy
+fi
+

@@ -40,7 +40,10 @@ Check for the existence of something.
 
 if TYPE == "var"    - interpret *THING* as a variable, check that the variable is not empty
 if TYPE == "file"   - interpret *THING* as a file path, check that the file exists
+                      also supports SSH syntax (e.g. user@host:~/file.txt)
 if TYPE == "dir"    - interpret *THING* as a directory path, check that the directory exists
+                      also supports SSH syntax (e.g. user@host:~/dir)
+
 
 
 
@@ -246,21 +249,23 @@ This script is meant to be run after the user switches to a different TTY.
 
 
 ## Backblaze Bucket Quick Mount + Unmount via RClone
-[`mount-b2 [mount, unmount]`](mount-b2)
+[`b2-mount [mount, unmount] [dirname]`](b2-mount)
 
 I store all of my remote backups (the "1" in 3-2-1 backups) in a Backblaze B2 buckets.
 Sometimes, it's useful to navigate this bucket manually to check out its contents.
 RClone is a fantastic tool that allows mounting of a Backblaze B2 bucket to your local machine, and this script streamlines the rclone mount/unmount process.
 
-This scripts assumes that:
+Utilizing an rclone remote under the hood, this script cleanly mounts and unmounts a given backblaze bucket under `dirname`.
+
+Please ensure that:
 - `rclone` is installed on your machine
 - There is an rclone remote configured which is named `backblaze`
 
-### Use
-`mount-b2 mount <bucketname> <dirname>`
 
-Mounts the Backblaze bucket with name <bucketname> to the directory specified by <dirname>.
 
-`mount-b2 unmount <dirname>`
 
-Unmounts the mounted Backblaze bucket at the location specified by <dirname>.
+## Copy to Clipboard
+[`copy [command]`](copy)
+
+This script copies the output of `command` to your default clipboard program.
+If the user provides a single filename as a `command`, this script will automatically copy the contents of that file to the clipboard.
