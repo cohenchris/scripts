@@ -21,8 +21,7 @@ if [ "$(uname)" = "FreeBSD" ]; then
   export PATH="${PATH}:${WORKING_DIR}/../bin"
 fi
 
-############################## INTEGRITY CHECKING ##############################
-
+############################## CHECKING ##############################
 # integrity_test()
 #
 # Run multifaceted integrity check
@@ -83,7 +82,6 @@ function borg_maintenance()
 }
 
 ############################## REPORTING ##############################
-
 # integrity_report()
 #
 # Construct a data integrity report email
@@ -99,7 +97,6 @@ function integrity_report()
   borg_summarize
 }
 
-############################## SUMMARIZATION ##############################
 
 # borg_summarize()
 #
