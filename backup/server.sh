@@ -11,7 +11,6 @@ source "${WORKING_DIR}/common.sh"
 require var "${SERVER_DIR}" || exit 1
 require var "${SERVER_USER}" || exit 1
 require var "${WORKING_DIR}" || exit 1
-require var "${SERVER_DIR}" || exit 1
 require var "${SERVER_LOCAL_BACKUP_DIR}" || exit 1
 require var "${REMOTE_BACKUP_SERVER}" || exit 1
 require var "${SERVER_REMOTE_BACKUP_DIR}" || exit 1
