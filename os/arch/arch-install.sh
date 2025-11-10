@@ -382,24 +382,6 @@ initrd /intel-ucode.img
 initrd /initramfs-linux-lts-fallback.img
 options zfs=zroot/ROOT/arch rw
 EOF
-
-  # Pacman hook to update bootctl when systemd is updated
-  # `bootctl update`
-  #   - copies the latest bootloader binaries to the EFI partition and makes
-  #   - ensures the bootloader is installed correctly
-  mkdir -p /etc/pacman.d/hooks/
-  cat <<EOF > /etc/pacman.d/hooks/100-systemd-boot.hook
-[Trigger]
-Type = Package
-Operation = Upgrade
-Target = systemd
-
-[Action]
-Description = update systemd-boot
-When = PostTransaction
-Exec = /usr/bin/bootctl update
-EOF
-
 }
 
 

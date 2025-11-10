@@ -27,12 +27,13 @@ THING=""
 REMOTE_HOST=""
 
 
+# Parse for remote (SSH) format
+# For example, if THING is in the format "user@host:/path/to/thing",
+# REMOTE_HOST="user@host"
+# THING="/path/to/thing"
 function parse_for_remote_format()
 {
-  # Parse for remote (SSH) format
-  # For example, if THING is in the format "user@host:/path/to/thing",
-  # REMOTE_HOST="user@host"
-  # THING="/path/to/thing"
+  # Check for SSH format
   if [[ "${THING}" =~ ^([^@]+@[^:]+):(.+)$ ]]; then
     REMOTE_HOST="${BASH_REMATCH[1]}"
     THING="${BASH_REMATCH[2]}"
@@ -49,9 +50,9 @@ function parse_for_remote_format()
 }
 
 
+# Check for the existence of an environment variable
 function check_var()
 {
-  # Check for the existence of an environment variable
   if [[ -z "${THING}" ]]; then
     # Log thing and calling function name
     echo -e "ERROR - variable \"${THING}\" is not set - required by ${FUNCNAME[1]:-env}"
@@ -60,6 +61,7 @@ function check_var()
 }
 
 
+# Check for the existence of a directory
 function check_dir()
 {
   local check_dir_cmd=""
@@ -84,6 +86,7 @@ function check_dir()
 }
 
 
+# Check for the existence of a file
 function check_file()
 {
   local check_file_cmd=""
@@ -132,6 +135,7 @@ function check_file()
 }
 
 
+# Delegate the command handler based on what the user has provided
 function handle_require_command()
 {
   TYPE="${1}"
