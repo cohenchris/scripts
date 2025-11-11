@@ -19,7 +19,7 @@ function b2_mount()
   local remotes=$(rclone listremotes)
   local found=0
 
-  for remote in "${remotes}"; do
+  for remote in ${remotes}; do
       # Check if the string is in the current remote name
       if [[ "${remote}" == "backblaze:" ]]; then
           found=1
@@ -84,7 +84,7 @@ function b2_unmount()
     echo "WARNING: directory ${mount_dir} is not empty, cannot remove..."
   else
     echo "Removing directory ${mount_dir}..."
-    rm -r ${mount_dir}
+    rm -r "${mount_dir}"
   fi
 }
 

@@ -26,9 +26,9 @@ function batocera_mount()
   wakeonlan "${BATOCERA_MAC}"
 
   echo "Mounting \"${BATOCERA_HOST}:/userdata\" at \"${mount_dir}\"..."
-  sshfs "${BATOCERA_HOST}:/userdata" "${mount_dir}"
+  local mount_cmd="sshfs ${BATOCERA_HOST}:/userdata ${mount_dir}"
 
-  if [ $? -ne 0 ]; then
+  if ! eval "${mount_cmd}"; then
     echo "ERROR: Batocera mounting failed. Is the host up?"
 
     if [ -n "$(ls -A "${mount_dir}" 2>/dev/null)" ]; then
@@ -61,9 +61,9 @@ function batocera_unmount()
   fi
 
   echo "Unmounting \"${mount_dir}\"..."
-  umount "${mount_dir}"
+  local umount_cmd="umount ${mount_dir}"
 
-  if [ $? -ne 0 ]; then
+  if ! eval "${umount_cmd}"; then
     echo "ERROR: failed to unmount \"${mount_dir}\"..."
     exit 1
   fi

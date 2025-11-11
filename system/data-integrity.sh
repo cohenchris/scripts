@@ -27,12 +27,12 @@ fi
 # Run multifaceted integrity check
 function integrity_test() {
   # Smartctl long test
-  for drive in ${SMART_DRIVES[@]}; do
+  for drive in "${SMART_DRIVES[@]}"; do
     smartctl -t long /dev/${drive} >/dev/null 2>&1
   done
 
   # ZFS trim/scrub
-  for pool in ${ZFS_POOLS[@]}; do
+  for pool in "${ZFS_POOLS[@]}"; do
     zpool scrub ${pool}
     zpool trim ${pool}
   done
@@ -129,7 +129,7 @@ function smart_summarize()
   echo -e "-----------------------------------------------------------------------"
 
   # Summarize each declared smartctl drive
-  for drive in ${SMART_DRIVES[@]}; do
+  for drive in "${SMART_DRIVES[@]}"; do
     echo -e "\n############################## /dev/${drive} ##############################"
 
     local smartctl_output_short=$(smartctl -H /dev/${drive})
@@ -166,7 +166,7 @@ function zfs_summarize()
   echo -e "-----------------------------------------------------------------------"
 
   # Summarize each declared ZFS pool
-  for pool in ${ZFS_POOLS[@]}; do
+  for pool in "${ZFS_POOLS[@]}"; do
     echo -e "\n############################## ${pool} ##############################"
     echo -e "$(zpool status ${pool})"
   done
@@ -188,12 +188,12 @@ if [[ -n "${BORG_REPOSITORIES[*]}" ]]; then
   # Create borg logfile (and remove existing)
   export BORG_PASSPHRASE=$(cat "${BORG_PASS_FILE}")
   BORG_LOGFILE=${XDG_CACHE_HOME:-${HOME}/.local/cache}/borg_maintenance.txt
-  mkdir -p $(dirname "${BORG_LOGFILE}")
+  mkdir -p "$(dirname "${BORG_LOGFILE}")"
   rm -f "${BORG_LOGFILE}"
 fi
 
 # Create array of all drives
-SMART_DRIVES=$(ls /dev | grep -E '^(sd[a-z]+|nvme[0-9]+n[0-9]+|ada[0-9]+|da[0-9]+)$' | sort)
+SMART_DRIVES=$(find /dev -maxdepth 1 -regextype posix-extended -regex '/dev/(sd[a-z]+|nvme[0-9]+n[0-9]+|ada[0-9]+|da[0-9]+)' | sort)
 
 # Create array of all ZFS pools
 ZFS_POOLS=($(zpool list -H -o name))

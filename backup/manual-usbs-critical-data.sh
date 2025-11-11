@@ -95,8 +95,8 @@ fi
 # Clear both USBs
 echo
 echo "Clearing USBs..."
-rm -r "${USB1_MNT_PATH}"/*
-rm -r "${USB2_MNT_PATH}"/*
+rm -r "${USB1_MNT_PATH:?}"/*
+rm -r "${USB2_MNT_PATH:?}"/*
 
 ####################
 #  COPY + DECRYPT  #
@@ -122,11 +122,11 @@ cp -r "${USB1_MNT_PATH}"/* "${USB2_MNT_PATH}"
 # Verify that backups have been copied to both drives
 echo
 if [ -z "$(ls -A "${USB1_MNT_PATH}")" ]; then
-  echo "ERROR: "${USB1_MNT_PATH}" is empty, backup failed..."
+  echo "ERROR: ${USB1_MNT_PATH} is empty, backup failed..."
   exit 1
 fi
 if [ -z "$(ls -A "${USB2_MNT_PATH}")" ]; then
-  echo "ERROR: "${USB2_MNT_PATH}" is empty, backup failed..."
+  echo "ERROR: ${USB2_MNT_PATH} is empty, backup failed..."
   exit 1
 fi
 echo "Done!"

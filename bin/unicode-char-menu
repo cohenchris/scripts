@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Based on Luke Smith's script [here](https://github.com/LukeSmithxyz/voidrice/blob/master/.local/bin/dmenuunicode)
 

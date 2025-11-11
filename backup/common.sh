@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # General settings
-WORKING_DIR=$(dirname "$(realpath "$0")")
 BACKUP_TYPE=$(basename $0 | cut -d "." -f 1)
 DATE=$(date +"%Y%m%d-%H%M")
 BACKUP_NAME="${BACKUP_TYPE}-backup-${DATE}"

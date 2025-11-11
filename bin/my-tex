@@ -104,7 +104,7 @@ function mytex_edit()
     exit
   fi
 
-  pdf=$(ls | grep *.pdf | wc -l)
+  pdf=$(ls *.pdf | wc -l)
   if [ $pdf -ne 1 ]; then
     mytex_compile ${filename_to_edit} >> /dev/null
     exit

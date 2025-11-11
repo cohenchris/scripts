@@ -31,7 +31,7 @@ cd "${bw_backup_dir}"
 # Backup to local drive
 mail_log plain "Exporting Bitwarden contents to encrypted JSON..."
 bw sync
-bw export --raw --session "${BW_SESSION}" --format encrypted_json --password $(cat "${BW_PASS_FILE}") > "${bw_backup_dir}/${bw_backup_file}"
+bw export --raw --session "${BW_SESSION}" --format encrypted_json --password "$(cat "${BW_PASS_FILE}")" > "${bw_backup_dir}/${bw_backup_file}"
 mail_log check "Bitwarden export" $?
 
 # Prune BW backups, keep last 30 days

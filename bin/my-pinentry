@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Based on https://github.com/james-nesbitt/pinentry-fuzzel/blob/main/pinentry-fuzzel
 

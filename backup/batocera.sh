@@ -22,9 +22,6 @@ require var "${BATOCERA_REMOTE_BACKUP_DIR}" || exit 1
 # No reason for this to be user-configurable - Batocera is an immutable distro, thus all installations
 # will have data stored in the same place
 BATOCERA_DIR="/userdata"
-# By default, any downloaded Steam games will be included in this backup
-# Takes up way too much space and is completely unnecessary, so exclude it
-# EXCLUDE_DOWNLOADED_STEAM_GAMES="saves/flatpak/data/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/"
 
 
 # is_device_on(host)
@@ -73,8 +70,6 @@ if [[ "${POWER_STATE}" -eq 0 ]]; then
         --delete \
         --update \
         --progress \
-#         --exclude "${EXCLUDE_DOWNLOADED_STEAM_GAMES}" \
-        --delete-excluded \
         "${BATOCERA_DIR}/" \
         "${BATOCERA_LOCAL_BACKUP_DIR}"
   mail_log check "Local backup" $?
@@ -85,8 +80,6 @@ if [[ "${POWER_STATE}" -eq 0 ]]; then
         --delete \
         --update \
         --progress \
-#         --exclude "${EXCLUDE_DOWNLOADED_STEAM_GAMES}" \
-        --delete-excluded \
         "${BATOCERA_HOST}:${BATOCERA_DIR}/" \
         "${BATOCERA_REMOTE_BACKUP_DIR}"
   mail_log check "Remote backup" $?
