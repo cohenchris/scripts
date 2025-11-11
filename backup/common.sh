@@ -61,10 +61,16 @@ function backup_finish() {
 
   # Log and notify backup status
   if [[ "${STATUS}" == "FAIL" ]]; then
-    "${SERVER_DIR}/misc/scripts/ha-notify.sh" "${BACKUP_TYPE} backup" "ERROR - ${BACKUP_TYPE} backup failed - ${DATE}..."
+    if [[ -n "${SERVER_DIR}" ]]; then
+      # SERVER_DIR is set, call ha-notify.sh
+      "${SERVER_DIR}/misc/scripts/ha-notify.sh" "${BACKUP_TYPE} backup" "ERROR - ${BACKUP_TYPE} backup failed - ${DATE}..."
+    fi
     echo -e "Backup failed..."
   else
-    "${SERVER_DIR}/misc/scripts/ha-notify.sh" "${BACKUP_TYPE} backup" "SUCCESS - ${BACKUP_TYPE} backup succeeded - ${DATE}!"
+    if [[ -n "${SERVER_DIR}" ]]; then
+      # SERVER_DIR is set, call ha-notify.sh
+      "${SERVER_DIR}/misc/scripts/ha-notify.sh" "${BACKUP_TYPE} backup" "SUCCESS - ${BACKUP_TYPE} backup succeeded - ${DATE}!"
+    fi
     echo -e "Backup succeeded!"
   fi
  
