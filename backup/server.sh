@@ -27,7 +27,7 @@ sleep 15
 # Shutdown server
 mail_log plain "Stopping all Docker containers..."
 cd "${SERVER_DIR}"
-./stacks.sh stop all
+./stacks.sh stop
 mail_log check "Stop all Docker stacks" $?
 # Export crontab
 mail_log plain "Exporting crontab for ${SERVER_USER}..."
@@ -53,7 +53,7 @@ mail_log check "Server remote backup" $?
 mail_log plain "Starting all Docker containers..."
 cd "${SERVER_DIR}"
 rm crontab.txt sudo_crontab.txt
-./stacks.sh start all
+./stacks.sh start
 mail_log check "Start all Docker stacks" $?
 cd "${WORKING_DIR}"
 

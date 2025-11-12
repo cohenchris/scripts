@@ -22,8 +22,8 @@ function update_arch()
 
   # Update and restart all docker containers in docker-compose.yml
   cd "${DOCKER_STACKS_HOME_DIR}"
-  ./stacks.sh update all
-  ./stacks.sh up all
+  ./stacks.sh update
+  ./stacks.sh up
 
   # Clean docker environment
   docker system prune -a -f
