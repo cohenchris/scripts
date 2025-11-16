@@ -24,7 +24,7 @@ Think of these as scripts that would require a solid amount of effort to port to
 
 
 ## Batocera Quick Mount + Unmount via SSHFS
-[`batocera-mount.sh [mount, unmount]`](batocera-mount.sh)
+[`batocera-mount.sh [mount, unmount/umount] [mount_dir]`](batocera-mount.sh)
 
 I have an Intel NUC [Batocera](https://batocera.org/) emulation station in my living room.
 From their website, "Batocera.linux is an open-source and completely free retro-gaming distribution that can be copied to a USB stick or an SD card with the aim of turning any computer/nano computer into a gaming console during a game or permanently."
@@ -37,14 +37,14 @@ This scripts assumes that:
 - You have filled out the [`.env`](sample.env) file
 
 ### Use
-`batocera-mount.sh mount`
+`batocera-mount.sh mount /path/to/dir`
 
-Mounts Batocera's `/userdata` directory to a newly created `./batocera` directory in the current working directory.
+Mounts Batocera's `/userdata` directory to the directory at `/path/to/dir`.
 
 
-`batocera-mount.sh unmount`
+`batocera-mount.sh unmount /path/to/dir`
 
-Unmounts and removes the local `./batocera` directory.
+Unmounts and removes the `/path/to/dir` directory.
 
 ## Borg Repository Maintenance
 [`borg-maintenance.sh`](borg-maintenance.sh)

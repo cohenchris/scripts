@@ -108,7 +108,7 @@ cp -r "${CRITICAL_DATA_LOCAL_BACKUP_DIR}"/* "${USB1_MNT_PATH}"
 
 # Decrypt backup_codes.txt on usb1
 BACKUP_CODES_PASSWORD=$(cat "${BACKUP_CODES_PASS_FILE}")
-echo -e "${BACKUP_CODES_PASSWORD}\n:X\n\n\n:wq\n" | /usr/bin/vim -es -u NONE -i NONE "${USB1_MNT_PATH}/backup_codes.txt"
+echo -e "${BACKUP_CODES_PASSWORD}\n:X\n\n\n:wq\n" | /usr/bin/vim -es -u NONE -i NONE "${USB1_MNT_PATH}/mfa/backup_codes.txt"
 unset BACKUP_CODES_PASSWORD
 
 ####################

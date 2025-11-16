@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
 
+# How many files to extract?
+num_extractions=$#
+
+# Keep track of which extraction is being performed
+num_extraction=0
+
 for file in "$@"; do
-  echo "Attempting to extract ${file}..."
+  file_displayname=$(basename "${file}")
+  (( num_extraction++ ))
+  notify NORMAL "Attempting to extract ${file_displayname}" "Extraction ${num_extraction}/${num_extractions}"
   if [ -f "${file}" ] ; then
     case "${file}" in
       *.tar.bz2)
@@ -65,11 +73,15 @@ for file in "$@"; do
       ;;
 
       *)
-        echo "don't know how to extract '${file}'..." 
+        notify CRITICAL "ERROR" "No rule to extract '${file_displayname}', stopping extraction..."
+        exit 1
       ;;
 
     esac
   else
-    echo "'${file}' is not a valid file!"
+    notify CRITICAL "ERROR" "'${file_displayname}' is not a file, stopping extraction..."
+    exit 1
   fi
 done
+
+notify GOOD "Success!" "Extraction of ${num_extractions} archives completed"

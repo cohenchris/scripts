@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# Exit immediately if a command exits with a non-zero status
+set -e
+# Bail if attempting to substitute an unset variable
+set -u
+
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source "${WORKING_DIR}/.env"
 
@@ -76,7 +81,7 @@ CMD=$1
 MOUNT_DIR=$2
 
 if ! [[ -n "${CMD}" && -n "${MOUNT_DIR}" ]]; then
-  echo "Usage: batocera.sh [mount,unmount/umount] [mount_dir]"
+  echo "Usage: batocera-mount.sh [mount,unmount/umount] [mount_dir]"
   exit 1
 fi
 
@@ -85,5 +90,5 @@ if [ "${CMD}" == "mount" ]; then
 elif [ "${CMD}" == "unmount" ] || [ "${CMD}" == "umount" ]; then
   batocera_unmount "${MOUNT_DIR}"
 else
-  echo "Usage: batocera.sh [mount,unmount/umount] [mount_dir]"
+  echo "Usage: batocera-mount.sh [mount,unmount/umount] [mount_dir]"
 fi
