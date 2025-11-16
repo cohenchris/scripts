@@ -66,7 +66,7 @@ if [[ "${POWER_STATE}" -eq 0 ]]; then
   # Make a backup of batocera on the local machine
   mail_log plain "Backup locally..."
   ssh -A "${BATOCERA_HOST}" \
-  rsync -r \
+  rsync -a \
         --delete \
         --update \
         --progress \
@@ -76,7 +76,7 @@ if [[ "${POWER_STATE}" -eq 0 ]]; then
 
   # Make a backup of batocera on the remote backup server
   mail_log plain "Backing up to remote backup server..."
-  rsync -r \
+  rsync -a \
         --delete \
         --update \
         --progress \
