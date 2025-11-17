@@ -11,6 +11,10 @@ USB1_MNT_PATH=/mnt/usb1
 USB2_MNT_PATH=/mnt/usb2
 source "${WORKING_DIR}/.env"
 
+# Include bin/ directory from this repository in the system PATH
+SCRIPTS_DIR=$(realpath "${WORKING_DIR}"/../bin)
+export PATH="${PATH}:${SCRIPTS_DIR}"
+
 # List devices
 fdisk -l
 
