@@ -77,7 +77,7 @@ function boot_mirror()
   # Update primary EFI boot partition using bootctl
   echo
   echo "Updating EFI boot partition on primary drive..."
-  bootctl update
+  bootctl update || true
 
   # Clone primary EFI boot partition to secondary boot partition
   echo

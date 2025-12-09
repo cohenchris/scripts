@@ -28,7 +28,7 @@ fi
 function integrity_test() {
   # Smartctl long test
   for drive in "${SMART_DRIVES[@]}"; do
-    smartctl -t long /dev/${drive} >/dev/null 2>&1
+    smartctl -t long ${drive} >/dev/null 2>&1
   done
 
   # ZFS trim/scrub
@@ -130,18 +130,18 @@ function smart_summarize()
 
   # Summarize each declared smartctl drive
   for drive in "${SMART_DRIVES[@]}"; do
-    echo -e "\n############################## /dev/${drive} ##############################"
+    echo -e "\n############################## ${drive} ##############################"
 
-    local smartctl_output_short=$(smartctl -H /dev/${drive})
+    local smartctl_output_short=$(smartctl -H ${drive})
 
     if [[ ${smartctl_output_short} == *"PASSED"* ]]; then
       # Print short-form health that basically only shows "PASSED"
       echo -e "${smartctl_output_short}"
     elif [[ ${smartctl_output_short} == *"Unable to detect device type"* ]]; then
-      echo -e "/dev/${drive} is not S.M.A.R.T. capable, skipping..."
+      echo -e "${drive} is not S.M.A.R.T. capable, skipping..."
     else
       # There's something wrong, print a more comprehensive summary
-      local smartctl_output_long=$(smartctl -a /dev/${drive})
+      local smartctl_output_long=$(smartctl -a ${drive})
 
       echo -e "${smartctl_output_long}"
     fi
@@ -193,7 +193,7 @@ if [[ -n "${BORG_REPOSITORIES[*]}" ]]; then
 fi
 
 # Create array of all drives
-SMART_DRIVES=$(find /dev -maxdepth 1 -regextype posix-extended -regex '/dev/(sd[a-z]+|nvme[0-9]+n[0-9]+|ada[0-9]+|da[0-9]+)' | sort)
+SMART_DRIVES=($(find /dev -maxdepth 1 -regextype posix-extended -regex '/dev/(sd[a-z]+|nvme[0-9]+n[0-9]+|ada[0-9]+|da[0-9]+)' | sort))
 
 # Create array of all ZFS pools
 ZFS_POOLS=($(zpool list -H -o name))
