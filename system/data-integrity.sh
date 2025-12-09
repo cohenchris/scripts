@@ -193,7 +193,7 @@ if [[ -n "${BORG_REPOSITORIES[*]}" ]]; then
 fi
 
 # Create array of all drives
-SMART_DRIVES=($(find /dev -maxdepth 1 -regextype posix-extended -regex '/dev/(sd[a-z]+|nvme[0-9]+n[0-9]+|ada[0-9]+|da[0-9]+)' | sort))
+SMART_DRIVES=($(smartctl --scan | awk '{print $1}'))
 
 # Create array of all ZFS pools
 ZFS_POOLS=($(zpool list -H -o name))
