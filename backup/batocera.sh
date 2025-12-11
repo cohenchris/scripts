@@ -34,7 +34,7 @@ function is_device_on()
   local host="$1"
   require var "${host}" || exit 1
 
-  ssh "${host}" "ls" &> /dev/null && echo 0 || echo 1
+  ssh -o ConnectTimeout=10 "${host}" "ls" &> /dev/null && echo 0 || echo 1
 }
 
 
