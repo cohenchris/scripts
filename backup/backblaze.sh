@@ -46,12 +46,9 @@ require var "${BACKBLAZE_BUCKET}" || exit 1
 if [[ -n "${BACKBLAZE_EXCLUDE_REGEX}" ]]; then
   exclude_regex="--excludeRegex \..*"
 
-  # Replace all '/' with the regex-friendly encoded version: '\/'
-  base_directory="${BACKBLAZE_BACKUPS_DIR/\//\\\/}"
-
   # Combine all user-provided regex strings, prepending each with the base backups directory
   for entry in "${BACKBLAZE_EXCLUDE_REGEX[@]}"; do
-    exclude_regex="${exclude_regex}|${base_directory}\/${entry}"
+    exclude_regex="${exclude_regex}|${entry}"
   done
 fi
 
