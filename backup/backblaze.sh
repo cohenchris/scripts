@@ -51,7 +51,7 @@ if [[ -n "${BACKBLAZE_EXCLUDE_REGEX}" ]]; then
 
   # Combine all user-provided regex strings, prepending each with the base backups directory
   for entry in "${BACKBLAZE_EXCLUDE_REGEX[@]}"; do
-    exclude_regex="${exclude_regex}|${base_directory}/${entry}"
+    exclude_regex="${exclude_regex}|${base_directory}\/${entry}"
   done
 fi
 
