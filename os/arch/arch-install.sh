@@ -114,7 +114,7 @@ function pre_chroot_setup()
   read -p "How many drives should be used in the root pool? (1 or 2): " NUM_DRIVES
 
   case ${NUM_DRIVES} in
-    [1] ) ;;
+    [1] ) USE_2_DRIVES=0 ;;
     [2] ) USE_2_DRIVES=1 ;;
     *   ) echo "ERROR: Number of drives must be either 1 or 2." && exit ;;
   esac
