@@ -253,8 +253,11 @@ fi
   zfs mount -a
 
   # Mount main boot partition
-  mkdir /mnt/boot
+  mkdir -p /mnt/boot
   mount "${ZFS_ROOT1_P1_DEV_NAME}" /mnt/boot
+
+  # Update keyring
+  pacman -Syy archlinux-keyring
 
   # Install base tools + linux kernel + vim
   pacstrap /mnt base base-devel linux-lts linux-firmware intel-ucode vim vi
