@@ -57,9 +57,9 @@ function configure_wifi()
   [[ $? -ne 0 ]] && echo "ERROR: DHCP failed" && network_setup
 
   # Verify connection
-  iw dev "$IFACE" link | grep -q "Connected to"
+  iw dev "${NETWORK_INTERFACE}" link | grep -q "Connected to"
   [[ $? -ne 0 ]] && echo "ERROR: Failed to connect to network ${NETWORK_NAME} on interface ${NETWORK_INTERFACE}" && network_setup
-  ip addr show "$IFACE" | grep -q "inet "
+  ip addr show "${NETWORK_INTERFACE}" | grep -q "inet "
   [[ $? -ne 0 ]] && echo "ERROR: No IP address assigned to interface ${NETWORK_INTERFACE} by network ${NETWORK_NAME}" && network_setup
 }
 
