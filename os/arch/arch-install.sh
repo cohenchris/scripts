@@ -217,7 +217,7 @@ fi
                -O mountpoint=none \
                -O devices=off \
                -R /mnt \
-               "${ZFS_ROOT_DEVICES_STRING}"
+               ${ZFS_ROOT_DEVICES_STRING}
 
 
   ########################
