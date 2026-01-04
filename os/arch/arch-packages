@@ -16,3 +16,4 @@ bluez-utils
 xdg-utils
 xdg-user-dirs
 rsync
+cronie
