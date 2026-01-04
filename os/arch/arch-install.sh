@@ -7,6 +7,52 @@
 # Bail if attempting to substitute an unset variable
 set -u
 
+# network_setup()
+#
+# Test internet connection and assist user with setup if required
+function network_setup()
+{
+  wget -q --spider http://google.com > /dev/null 2>&1
+  if [[ $? -ne 0 ]]; then
+    echo "ERROR: No network connection. How would you like to proceed?"
+    read -p "Ethernet or WiFi? (e/w): " NETWORK_SELECTION
+
+    # Handle selection
+    case ${NETWORK_SELECTION} in
+      [e] ) network_setup ;;
+      [w] ) break ;;
+      *   ) echo "ERROR: Invalid selection." && network_setup ;;
+    esac
+  fi
+
+  # Set up WiFi
+  if [[ "${NETWORK_SELECTION}" = "w" ]]; then
+    # Scan for networks
+    echo "---------- List of available WiFi networks ----------"
+    echo
+    nmcli -f SSID device wifi list | tail -n +2 | awk '$1 != "--" {print}' | uniq
+    echo
+    echo "-----------------------------------------------------"
+    echo
+
+    # Read network credentials
+    read -p "Enter network name: " NETWORK_NAME
+    read -s -p "Enter password for network ${NETWORK_NAME}: " NETWORK_PASSWORD
+    echo
+
+    # Attempt to connect to network
+    echo "Attempting to connect to ${NETWORK_NAME}"
+    nmcli device wifi connect "${NETWORK_NAME}" password "${NETWORK_PASSWORD}"
+
+    # Handle failure
+    if [[ $? -ne 0 ]]; then
+      echo "ERROR: Connection to network ${NETWORK_NAME} failed..."
+      network_setup
+    fi
+  fi
+}
+
+
 # pre_chroot_setup()
 #
 # Arch Linux setup which is executed in a live USB.
@@ -400,6 +446,9 @@ if [ -z "$(ls /sys/firmware/efi)" ]; then
   echo "ERROR: The system is not booted in UEFI mode, cannot continue."
   exit
 fi
+
+# Set up network connection
+network_setup
 
 if [[ -f /etc/hostname && "$(cat /etc/hostname)" == "archiso" ]]; then
   echo "Running on live USB, proceeding with pre-chroot setup..."
