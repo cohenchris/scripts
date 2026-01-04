@@ -7,6 +7,8 @@
 # Bail if attempting to substitute an unset variable
 set -u
 
+WORKING_DIR=$(dirname "$(realpath "$0")")
+
 
 # configure_wifi()
 #
@@ -292,6 +294,7 @@ fi
   ####################
   # Copy this script into your new Arch system to continue bootstrapping
   cp "$0" /mnt/root/
+  cp "${WORKING_DIR}"/arch-packages /mnt/root
   chmod +x /mnt/root/"$0"
 
   # Go into your new Arch partition and continue executing this script
@@ -299,6 +302,7 @@ fi
 
   # Delete bootstrapping script
   rm /mnt/root/"$0"
+  rm /mnt/root/arch-packages
 }
 
 
@@ -357,13 +361,13 @@ function post_chroot_setup() {
   pacman-key --init
   pacman-key --populate archlinux
 
-  if [[ ! -s ./arch-packages ]]; then
+  if [[ ! -s "${WORKING_DIR}"/arch-packages ]]; then
     echo "arch-packages empty or not found, cannot continue..."
     exit 1
   fi
 
-  local ARCH_PACKAGES=$(cat "./arch-packages" | tr '\n' ' ')
-  pacman -Syu --noconfirm "${ARCH_PACKAGES}"
+  local ARCH_PACKAGES=$(cat "${WORKING_DIR}"/arch-packages | tr '\n' ' ')
+  pacman -Syu --noconfirm ${ARCH_PACKAGES}
 
   # Enable internet
   echo
