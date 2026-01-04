@@ -259,7 +259,8 @@ fi
   mount "${ZFS_ROOT1_P1_DEV_NAME}" /mnt/boot
 
   # Update keyring
-  pacman -Syy archlinux-keyring
+  pacman -Syy
+  pacman -S archlinux-keyring
 
   # Install base tools + linux kernel + vim
   pacstrap /mnt base base-devel linux-lts linux-firmware intel-ucode vim vi iw wpa_supplicant dhcpcd
@@ -358,6 +359,8 @@ function post_chroot_setup() {
   # Install core basic packages
   echo
   echo "Installing core basic packages..."
+  pacman -Syy
+  pacman -S archlinux-keyring
   pacman-key --init
   pacman-key --populate archlinux
 
