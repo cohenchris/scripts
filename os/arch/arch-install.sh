@@ -13,6 +13,9 @@ set -u
 # Assist user with WiFi setup
 function configure_wifi()
 {
+  # Set US regulatory domain
+  iw reg set US
+
   # Select wireless interface
   echo "---------- List of available network interfaces ----------"
   echo
