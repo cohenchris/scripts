@@ -7,12 +7,67 @@
 # Bail if attempting to substitute an unset variable
 set -u
 
+
+# configure_wifi()
+#
+# Assist user with WiFi setup
+function configure_wifi()
+{
+  # Select wireless interface
+  echo "---------- List of available network interfaces ----------"
+  echo
+  ls /sys/class/ieee80211/*/device/net/
+  echo
+  echo "----------------------------------------------------------"
+
+  read -p "Select desired network interface: " NETWORK_INTERFACE
+  echo "Attempting to bring up interface ${NETWORK_INTERFACE}..."
+  ip link set "${NETWORK_INTERFACE}" up
+  [[ $? -ne 0 ]] && echo "ERROR: failed to bring up interface ${NETWORK_INTERFACE}" && network_setup
+  echo
+
+
+  # Select network and enter credentials
+  echo "---------- List of available WiFi networks ----------"
+  echo
+  iw dev "${NETWORK_INTERFACE}" scan | grep -oP '(?<=SSID: ).+'
+  echo
+  echo "-----------------------------------------------------"
+  echo
+
+  read -p "Enter desired network name: " NETWORK_NAME
+  read -s -p "Enter password for network ${NETWORK_NAME}: " NETWORK_PASSWORD
+  echo
+
+
+  # Attempt to connect to network
+  echo "Attempting to connect to ${NETWORK_NAME}"
+
+  wpa_passphrase "${NETWORK_NAME}" "${NETWORK_PASSWORD}" > /tmp/wpa.conf
+  [[ $? -ne 0 ]] && echo "ERROR: Failed to create WPA config" && network_setup
+
+  wpa_supplicant -B -i "${NETWORK_INTERFACE}" -c /tmp/wpa.conf
+  [[ $? -ne 0 ]] && echo "ERROR: Failed to start wpa_supplicant" && network_setup
+
+  sleep 5
+  dhcpcd "${NETWORK_INTERFACE}"
+  [[ $? -ne 0 ]] && echo "ERROR: DHCP failed" && network_setup
+
+  # Verify connection
+  iw dev "$IFACE" link | grep -q "Connected to"
+  [[ $? -ne 0 ]] && echo "ERROR: Failed to connect to network ${NETWORK_NAME} on interface ${NETWORK_INTERFACE}" && network_setup
+  ip addr show "$IFACE" | grep -q "inet "
+  [[ $? -ne 0 ]] && echo "ERROR: No IP address assigned to interface ${NETWORK_INTERFACE} by network ${NETWORK_NAME}" && network_setup
+}
+
+
 # network_setup()
 #
 # Test internet connection and assist user with setup if required
 function network_setup()
 {
   wget -q --spider http://google.com > /dev/null 2>&1
+
   if [[ $? -ne 0 ]]; then
     echo "ERROR: No network connection. How would you like to proceed?"
     read -p "Ethernet or WiFi? (e/w): " NETWORK_SELECTION
@@ -20,36 +75,12 @@ function network_setup()
     # Handle selection
     case ${NETWORK_SELECTION} in
       [e] ) network_setup ;;
-      [w] ) break ;;
+      [w] ) configure_wifi ;;
       *   ) echo "ERROR: Invalid selection." && network_setup ;;
     esac
   fi
 
-  # Set up WiFi
-  if [[ "${NETWORK_SELECTION}" = "w" ]]; then
-    # Scan for networks
-    echo "---------- List of available WiFi networks ----------"
-    echo
-    nmcli -f SSID device wifi list | tail -n +2 | awk '$1 != "--" {print}' | uniq
-    echo
-    echo "-----------------------------------------------------"
-    echo
-
-    # Read network credentials
-    read -p "Enter network name: " NETWORK_NAME
-    read -s -p "Enter password for network ${NETWORK_NAME}: " NETWORK_PASSWORD
-    echo
-
-    # Attempt to connect to network
-    echo "Attempting to connect to ${NETWORK_NAME}"
-    nmcli device wifi connect "${NETWORK_NAME}" password "${NETWORK_PASSWORD}"
-
-    # Handle failure
-    if [[ $? -ne 0 ]]; then
-      echo "ERROR: Connection to network ${NETWORK_NAME} failed..."
-      network_setup
-    fi
-  fi
+  # If we reach this point, we have a network connection
 }
 
 
