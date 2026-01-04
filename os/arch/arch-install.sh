@@ -260,7 +260,7 @@ fi
   pacman -Syy archlinux-keyring
 
   # Install base tools + linux kernel + vim
-  pacstrap /mnt base base-devel linux-lts linux-firmware intel-ucode vim vi
+  pacstrap /mnt base base-devel linux-lts linux-firmware intel-ucode vim vi iw wpa_supplicant dhcpcd
 
   ##################################
   # ZFS DATASET AUTOMATIC MOUNTING #
