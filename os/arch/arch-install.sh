@@ -442,8 +442,8 @@ EOF
   ##############
   echo
   echo "Configuring bootloader..."
-  # Configure intial ramdisk (add 'zfs' to the HOOKS list after 'block')
-  sed -i '/^HOOKS=/s/\(.*block\)/\1 zfs/' /etc/mkinitcpio.conf
+  # Configure intial ramdisk (add 'zfs' to the HOOKS list after 'block' + remove 'fsck')
+  sed -i '/^HOOKS=/s/\(.*block\)/\1 zfs/; s/ fsck\b//' /etc/mkinitcpio.conf
   mkinitcpio -P
 
   # Install bootloader to /boot
