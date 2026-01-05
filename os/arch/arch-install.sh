@@ -261,6 +261,8 @@ fi
   # Update keyring
   pacman -Syy
   pacman -S archlinux-keyring
+  pacman-key --init
+  pacman-key --populate archlinux
 
   # Install base tools + linux kernel + vim
   pacstrap /mnt base base-devel linux-lts linux-firmware intel-ucode vim vi iw wpa_supplicant dhcpcd
@@ -356,13 +358,15 @@ function post_chroot_setup() {
   ##################
   # BASIC PACKAGES #
   ##################
-  # Install core basic packages
-  echo
-  echo "Installing core basic packages..."
+  # Update keyring
   pacman -Syy
   pacman -S archlinux-keyring
   pacman-key --init
   pacman-key --populate archlinux
+
+  # Install core basic packages
+  echo
+  echo "Installing core basic packages..."
 
   if [[ ! -s "${WORKING_DIR}"/arch-packages ]]; then
     echo "arch-packages empty or not found, cannot continue..."
@@ -441,9 +445,13 @@ EOF
   # BOOTLOADER #
   ##############
   echo
-  echo "Configuring bootloader..."
-  # Configure intial ramdisk (add 'zfs' to the HOOKS list after 'block' + remove 'fsck')
-  sed -i '/^HOOKS=/s/\(.*block\)/\1 zfs/; s/ fsck\b//' /etc/mkinitcpio.conf
+  echo "Configuring bootloader and initial ramdisk..."
+  # Add 'zfs' to the HOOKS list after 'block'
+  sed -i '/^HOOKS=/s/\(.*block\)/\1 zfs/' /etc/mkinitcpio.conf
+  # Recent installations of Arch Linux uses a systemd initramfs.
+  # The ZFS hook provided by zfs-utils is only compatible with busybox-based initramfs images, so make sure the beginning of the HOOKS array reads 'base udev' instead of 'base systemd'.
+  # Right now I do not care enough to use systemd initramfs, so I won't bother finding a different hook which is compatible with systemd-based initramfs images.
+  sed -i '/^HOOKS=/s/base systemd/base udev/' /etc/mkinitcpio.conf
   mkinitcpio -P
 
   # Install bootloader to /boot
