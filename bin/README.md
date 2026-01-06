@@ -29,7 +29,8 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 - [Hyprlock Reload](#Hyprlock-Reload)
 - [Backblaze Bucket Quick Mount + Unmount via RClone](#Backblaze-Bucket-Quick-Mount-+-Unmount-via-RClone)
   - [Use](#Use)
-
+- [Copy to Clipboard](#Copy-to-Clipboard)
+- [Toggle Airplane Mode](#Toggle-Airplane-Mode)
 
 
 
@@ -269,3 +270,11 @@ Please ensure that:
 
 This script copies the output of `command` to your default clipboard program.
 If the user provides a single filename as a `command`, this script will automatically copy the contents of that file to the clipboard.
+
+
+
+
+## Toggle Airplane Mode
+[`airplane-mode`](airplane-mode)
+
+This script toggles airplane mode on this device (i.e. RFKill)

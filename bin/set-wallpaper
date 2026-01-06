@@ -38,7 +38,7 @@ function display_wallpaper()
   ln -sf "${selected_wallpaper}" "${XDG_CACHE_HOME:-${HOME}/.local/cache}/active-wallpaper.jpg"
 
   # Preload selected_wallpaper file
-  hyprctl hyprpaper preload "${selected_wallpaper}"
+  #hyprctl hyprpaper preload "${selected_wallpaper}"
 
   # Display selected_wallpaper
   hyprctl hyprpaper wallpaper "${MONITOR},${selected_wallpaper}"
