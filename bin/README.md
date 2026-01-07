@@ -30,7 +30,6 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 - [Backblaze Bucket Quick Mount + Unmount via RClone](#Backblaze-Bucket-Quick-Mount-+-Unmount-via-RClone)
   - [Use](#Use)
 - [Copy to Clipboard](#Copy-to-Clipboard)
-- [Toggle Airplane Mode](#Toggle-Airplane-Mode)
 
 
 
@@ -274,7 +273,3 @@ If the user provides a single filename as a `command`, this script will automati
 
 
 
-## Toggle Airplane Mode
-[`airplane-mode`](airplane-mode)
-
-This script toggles airplane mode on this device (i.e. RFKill)
