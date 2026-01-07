@@ -30,7 +30,7 @@ function boot_mirror()
   ZFS_ROOT_POOL_DEVICES=($(zpool list -v "${ZFS_ROOT_POOL}" -H | awk '$1 !~ /(mirror|raidz|spare|log|cache|special)-?[0-9]*/ {print $1}' | tail -n +2))
 
   if [ "${#ZFS_ROOT_POOL_DEVICES[@]}" -ne 2 ]; then
-    echo "ERROR: this pool is not a mirrored pool with 2 devices."
+    echo "WARNING: the specified pool ${ZFS_ROOT_POOL} is not a mirrored pool with 2 devices, no partition mirroring will be performed."
     exit
   fi
 

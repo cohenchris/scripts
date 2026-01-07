@@ -9,9 +9,6 @@ SCRIPTS_DIR=$(dirname "${WORKING_DIR}")
 
 function update_arch()
 {
-  require var "${DOCKER_STACKS_HOME_DIR}"
-  require dir "${DOCKER_STACKS_HOME_DIR}"
-
   # Synchronizes all packages from repositories
   # Downloads fresh package database from the servers
   # Upgrades all outdated packages to their latest versions
@@ -20,13 +17,21 @@ function update_arch()
   # Clear all package cache
   paru -Scc --noconfirm
 
-  # Update and restart all docker containers in docker-compose.yml
-  cd "${DOCKER_STACKS_HOME_DIR}"
-  ./stacks.sh update
-  ./stacks.sh up
+  # Docker maintenance if applicable
+  if [[ -z "${DOCKER_STACKS_HOME_DIR}" ]]; then
+    echo 'WARNING: variable ${DOCKER_STACKS_HOME_DIR} is not set in the environment, no docker maintenance will be performed.'
+  else
+    require var "${DOCKER_STACKS_HOME_DIR}"
+    require dir "${DOCKER_STACKS_HOME_DIR}"
 
-  # Clean docker environment
-  docker system prune -a -f
+    # Update and restart all docker containers in docker-compose.yml
+    cd "${DOCKER_STACKS_HOME_DIR}"
+    ./stacks.sh update
+    ./stacks.sh up
+
+    # Clean docker environment
+    docker system prune -a -f
+  fi
 
   # Mirror EFI boot partitions
   sudo "${SCRIPTS_DIR}/os/arch/arch-boot-mirror.sh" zroot
