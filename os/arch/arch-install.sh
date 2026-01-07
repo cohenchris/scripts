@@ -391,6 +391,11 @@ function post_chroot_setup() {
   echo "Enabling cron..."
   systemctl enable cronie
 
+  # Enable systemd-resolved
+  echo
+  echo "Enabling systemd-resolved..."
+  systemctl enable systemd-resolved
+
   # Install paru AUR helper
   echo
   echo "Installing paru AUR helper..."
