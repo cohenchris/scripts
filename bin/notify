@@ -12,34 +12,112 @@ urgency="$1"
 title="$2"
 body="$3"
 
+
+# Urgency level keywords which will display in green
+good_keywords=(
+  "GOOD"
+  "FULL"
+)
+
+# Urgency level keywords which will display in gray
+normal_keywords=(
+  "NORMAL"
+)
+
+# Urgency level keywords which will display in yellow
+notice_keywords=(
+  "NOTICE"
+)
+
+# Urgency level keywords which will display in orange
+warning_keywords=(
+  "WARNING"
+)
+
+# Urgency level keywords which will display in red
+critical_keywords=(
+  "CRITICAL"
+  "DANGER"
+)
+
+
+function in_array() {
+  local array_name="$1[@]"
+  local needle="$2"
+  local item
+
+  for item in "${!array_name}"; do
+    [[ "$item" == "$needle" ]] && return 0
+  done
+  return 1
+}
+
+
 if [[ -n "${SSH_TTY}" ]] || [[ -z "${WAYLAND_DISPLAY}" ]]; then
   # There is no display - print to stdout
-  if [ "${urgency}" = "CRITICAL" ]; then
-    # Print in red
-    echo -e "\e[31m${title}\n${body}\e[0m"
-    echo -e "\e[31m${body}\e[0m"
-  elif [ "${urgency}" = "GOOD" ]; then
+
+  if in_array good_keywords "${urgency}"; then
     # Print in green
     echo -e "\e[32m${title}\e[0m"
     echo -e "\e[32m${body}\e[0m"
+
+  elif in_array normal_keywords "${urgency}"; then
+    # Print normally (gray)
+    echo -e "${title}"
+    echo -e "${body}"
+
+  elif in_array notice_keywords "${urgency}"; then
+    # Print in yellow
+    echo -e "\e[33m${title}\e[0m"
+    echo -e "\e[33m${body}\e[0m"
+
+  elif in_array warning_keywords "${urgency}"; then
+    # Print in orange
+    echo -e "\e[38;2;255;140;0m${title}\e[0m"
+    echo -e "\e[38;2;255;140;0m${body}\e[0m"
+
+  elif in_array critical_keywords "${urgency}"; then
+    # Print in red
+    echo -e "\e[31m${title}\e[0m"
+    echo -e "\e[31m${body}\e[0m"
+
   else
-    # Print normally
-    echo "${title}"
-    echo "${body}"
+    echo "Invalid urgency level \"${urgency}\", must be one of the following:"
+    echo -e "\tPositive Notifications: ${good_keywords[@]}"
+    echo -e "\tNeutral Notifications:  ${normal_keywords[@]}"
+    echo -e "\tWarning Notifications:  ${warning_keywords[@]}"
+    echo -e "\tCritical Notifications: ${critical_keywords[@]}"
+    exit
   fi
 else
   # There is a display - use notify-send
-  if [ "${urgency}" = "GOOD" ]; then
-    # Notify with a positive look (hijacking the rarely-used "low" urgency)
-    notify-send --urgency low "${title}" "${body}"
-  elif [ "${urgency}" = "NORMAL" ]; then
-    # Notify with a neutral look
-    notify-send --urgency normal "${title}" "${body}"
-  elif [ "${urgency}" = "CRITICAL" ]; then
-    # Notify with a negative look
-    notify-send --urgency critical "${title}" "${body}"
+  if in_array good_keywords "${urgency}"; then
+    # Green notification bubble
+    notify-send --urgency low --category good "${title}" "${body}"
+
+  elif in_array normal_keywords "${urgency}"; then
+    # Gray notification bubble
+    notify-send --urgency normal --category normal "${title}" "${body}"
+
+  elif in_array notice_keywords "${urgency}"; then
+    # Yellow notification bubble
+    notify-send --urgency normal --category notice "${title}" "${body}"
+
+  elif in_array warning_keywords "${urgency}"; then
+    # Orange notification bubble
+    notify-send --urgency critical --category warning "${title}" "${body}"
+
+  elif in_array critical_keywords "${urgency}"; then
+    # Red notification bubble
+    notify-send --urgency critical --category critical "${title}" "${body}"
+
   else
-    echo "urgency must be one of [GOOD, NORMAL, CRITICAL]"
+    echo "Invalid urgency level \"${urgency}\", must be one of the following:"
+    echo -e "\tPositive Notifications: ${good_keywords[@]}"
+    echo -e "\tNeutral Notifications:  ${normal_keywords[@]}"
+    echo -e "\tNotice Notifications:   ${notice_keywords[@]}"
+    echo -e "\tWarning Notifications:  ${warning_keywords[@]}"
+    echo -e "\tCritical Notifications: ${critical_keywords[@]}"
     exit
   fi
 fi

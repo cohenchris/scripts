@@ -5,6 +5,10 @@ if [[ -n "${SSH_TTY}" ]] || [[ -z "${WAYLAND_DISPLAY}" ]]; then
   exit 1
 fi
 
+
+exec 1> /home/chris/log.txt
+exec 2>&1
+
 # Prepare global variables
 WALLPAPER_DIR="${XDG_DATA_HOME:-${HOME}/.local/share}/wallpapers"
 MONITOR=$(hyprctl monitors | grep "Monitor" | awk '{print $2}')
@@ -36,9 +40,6 @@ function display_wallpaper()
 
   # Keep track of active selected_wallpaper
   ln -sf "${selected_wallpaper}" "${XDG_CACHE_HOME:-${HOME}/.local/cache}/active-wallpaper.jpg"
-
-  # Preload selected_wallpaper file
-  #hyprctl hyprpaper preload "${selected_wallpaper}"
 
   # Display selected_wallpaper
   hyprctl hyprpaper wallpaper "${MONITOR},${selected_wallpaper}"

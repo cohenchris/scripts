@@ -28,17 +28,25 @@ fi
 function integrity_test() {
   # Smartctl long test
   for drive in "${SMART_DRIVES[@]}"; do
+    echo "Running integrity test on drive ${drive}..."
+    echo -e "\tsmartctl -t long ${drive}"
     smartctl -t long ${drive} >/dev/null 2>&1
   done
 
   # ZFS trim/scrub
   for pool in "${ZFS_POOLS[@]}"; do
+    echo "Scrubbing ZFS pool ${pool}..."
+    echo -e "\tzpool scrub ${pool}"
     zpool scrub ${pool}
+
+    echo "Trimming ZFS pool ${pool}..."
+    echo -e "\tzpool trim ${pool}"
     zpool trim ${pool}
   done
 
   # Perform maintenance on borg repositories
   for repo_path in "${BORG_REPOSITORIES[@]}"; do
+    echo "Performing maintenance on borg repository ${repo_path}..."
     borg_maintenance "${repo_path}" &
     sleep 30
   done
