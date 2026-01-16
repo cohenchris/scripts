@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 # Backup everything to Backblaze
 
-# backblaze_sync(dir_to_sync, backblaze_bucket, exclude_regex)
-#   dir_to_sync      - backup directory to sync to backblaze
-#   backblaze_bucket - backblaze destination bucket
-#   exclude_regex    - regex for files/directories to exclude in the backblaze backup
+# backblaze_sync(dir_to_sync, backblaze_bucket, exclude_dir_regex)
+#   dir_to_sync       - backup directory to sync to backblaze
+#   backblaze_bucket  - backblaze destination bucket
+#   exclude_dir_regex - regex for directories to exclude in the backblaze backup
 #
 # Syncs a given directory to a given bucket on Backblaze
 function backblaze_sync() {
   local dir_to_sync="$1"
   local backblaze_bucket="$2"
-  local exclude_regex="$3"
+  local exclude_dir_regex="$3"
 
   require dir "${dir_to_sync}" || exit 1
   require var "${backblaze_bucket}" || exit 1
@@ -22,11 +22,11 @@ function backblaze_sync() {
   mail_log check "Backblaze authorization" $?
 
   # Sync directory to Backblaze
-  # Handle user-specified excluded files/directories
+  # Handle user-specified excluded directories
   # Always prevent hidden files from being included
   cd "${dir_to_sync}"
   mail_log plain "Syncing backup to Backblaze..."
-  "${BACKBLAZE_BIN}" sync --delete --replaceNewer ${exclude_regex} . b2://${backblaze_bucket}
+  "${BACKBLAZE_BIN}" sync --delete --replaceNewer ${exclude_dir_regex} . b2://${backblaze_bucket}
   mail_log check "Backblaze backup" $?
 
   cd "${WORKING_DIR}"
@@ -43,16 +43,16 @@ require var "${BACKBLAZE_BUCKET}" || exit 1
 
 # Construct the exclusion regex string
 # Should be in the format "\..*|somedir|anotherdir|somefile|anotherfile"
-if [[ -n "${BACKBLAZE_EXCLUDE_REGEX}" ]]; then
-  exclude_regex="--excludeRegex \..*"
+if [[ -n "${BACKBLAZE_EXCLUDE_DIR_REGEX}" ]]; then
+  exclude_dir_regex="--excludeDirRegex \..*"
 
   # Combine all user-provided regex strings, prepending each with the base backups directory
-  for entry in "${BACKBLAZE_EXCLUDE_REGEX[@]}"; do
-    exclude_regex="${exclude_regex}|${entry}"
+  for entry in "${BACKBLAZE_EXCLUDE_DIR_REGEX[@]}"; do
+    exclude_dir_regex="${exclude_dir_regex}|${entry}"
   done
 fi
 
 # Sync backups directory to Backblaze
-backblaze_sync "${BACKBLAZE_BACKUPS_DIR}" "${BACKBLAZE_BUCKET}" "${exclude_regex}"
+backblaze_sync "${BACKBLAZE_BACKUPS_DIR}" "${BACKBLAZE_BUCKET}" "${exclude_dir_regex}"
 
 backup_finish
