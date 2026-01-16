@@ -46,7 +46,7 @@ function update_ubuntu()
 
 function update_openwrt()
 {
-  opkg update
+  apk update
 
   echo "!!!!!!!!!! WARNING !!!!!!!!!!"
   echo "About to perform a system upgrade!"
@@ -81,7 +81,7 @@ if command -v apt &> /dev/null; then
   update_ubuntu
 
 # OpenWRT
-elif command -v opkg &> /dev/null; then
+elif command -v apk &> /dev/null; then
   update_openwrt
 
 # Arch Linux Lab

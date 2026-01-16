@@ -15,7 +15,7 @@ fi
 if command -v apt &> /dev/null; then
   REALNAME="Backup Server"
 # OpenWRT
-elif command -v opkg &> /dev/null; then
+elif command -v apk &> /dev/null; then
   REALNAME="OpenWRT"
 # Arch Linux Lab
 elif command -v pacman &> /dev/null; then
@@ -70,8 +70,8 @@ function install_dependencies()
   # OpenWRT
   elif [[ "${REALNAME}" = "OpenWRT" ]]; then
     echo "Installing packages for OpenWRT..."
-    opkg update
-    opkg install coreutils-realpath curl mutt msmtp msmtp-mta
+    apk update
+    apk add coreutils-realpath curl mutt msmtp msmtp-mta
 
   # Arch Linux Lab
   elif [[ "${REALNAME}" = "Phrog" ]]; then
