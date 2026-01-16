@@ -13,7 +13,7 @@ source "${WORKING_DIR}/.env"
 source "${WORKING_DIR}/common.sh"
 
 require var "${BATOCERA_HOST}" || exit 1
-require var "${BATOCERA_MAC}" || exit 1
+require var "${BATOCERA_MACS}" || exit 1
 require var "${BATOCERA_LOCAL_BACKUP_DIR}" || exit 1
 require var "${BATOCERA_REMOTE_BACKUP_DIR}" || exit 1
 
@@ -49,7 +49,7 @@ if [[ "${POWER_STATE}" -ne 0 ]]; then
 
   # Attempt to wake batocera using Wake-On-LAN if not already powered on
   mail_log plain "Sending magic Wake-On-LAN packet..."
-  wakeonlan "${BATOCERA_MAC}"
+  wakeonlan "${BATOCERA_MACS}"
   mail_log check "WOL sent" $?
 
   # Check that batocera is up (this command will wait long enough for the device to boot)
