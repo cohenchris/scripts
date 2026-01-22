@@ -17,7 +17,6 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 - [Local E-Mail Sync](#Local-E-Mail-Sync)
 - [LF File Manager Wrapper](#LF-File-Manager-Wrapper)
 - [LaTeX Shortcuts](#LaTeX-Shortcuts)
-- [Music Video Downloader](#Music-Video-Downloader)
 - [Set Wallpaper](#Set-Wallpaper)
 - [Email Lookup](#Email-Lookup)
 - [Custom Pinentry](#Custom-Pinentry)
@@ -27,8 +26,6 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 - [Fuzzel Askpass](#Fuzzel-Askpass)
 - [Unicode Character Selection Menu](#Unicode-Character-Selection-Menu)
 - [Hyprlock Reload](#Hyprlock-Reload)
-- [Backblaze Bucket Quick Mount + Unmount via RClone](#Backblaze-Bucket-Quick-Mount-+-Unmount-via-RClone)
-  - [Use](#Use)
 - [Copy to Clipboard](#Copy-to-Clipboard)
 
 
@@ -108,26 +105,6 @@ Behavior differs depending on the subcommand:
 `create <filename>` spits out a file (name provided as an argument) which contains a very simple LaTeX template.
 
 `edit <tex_source_file>` compiles the source file into a PDF, open the PDF, and open the source file in vim.
-
-
-
-
-## Music Video Downloader
-[`mvdl [FILE]`](mvdl)
-
-This script reads in a file which contains newline-separated YouTube music video URLs.
-If there is a music file and music video file with the same name, Plex can automatically detect this and associate the two files.
-If there is a music file with an associated music video file, Plex will allow you to play either file.
-This script is an attempt to automate the process of pulling + renaming music videos for this feature.
-You may read about this naming process [here](https://support.plex.tv/articles/205568377-adding-local-artist-and-music-videos/).
-
-This script is pretty hardcoded to my personal environment and directory structure.
-
-1. User points the script to music and music video directories
-2. Download each video
-3. Based on the title of the music video, attempt to find a matching music file
-4. If a match is found, rename the downloaded music video according to the standard linked above
-5. If a match is not found, rename the downloaded music video to a cleaner, more readable version
 
 
 
@@ -244,22 +221,6 @@ OR
 Sometimes, when the screen is locked, hyprlock crashes and the user can no longer login.
 To remedy this, the user must login to a different TTY reload the program (run this script), and switch back to the original TTY to login.
 This script is meant to be run after the user switches to a different TTY.
-
-
-
-
-## Backblaze Bucket Quick Mount + Unmount via RClone
-[`b2-mount [mount, unmount] [dirname]`](b2-mount)
-
-I store all of my remote backups (the "1" in 3-2-1 backups) in a Backblaze B2 buckets.
-Sometimes, it's useful to navigate this bucket manually to check out its contents.
-RClone is a fantastic tool that allows mounting of a Backblaze B2 bucket to your local machine, and this script streamlines the rclone mount/unmount process.
-
-Utilizing an rclone remote under the hood, this script cleanly mounts and unmounts a given backblaze bucket under `dirname`.
-
-Please ensure that:
-- `rclone` is installed on your machine
-- There is an rclone remote configured which is named `backblaze`
 
 
 
