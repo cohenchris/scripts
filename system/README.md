@@ -98,11 +98,11 @@ RClone is a fantastic tool that allows mounting of a Backblaze B2 bucket to your
 
 Utilizing an rclone remote under the hood, this script cleanly mounts and unmounts a given backblaze bucket under `dirname`.
 
-Please ensure that:
-- `rclone` is installed on your machine
-- There is an rclone remote configured which is named `backblaze`
-
 ### Prerequisites
+This script assumes that:
+- `rclone` is installed on your machine
+- You have filled out the [`.env`](sample.env) file
+- There is an rclone remote configured for the remote specified in [`.env`](sample.env)
 
 ### Use
 
