@@ -1,33 +1,76 @@
 #!/usr/bin/env bash
 # Backup everything to Backblaze
 
-# backblaze_sync(dir_to_sync, backblaze_bucket, exclude_dir_regex)
+
+# validate_remote(rclone_remote)
+#   rclone_remote - rclone remote config
+#
+# Validate that there exists an rclone remote config ${rclone_remote}
+function validate_remote()
+{
+  local rclone_remote="$1"
+
+  for remote in $(rclone listremotes); do
+    # Check if the string is in the current remote name
+    if [[ "${remote}" == "${rclone_remote}" ]]; then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+
+# backblaze_sync(rclone_remote, dir_to_sync, backblaze_bucket)
+#   rclone_remote     - rclone remote config to backblaze
 #   dir_to_sync       - backup directory to sync to backblaze
 #   backblaze_bucket  - backblaze destination bucket
-#   exclude_dir_regex - regex for directories to exclude in the backblaze backup
 #
 # Syncs a given directory to a given bucket on Backblaze
 function backblaze_sync() {
-  local dir_to_sync="$1"
-  local backblaze_bucket="$2"
-  local exclude_dir_regex="$3"
+  local backblaze_rclone_remote="$1"
+  local dir_to_sync="$2"
+  local backblaze_bucket="$3"
 
+  require var "${backblaze_rclone_remote}" || exit 1
   require dir "${dir_to_sync}" || exit 1
   require var "${backblaze_bucket}" || exit 1
-  require var "${BACKBLAZE_BIN}" || exit 1
 
-  # Check B2 auth
-  mail_log plain "Checking Backblaze authorization for bucket ${backblaze_bucket}..."
-  "${BACKBLAZE_BIN}" get-bucket "${backblaze_bucket}" > /dev/null 2>&1
-  mail_log check "Backblaze authorization" $?
+  # Validate that there exists an rclone remote config ${backblaze_rclone_remote}
+  mail_log plain "Validating rclone remote config..."
+  status=$(validate_remote "${backblaze_rclone_remote}")
+  mail_log check "Validate rclone remote" ${status}
+
+  # Validate that there exists a Backblaze B2 bucket (directory) ${remote_bucket} on rclone remote config ${backblaze_rclone_remote}
+  mail_log plain "Validating Backblaze bucket..."
+  status=$(rclone lsd ${backblaze_rclone_remote}${backblaze_bucket} > /dev/null 2>&1)
+  mail_log check "Validate Backblaze bucket" "${status}"
 
   # Sync directory to Backblaze
   # Handle user-specified excluded directories
   # Always prevent hidden files from being included
   cd "${dir_to_sync}"
-  mail_log plain "Syncing backup to Backblaze..."
-  "${BACKBLAZE_BIN}" sync --delete --replaceNewer ${exclude_dir_regex} . b2://${backblaze_bucket}
-  mail_log check "Backblaze backup" $?
+  mail_log plain "Syncing backup to Backblaze using rclone..."
+
+  rclone_command=(
+    rclone sync
+    .
+    ${backblaze_rclone_remote}${backblaze_bucket}
+    --delete-excluded
+    --progress
+    --b2-hard-delete
+    --dry-run
+  )
+
+  # Add user-defined exclude regex
+  for entry in "${BACKBLAZE_EXCLUDE_DIR_REGEX[@]}"; do
+    rclone_command+=(--exclude "${entry}")
+  done
+
+  # Run the rclone command
+  echo "${rclone_command[@]}"
+
+  mail_log check "Backblaze backup via rclone" $?
 
   cd "${WORKING_DIR}"
 }
@@ -38,21 +81,11 @@ WORKING_DIR=$(dirname "$(realpath "$0")")
 source "${WORKING_DIR}/.env"
 source "${WORKING_DIR}/common.sh"
 
+require var "${BACKBLAZE_RCLONE_REMOTE}" || exit 1
 require var "${BACKBLAZE_BACKUPS_DIR}" || exit 1
 require var "${BACKBLAZE_BUCKET}" || exit 1
 
-# Construct the exclusion regex string
-# Should be in the format "\..*|somedir|anotherdir|somefile|anotherfile"
-if [[ -n "${BACKBLAZE_EXCLUDE_DIR_REGEX}" ]]; then
-  exclude_dir_regex="--excludeDirRegex \..*"
-
-  # Combine all user-provided regex strings, prepending each with the base backups directory
-  for entry in "${BACKBLAZE_EXCLUDE_DIR_REGEX[@]}"; do
-    exclude_dir_regex="${exclude_dir_regex}|${entry}"
-  done
-fi
-
 # Sync backups directory to Backblaze
-backblaze_sync "${BACKBLAZE_BACKUPS_DIR}" "${BACKBLAZE_BUCKET}" "${exclude_dir_regex}"
+backblaze_sync "${BACKBLAZE_RCLONE_REMOTE}" "${BACKBLAZE_BACKUPS_DIR}" "${BACKBLAZE_BUCKET}"
 
 backup_finish
