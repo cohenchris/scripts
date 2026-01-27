@@ -14,7 +14,7 @@ source "${WORKING_DIR}/common.sh"
 
 require var "${BATOCERA_HOST}" || exit 1
 require var "${BATOCERA_MACS}" || exit 1
-require var "${BATOCERA_LOCAL_BACKUP_DIR}" || exit 1
+#require var "${BATOCERA_LOCAL_BACKUP_DIR}" || exit 1
 require var "${BATOCERA_REMOTE_BACKUP_DIR}" || exit 1
 
 
@@ -64,15 +64,15 @@ fi
 # If powered on, perform backups
 if [[ "${POWER_STATE}" -eq 0 ]]; then
   # Make a backup of batocera on the local machine
-  mail_log plain "Backup locally..."
-  ssh -A "${BATOCERA_HOST}" \
-  rsync -a \
-        --delete \
-        --update \
-        --progress \
-        "${BATOCERA_DIR}/" \
-        "${BATOCERA_LOCAL_BACKUP_DIR}"
-  mail_log check "Local backup" $?
+#  mail_log plain "Backup locally..."
+#  ssh -A "${BATOCERA_HOST}" \
+#  rsync -a \
+#        --delete \
+#        --update \
+#        --progress \
+#        "${BATOCERA_DIR}/" \
+#        "${BATOCERA_LOCAL_BACKUP_DIR}"
+#  mail_log check "Local backup" $?
 
   # Make a backup of batocera on the remote backup server
   mail_log plain "Backing up to remote backup server..."
