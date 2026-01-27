@@ -38,13 +38,13 @@ function backblaze_sync() {
 
   # Validate that there exists an rclone remote config ${backblaze_rclone_remote}
   mail_log plain "Validating rclone remote config..."
-  status=$(validate_remote "${backblaze_rclone_remote}")
-  mail_log check "Validate rclone remote" ${status}
+  validate_remote "${backblaze_rclone_remote}"
+  mail_log check "Validate rclone remote" $?
 
   # Validate that there exists a Backblaze B2 bucket (directory) ${remote_bucket} on rclone remote config ${backblaze_rclone_remote}
   mail_log plain "Validating Backblaze bucket..."
-  status=$(rclone lsd ${backblaze_rclone_remote}${backblaze_bucket} > /dev/null 2>&1)
-  mail_log check "Validate Backblaze bucket" "${status}"
+  rclone lsd ${backblaze_rclone_remote}${backblaze_bucket} > /dev/null 2>&1
+  mail_log check "Validate Backblaze bucket" $?
 
   # Sync directory to Backblaze
   # Handle user-specified excluded directories
@@ -60,6 +60,8 @@ function backblaze_sync() {
     --progress
     --b2-hard-delete
     --dry-run
+    --exclude "/.*"
+    --exclude "/.*/**"
   )
 
   # Add user-defined exclude regex
@@ -68,7 +70,7 @@ function backblaze_sync() {
   done
 
   # Run the rclone command
-  echo "${rclone_command[@]}"
+  "${rclone_command[@]}"
 
   mail_log check "Backblaze backup via rclone" $?
 
