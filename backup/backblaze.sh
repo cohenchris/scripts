@@ -59,7 +59,6 @@ function backblaze_sync() {
     --delete-excluded
     --progress
     --b2-hard-delete
-    --dry-run
     --exclude "/.*"
     --exclude "/.*/**"
   )
