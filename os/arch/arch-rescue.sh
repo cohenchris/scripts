@@ -34,7 +34,7 @@ zfs mount -a
 mount "${ZPOOL_DISK_1_EFI}" /mnt/boot
 
 # 2. Chroot into /mnt and re-install kernel
-arch-chroot /mnt sudo -u "${MAIN_USER}" sudo paru -Syu --noconfirm linux-lts mkinitcpio
+arch-chroot /mnt sudo -u "${MAIN_USER}" sudo pacman -Syu --noconfirm linux-lts mkinitcpio
 
 # 3. Unmount everything and export ZFS pools
 zfs umount -a
