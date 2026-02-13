@@ -46,7 +46,7 @@ rm -r /mnt/boot
 if [ -z "${ZPOOL_DISK_2_EFI}" ]; then
   echo "No second disk specified for the pool zroot, skipping..."
 else
-  dd if="${ZPOOL_DISK_1_EFI}" "${ZPOOL_DISK_2_EFI}" status=progress
+  dd if="${ZPOOL_DISK_1_EFI}" of="${ZPOOL_DISK_2_EFI}" status=progress
 fi
 
 echo "Done!"
