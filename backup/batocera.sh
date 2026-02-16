@@ -34,7 +34,8 @@ function is_device_on()
   local host="$1"
   require var "${host}" || exit 1
 
-  ssh -o ConnectTimeout=5 "${host}" "ls" &> /dev/null && echo 0 || echo 1
+  ssh -o ConnectTimeout=10 "${host}" "ls" &> /dev/null
+  echo $?
 }
 
 
@@ -49,7 +50,7 @@ if [[ "${POWER_STATE}" -ne 0 ]]; then
 
   # Attempt to wake batocera using Wake-On-LAN if not already powered on
   mail_log plain "Sending magic Wake-On-LAN packet..."
-  wakeonlan "${BATOCERA_MACS}"
+  wakeonlan ${BATOCERA_MACS}
   mail_log check "WOL sent" $?
 
   sleep 30
