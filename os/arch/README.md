@@ -11,10 +11,10 @@ The import script is tailored towards Arch Linux, but these services should work
 - [Install Arch on ZFS](#Install-Arch-on-ZFS)
   - [Prerequisites](#Prerequisites)
   - [Use](#Use)
-- [Sync Mirrored EFI Partitions](#Sync-Mirrored-EFI-Partitions)
+- [Sync Mirrored EFI Boot Partitions](#Sync-Mirrored-EFI-Boot-Partitions)
   - [Prerequisites](#Prerequisites-1)
   - [Use](#Use-1)
-- [Replace/Resilver a Drive in ZFS Root Pool](#Replace/Resilver-a-Drive-in-ZFS-Root-Pool)
+- [Replace and Resilver a Drive in a ZFS Root Pool](#Replace-and-Resilver-a-Drive-in-a-ZFS-Root-Pool)
   - [Prerequisites](#Prerequisites-2)
   - [Use](#Use-2)
 - [Rescue Corrupted EFI Boot Partition](#Rescue-Corrupted-EFI-Boot-Partition)
@@ -56,7 +56,7 @@ When the script is done, you should reboot, remove the live USB, and boot into y
 
 
 
-## Sync Mirrored EFI Partitions
+## Sync Mirrored EFI Boot Partitions
 [`arch-boot-mirror.sh [root_pool_name]`](arch-boot-mirror.sh)
 
 This keeps a mirrored ZFS root pool's EFI partitions in sync.
@@ -80,14 +80,14 @@ These packages include, but are not limited to:
 
 I highly recommend automating the mirroring of your EFI boot partitions to minimize the amount of time your EFI boot partitions will be out of sync.
 If you have a drive failure, and the surviving disk's EFI partition is out of date, you will almost certainly run into undefined behavior due to kernel mismatching issues.
-Personally, I have an [`update`](../bin/update) script that does a variety of things to update and clean my system.
+Personally, I have an [`update`](../../bin/update) script that does a variety of things to update and clean my system.
 At the very end of this script, I call this script to mirror the EFI boot partitions.
 This means that the script is called whether the EFI boot partition data is updated or not, it's better to be safe.
 
 
 
 
-## Replace/Resilver a Drive in ZFS Root Pool
+## Replace and Resilver a Drive in a ZFS Root Pool
 [`arch-root-resilver.sh`](arch-root-resilver.sh)
 
 In case of a drive failure, on your mirrored ZFS root pool, this script assists in seamlessly resilvering a replacement drive.

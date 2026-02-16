@@ -29,13 +29,6 @@ sudo -u "${USERNAME}" paru -Sy --noconfirm glances python-fastapi uvicorn python
 cp "${ARCH_ENV_SETUP_DIR}"/glances.service /etc/systemd/system
 
 
-# Install nvidia GPU power savings dependencies and service
-echo
-echo "Installing Nvidia GPU power savings service..."
-sudo -u "${USERNAME}" paru -Sy --noconfirm nvidia-lts nvidia-container-toolkit python-nvidia-ml-py
-cp "${ARCH_ENV_SETUP_DIR}"/nvidia-gpu-power-savings.service /etc/systemd/system
-
-
 # Install network UPS tools and service
 echo
 echo "Installing and configuring Network UPS tools..."
@@ -47,7 +40,6 @@ chmod 640 /etc/nut/*
 
 # Reload systemd, then enable + start services
 systemctl daemon-reload
-systemctl enable --now nvidia-gpu-power-savings.service
 systemctl enable --now glances.service
 upsdrvctl start
 systemctl enable --now nut.target nut-driver.target nut-driver-enumerator.service

@@ -3,18 +3,17 @@
 Scripts which backup various devices and services.
 
 Unless otherwise documented, each script will execute on the backup target machine and behave as follows:
-1. Create a backup for the target data
-2. Store one copy of the backup on the local machine
-3. Store one copy of the backup on a remote backup server
-4. Send an email with an overview of the job status
+1. Create a backup on the local machine
+2. Create a backup on the remote backup server
+3. Send an email with an overview of the job status
 
 ### Prerequisites and Use
 Every script is data-driven using variables defined in the `.env` file.
-A `sample.env` file is provided which should be cloned by running `cp sample.env .env`.
+A [`sample.env`](sample.env) file is provided as guidance.
 Each variable in the `.env` file is clearly labeled with the name of the script(s) it corresponds to.
-If you attempt to run a script without all of the relevant variables filled in, an error message will be printed and execution will stop.
+If some required `.env` variable is unset, each script will immediately stop execution and inform the user about which variables are missing.
 
-These scripts are customized to my exact network structure and backup requirements, each constructed using common functions defined in `common.sh`.
+These scripts are customized to my exact network structure and backup requirements.
 
 I follow the "3-2-1 backup system", which calls for:
 - **3** copies of your data
@@ -28,8 +27,7 @@ Note that the backups are staggered to prevent conflicting operations and data c
 
 In this document, you will see references to "local machine" and "backup server".
 
-Taking the above diagram as an example, "local machine" refers to the device on which the backup script is run.
-"Backup server" refers to the central figure labeled "Backup Server Pi" in the diagram.
+Taking the above diagram as an example, "local machine" refers to the device on which the backup script is run, and "backup server" refers to the central figure labeled "Backup Server Pi" in the diagram.
 This is a single device on my network that stores backups for my entire network.
 
 
@@ -37,7 +35,7 @@ This is a single device on my network that stores backups for my entire network.
 
 # Table of Contents
 
-  - [Prerequisites and Use](#Prerequisites-and-Use)
+- [Prerequisites and Use](#Prerequisites-and-Use)
 - [Backblaze Remote Backup](#Backblaze-Remote-Backup)
   - [Prerequisites](#Prerequisites)
   - [Use](#Use)

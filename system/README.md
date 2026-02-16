@@ -16,14 +16,12 @@ Think of these as scripts that would require a solid amount of effort to port to
   - [Prerequisites](#Prerequisites)
   - [Use](#Use)
 - [System Update](#System-Update)
-  - [Prerequisites](#Prerequisites-1)
-  - [Use](#Use)
 - [Backblaze Bucket Quick Mount + Unmount via RClone](#Backblaze-Bucket-Quick-Mount-+-Unmount-via-RClone)
+  - [Prerequisites](#Prerequisites-1)
+  - [Use](#Use-1)
+- [Music Video Downloader](#Music-Video-Downloader)
   - [Prerequisites](#Prerequisites-2)
   - [Use](#Use-2)
-- [Music Video Downloader](#Music-Video-Downloader)
-  - [Prerequisites](#Prerequisites-3)
-  - [Use](#Use-3)
 
 
 
@@ -61,8 +59,8 @@ There are two different functions:
 
 ### Prerequisites
 This script assumes that:
-- You have created and filled out the .env file in `scripts/system`
-- You have set up SSMTP for email notifications (see `arch/services/` for more information)
+- You have filled out the [`.env`](sample.env) file
+- You have set up MSMTP for email notifications (see [`os/email/`](os/email/) for more information)
 
 ### Use
 It is highly recommmended to run this script with an automated cron job.
@@ -83,9 +81,6 @@ It also assumes that the user has a docker-compose stack located at `/home/${USE
 4. Remove all dangling docker container images
 5. Mirror EFI boot partitions on mirrored ZFS root pool
 
-### Prerequisites
-
-### Use
 
 
 
@@ -105,6 +100,15 @@ This script assumes that:
 - There is an rclone remote configured for the remote specified in [`.env`](sample.env)
 
 ### Use
+To mount a B2 bucket to `/path/to/b2/mount/dir`:
+```sh
+./b2-mount.sh mount my-bucket-name /path/to/b2/mount/dir
+```
+
+To unmount the same B2 bucket:
+```sh
+./b2-mount.sh umount /path/to/b2/mount/dir
+```
 
 
 
@@ -126,5 +130,9 @@ This script is pretty hardcoded to my personal environment and directory structu
 5. If a match is not found, rename the downloaded music video to a cleaner, more readable version
 
 ### Prerequisites
+This script assumes that:
+- You have filled out the [`.env`](sample.env) file
+- You have a plaintext file with newline-separated YouTube video URLs to download.
 
 ### Use
+To use this script, simply invoke it and provide the URL file as input.

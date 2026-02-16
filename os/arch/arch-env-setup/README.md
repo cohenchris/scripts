@@ -2,12 +2,9 @@
 - [Network UPS Tools](#Network-UPS-Tools)
   - [Prerequisites](#Prerequisites)
   - [Use](#Use)
-- [Nvidia GPU Power Savings](#Nvidia-GPU-Power-Savings)
+- [Glances](#Glances)
   - [Prerequisites](#Prerequisites-1)
   - [Use](#Use-1)
-- [Glances](#Glances)
-  - [Prerequisites](#Prerequisites-2)
-  - [Use](#Use-2)
 
   
 
@@ -33,31 +30,6 @@ chown -R root:nut /etc/nut/*
 chmod 640 /etc/nut/*
 sudo systemctl enable nut.service
 sudo systemctl start nut.service
-```
-2. Automated setup using [`arch-env-setup.sh`](../arch-env-setup.sh)
-
-
-
-
-## Nvidia GPU Power Savings
-[`nvidia-gpu-power-savings.service`](nvidia-gpu-power-savings.service)
-
-This is a systemd service file which will lower the idle power consumption of your Nvidia GPU.
-
-### Prerequisites
-- You have an Nvidia GPU
-- You have proper Nvidia drivers installed
-- Your Nvidia GPU is visible on nvidia-smi
-
-### Use
-Two options are available for setup:
-
-1. Manual setup
-```sh
-cp nvidia-gpu-power-savings.service /etc/systemd/system
-systemctl daemon-reload
-systemctl enable nvidia-gpu-power-savings.service
-systemctl start nvidia-gpu-power-savings.service
 ```
 2. Automated setup using [`arch-env-setup.sh`](../arch-env-setup.sh)
 

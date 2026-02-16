@@ -7,30 +7,32 @@ Custom scripts, services, and configuration files for a FreeBSD-based OPNSense d
 
 # Table of Contents
 
-- [OPNSense Action to Backup OPNSense + AdGuard](#OPNSense-Action-to-Backup-OPNSense-+-AdGuard)
+- [OPNSense Action to Backup Configuration Data](#OPNSense-Action-to-Backup-Configuration-Data)
   - [Prerequisites](#Prerequisites)
   - [Use](#Use)
-- [OPNSense Action to Check Data Integrity](#OPNSense-Action-to-Check-Data-Integrity)
+- [OPNSense Action to Monitor Disk Health](#OPNSense-Action-to-Monitor-Disk-Health)
   - [Prerequisites](#Prerequisites-1)
   - [Use](#Use-1)
-- [Replace/Resilver a Drive in ZFS Root Pool](#Replace/Resilver-a-Drive-in-ZFS-Root-Pool)
+- [Replace and Resilver a Drive in a ZFS Root Pool](#Replace-and-Resilver-a-Drive-in-a-ZFS-Root-Pool)
   - [Prerequisites](#Prerequisites-2)
   - [Use](#Use-2)
+- [OPNSense Fresh Install Setup Script](#OPNSense-Fresh-Install-Setup-Script)
+  - [Use](#Use-3)
 
 
 
 
-## OPNSense Action to Backup OPNSense + AdGuard
+## OPNSense Action to Backup Configuration Data
 [`actions_backupopnsense.conf`](actions_backupopnsense.conf)
 
 This is an "OPNSense action", which is essentially a cron job that can be configured from the OPNSense web UI.
 This action will run a script which makes a full backup of OPNSense and AdGuard Home.
-For more details on the exact functionality of said script, please check out [`opnsense.sh`](../../../backup/opnsense.sh) in the `backups` directory.
+For more details on the exact functionality of said script, please check out [`opnsense.sh`](../../backup/opnsense.sh) in the `backups` directory.
 
 After this action is installed, you may schedule it from the OPNSense web UI (System --> Settings --> Cron).
 
 ### Prerequisites
-- You have populated the [`.env`](../../../backup/sample.env) file for [`opnsense.sh`](../../../backup/opnsense.sh)
+- You have populated the [`.env`](../../backup/sample.env) file for [`opnsense.sh`](../../backup/opnsense.sh)
 
 ### Use
 Two options are available to setup this OPNSense action:
@@ -49,23 +51,21 @@ configctl backupopnsense backup
 ```
 
 
-
-
-2. Automated setup using [`email-env-setup.sh`](email-env-setup.sh)
+2. Automated setup using [`opnsense-env-setup.sh`](opnsense-env-setup.sh)
 
 
 
 
-## OPNSense Action to Check Data Integrity
+## OPNSense Action to Monitor Disk Health
 [`actions_dataintegrity.conf`](actions_dataintegrity.conf)
 
 This is an "OPNSense action", which is essentially a cron job that can be configured from the OPNSense web UI.
-This action will run a script which, depending on the sub-command selected, can either run a data integrity test or send a data integrity report.
+This action will run a script which, depending on the sub-command selected, will either run a data integrity test or send a data integrity report.
 
 After this action is installed, you may schedule it from the OPNSense web UI (System --> Settings --> Cron).
 
 ### Prerequisites
-- You have populated the [`.env`](../../../system/sample.env) file for [`data-integrity.sh`](../../../system/data-integrity.sh)
+- You have populated the [`.env`](../../system/sample.env) file for [`data-integrity.sh`](../../system/data-integrity.sh)
 - You are able to send email notifications
 - Smartmontools is installed
 - If you have ZFS pools, ZFS is installed
@@ -86,15 +86,12 @@ Manually test by running:
 configctl dataintegrity backup
 ```
 
-
-
-
-2. Automated setup using [`email-env-setup.sh`](email-env-setup.sh)
+2. Automated setup using [`opnsense-env-setup.sh`](opnsense-env-setup.sh)
 
 
 
 
-## Replace/Resilver a Drive in ZFS Root Pool
+## Replace and Resilver a Drive in a ZFS Root Pool
 [`opnsense-root-resilver.sh`](opnsense-root-resilver.sh)
 
 In case of a drive failure on your mirrored ZFS root pool, this script assists in seamlessly resilvering a replacement drive.
@@ -109,3 +106,19 @@ It will clone the EFI boot partition to the new drive, clone the FreeBSD-Boot pa
 
 ### Use
 To resilver, boot from the surviving drive in your ZFS root pool and run this script.
+
+
+
+
+## OPNSense Fresh Install Setup Script
+[`opnsense-env-setup.sh`](opnsense-env-setup.sh)
+
+This script completes a fresh install of OPNSense by configuring custom actions.
+First, the [OPNSense action to monitor disk health](#OPNSense-Action-To-Monitor-Disk-Health) is configured so that automated backups may be scheduled.
+Then, the [OPNSense action to backup configuration data](#OPNSense-Action-To-Backup-Configuration-Data) is configured so that disk health monitoring may be scheduled.
+
+### Use
+Call this script from the command line:
+```sh
+./opnsense-env-setup.sh
+```

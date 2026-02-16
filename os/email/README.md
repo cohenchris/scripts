@@ -1,6 +1,6 @@
 # Setup Email Notifications
 
-Install and configure email notifications on the host machine.
+Install and configure email on the host machine.
 
 
 
@@ -13,6 +13,8 @@ Install and configure email notifications on the host machine.
 - [Mutt E-Mail Client](#Mutt-E-Mail-Client)
   - [Prerequisites](#Prerequisites-1)
   - [Use](#Use-1)
+- [Automated Email Setup Script](#Automated-Email-Setup-Script)
+  - [Use](#Use-2)
 
 
 
@@ -20,7 +22,7 @@ Install and configure email notifications on the host machine.
 ## MSMTP SMTP client
 [`msmtprc`](msmtprc)
 
-This is a configuration file for the `msmtp` SMTP client. This is one part of what will allow email notifications to be sent automatically via cron jobs and privileged scripts.
+This is a configuration file for the `msmtp` SMTP client. This is one of two parts which will allow email notifications to be sent automatically via cron jobs and privileged scripts.
 
 ### Prerequisites
 Before configuring `msmtp`, please install the following:
@@ -38,17 +40,16 @@ First, fill in the config file:
   - `<email_password>` - the password for `<email_username>`
   - `<tls_trust_file>` - path to the TLS certificates file
 
-Then, copy into the proper location + set permissions
+Then, copy into the proper location + set permissions:
 ```sh
 cp ./msmtprc /etc/msmtprc
 chown root:root /etc/msmtprc
 chmod 600 /etc/msmtprc
 ```
 
+
 2. Automated setup using [`email-setup.sh`](email-setup.sh)
 
-This script will prompt you for your SMTP URL, email, and password.
-Once provided, it will copy the config file so that it's visible to MSMTP, fill in your details, and set proper permissions.
 
 
 
@@ -56,10 +57,10 @@ Once provided, it will copy the config file so that it's visible to MSMTP, fill 
 [`muttrc`](muttrc)
 
 This is a configuration file for the `mutt` email client.
-This is one part of what will allow email notifications to be sent automatically via cron jobs and privileged scripts.
+This is one of parts which will allow email notifications to be sent automatically via cron jobs and privileged scripts.
 
 ### Prerequisites
-Before configuring `mutt`, please install `mutt` and follow above instructions to set up `msmtp`.
+Before configuring `mutt`, please install `mutt` and configure the [MSMTP SMTP Client](#MSMTP-SMTP-Client) as described above.
 
 ### Use
 Two options are available for setup:
@@ -75,7 +76,24 @@ Then, copy into the proper location
 cp ./muttrc /root/.muttrc
 ```
 
+
 2. Automated setup using [`email-setup.sh`](email-setup.sh)
 
-This script will prompt you for your SMTP URL, email, and password.
-Once provided, it will copy the config file so that it's visible to Mutt and fill in your details.
+
+
+
+## Automated Email Setup Script
+[`email-setup.sh`](email-setup.sh)
+
+This is a system-agnostic script which installs and configures email on the local machine.
+This is a two-part system - `msmtp` as an SMTP client, and `mutt` as an email client.
+It will first install both packages and all required dependencies.
+Then, it will prompt the user for their SMTP URL, email, and password.
+With this information, both `msmtp` and `mutt` will be configured based on the sample configuration files [`msmtprc`](msmtprc) and [`muttrc`](muttrc).
+
+
+### Use
+Call this script from the command line:
+```sh
+./email-setup.sh
+```

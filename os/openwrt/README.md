@@ -1,6 +1,6 @@
 # OpenWRT Services
 
-Custom scripts, services, and configuration files for a Linux-based OpenWRT distribution.
+Custom scripts, services, and configuration files for a machine running the Linux-based OpenWRT distribution.
 
 
 
@@ -16,11 +16,11 @@ Custom scripts, services, and configuration files for a Linux-based OpenWRT dist
 ## OpenWRT Fresh Install Setup
 [`openwrt-env-setup.sh`](openwrt-env-setup.sh)
 
-Most settings will be restored from an OpenWRT backup.
+When updating OpenWRT, most settings are restored, but some are wiped.
 This script completes a fresh install by modifying system settings which are not restored via OpenWRT backup restore.
 
 ### Use
-Simply call this script from the command line:
+Call this script from the command line:
 ```sh
 ./openwrt-env-setup.sh
 ```

@@ -186,8 +186,8 @@ function b2_unmount()
 CMD="${1}"
 
 if ! [[ -n "${CMD}" ]]; then
-  echo "Usage: mount-b2 mount [bucket] [mount_dir]"
-  echo "       mount-b2 unmount [mount_dir]"
+  echo "Usage: b2-mount.sh mount [bucket] [mount_dir]"
+  echo "       b2-mount.sh unmount [mount_dir]"
   exit 1
 fi
 
@@ -199,7 +199,7 @@ elif [[ "${CMD}" == "unmount" ]] || [[ "${CMD}" == "umount" ]]; then
   MOUNT_DIR="${2}"
   b2_unmount "${MOUNT_DIR}"
 else
-  echo "Usage: mount-b2 mount [remote_bucket] [mount_dir]"
-  echo "       mount-b2 unmount [mount_dir]"
+  echo "Usage: b2-mount.sh mount [remote_bucket] [mount_dir]"
+  echo "       b2-mount.sh unmount [mount_dir]"
   exit 1
 fi
