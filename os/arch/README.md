@@ -80,7 +80,7 @@ These packages include, but are not limited to:
 
 I highly recommend automating the mirroring of your EFI boot partitions to minimize the amount of time your EFI boot partitions will be out of sync.
 If you have a drive failure, and the surviving disk's EFI partition is out of date, you will almost certainly run into undefined behavior due to kernel mismatching issues.
-Personally, I have an [`update`](../../bin/update) script that does a variety of things to update and clean my system.
+Personally, I have an [`system-update.sh`](../../system/system-update.sh) script that does a variety of things to update and clean my system.
 At the very end of this script, I call this script to mirror the EFI boot partitions.
 This means that the script is called whether the EFI boot partition data is updated or not, it's better to be safe.
 

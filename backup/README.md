@@ -35,7 +35,6 @@ This is a single device on my network that stores backups for my entire network.
 
 # Table of Contents
 
-- [Prerequisites and Use](#Prerequisites-and-Use)
 - [Backblaze Remote Backup](#Backblaze-Remote-Backup)
   - [Prerequisites](#Prerequisites)
   - [Use](#Use)
@@ -81,7 +80,7 @@ Think of this as fulfilling the "1" in "3-2-1 backup system".
 ### Prerequisites
 - Backblaze CLI package is installed
 - Variables for this script are filled out in [`.env`](sample.env) file
-- The Backblaze CLI package has an authorized Backblaze account under the root user named `backblaze`
+- You have set up and authorized an rclone remote to some Backblaze account
 - `msmtp` and `mutt` packages are installed and configured under the root user
 
 ### Use
@@ -115,7 +114,7 @@ All of the save data, configuration data, game downloads, and more are saved in 
 This script is responsible for backing up this `/userdata` directory.
 It is likely that the console will be shut off, so this script is responsible for first powering the console on, backing up the target directory, then powering it off.
 
-Batocera is an immutable distribution, so this script cannot be run locally.
+Batocera is an immutable distribution, so this script is not meant to be run on the machine running Batocera itself.
 Instead, this should be run and scheduled on the central backup server.
 
 ### Prerequisites
@@ -134,6 +133,11 @@ Unless excluded with the `MAIN_BACKUPS_EXCLUDE_REGEX` variable in [`.env`](sampl
 [`common.sh`](common.sh)
 
 This script functions as a common library for all other backup scripts - it should **NEVER** be run from the command line.
+
+It is responsible for:
+1. Redirecting stdout/stderr to `/var/log/`
+2. Creating and sending backup notification emails
+3. Backing up data to Borg repositories
 
 ### Use
 To use from another script, please do the following:
@@ -157,7 +161,7 @@ Now, all of the functions declared in `common.sh` will be available for use.
 [`critical-data.sh`](critical-data.sh)
 
 This script compiles all of the most critical data that I own - data that I would need to restore my data in absolute worst-case scenarios, including:
-- Mobile 2FA Authenticator Backup (already present in `CRITICAL_DATA_LOCAL_BACKUP_DIR`)
+- Mobile 2FA Authenticator Backup (already present in `CRITICAL_DATA_LOCAL_BACKUP_DIR` in [`.env`](sample.env))
 - Bitwarden Password Manager Backup (backed up when this script is run)
 - Encrypted file including critical passwords and 2FA recovery codes (already present in `CRITICAL_DATA_LOCAL_BACKUP_DIR`)
 
@@ -270,7 +274,7 @@ This script backs up the current OPNSense and AdGuard configurations.
 On your OPNSense router, this script should be set up as an OPNSense action, which is essentially a cron job.
 OPNSense actions are used because OPNSense may overwrite cron jobs manually defined using `crontab`.
 
-To set up an action which runs this script, please refer to the [OPNSense system services directory](../os/services/opnsense).
+To set up an action which runs this script, please refer to the [OPNSense system services directory](../os/opnsense).
 
 
 
