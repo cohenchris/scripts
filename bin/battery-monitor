@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+
+
+BATTERY_CHARGING_STATUS_CACHE="${XDG_CACHE_HOME}/battery-status"
+WATCH_INTERVAL_S=15
+FULL_PERCENTAGE=80
+NOTICE_PERCENTAGE=40
+WARNING_PERCENTAGE=25
+DANGER_PERCENTAGE=10
+
+function check_for_battery()
+{
+  upower -e | grep BAT > /dev/null 2>&1
+  if [[ $? -ne 0 ]]; then
+    echo "No battery to monitor. Exiting..."
+    exit 0
+  fi
+}
+
+
+
+function get_battery_percentage()
+{
+  upower -i $(upower -e | grep BAT) | awk '/percentage/ {gsub(/%/,"",$2); print $2}'
+}
+
+function get_current_battery_charging_status()
+{
+  local current_status=$(upower -i $(upower -e | grep BAT) | awk '/state/ {print $2}')
+  echo "${current_status}" > "${BATTERY_CHARGING_STATUS_CACHE}"
+  echo "${current_status}"
+}
+
+function get_last_battery_charging_status()
+{
+  cat "${BATTERY_CHARGING_STATUS_CACHE}"
+}
+
+function battery_full()
+{
+  notify FULL "󰁹 Battery Full!" "Battery Level: ${FULL_PERCENTAGE}%"
+}
+
+function battery_notice()
+{
+  notify NOTICE "NOTICE" "󰁽 Battery Level: ${NOTICE_PERCENTAGE}%"
+}
+
+function battery_warning()
+{
+  notify WARNING "󰁼 WARNING" "Battery Level: ${WARNING_PERCENTAGE}%"
+}
+
+function battery_danger()
+{
+  notify CRITICAL "󱃍 DANGER" "Battery Critically Low!"
+}
+
+function battery_discharging()
+{
+  notify GOOD "󰂄 Battery Charging!"
+}
+
+function battery_charging()
+{
+  notify NOTICE "󱟞 Battery Discharging..."
+}
+
+
+
+
+
+check_for_battery
+
+
+while true; do
+  PERCENTAGE=$(get_battery_percentage)
+  LAST_STATUS=$(get_last_battery_charging_status)
+  CURRENT_STATUS=$(get_current_battery_charging_status)
+
+  # Battery percentage
+  if [[ ${PERCENTAGE} -le ${DANGER_PERCENTAGE} ]]; then
+    battery_danger
+  elif [[ ${PERCENTAGE} -le ${WARNING_PERCENTAGE} ]]; then
+    battery_warning
+  elif [[ ${PERCENTAGE} -le ${NOTICE_PERCENTAGE} ]]; then
+    battery_notice
+  elif [[ ${PERCENTAGE} -ge ${FULL_PERCENTAGE} ]]; then
+    battery_full
+  fi
+
+  # Battery charging state
+  if [[ "${CURRENT_STATUS}" = "discharging" && "${LAST_STATUS}" = "charging" ]]; then
+    battery_charging
+  elif [[ "${CURRENT_STATUS}" = "charging" && "${LAST_STATUS}" = "discharging" ]]; then
+    battery_discharging
+  fi
+
+  # Sleep until next watch interval
+  sleep ${WATCH_INTERVAL_S}
+done
+

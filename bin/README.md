@@ -27,6 +27,7 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 - [Unicode Character Selection Menu](#Unicode-Character-Selection-Menu)
 - [Hyprlock Reload](#Hyprlock-Reload)
 - [Copy to Clipboard](#Copy-to-Clipboard)
+- [Battery Monitor](#Battery-Monitor)
 
 
 
@@ -234,3 +235,9 @@ If the user provides a single filename as a `command`, this script will automati
 
 
 
+## Battery Monitor
+[`battery-monitor`](battery-monitor)
+
+This script monitors the battery percentage and charging state at a set interval.
+It will send notifications when the battery starts charging or discharging, as well as when it reaches certain percentage thresholds.
+It will also immediately exit if there is no battery found.
