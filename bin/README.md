@@ -238,6 +238,6 @@ If the user provides a single filename as a `command`, this script will automati
 ## Battery Monitor
 [`battery-monitor`](battery-monitor)
 
-This script monitors the battery percentage and charging state at a set interval.
+This script monitors the battery percentage and charging state when the relevant `/sys/class/power_supply` files are modified.
 It will send notifications when the battery starts charging or discharging, as well as when it reaches certain percentage thresholds.
 It will also immediately exit if there is no battery found.

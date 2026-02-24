@@ -1,29 +1,104 @@
 #!/usr/bin/env bash
 
-
+# File path where the cached battery percentage and charging status values will be stored
 BATTERY_CHARGING_STATUS_CACHE="${XDG_CACHE_HOME}/battery-status"
-WATCH_INTERVAL_S=15
+BATTERY_PERCENTAGE_CATEGORY_CACHE="${XDG_CACHE_HOME}/battery-percentage-category"
+
+# Battery percentage alert thresholds
 FULL_PERCENTAGE=80
 NOTICE_PERCENTAGE=40
 WARNING_PERCENTAGE=25
 DANGER_PERCENTAGE=10
 
-function check_for_battery()
+# Battery information populated by initialize_battery_info()
+BATTERY_PERCENTAGE_FILE=""
+BATTERY_CHARGE_STATUS_FILE=""
+
+
+
+
+
+# Initialize all battery-related items.
+# If no battery is present, script will immediately exit.
+function initialize_battery_info()
 {
+  # Check for the existence of a battery
   upower -e | grep BAT > /dev/null 2>&1
   if [[ $? -ne 0 ]]; then
     echo "No battery to monitor. Exiting..."
     exit 0
   fi
+
+  # Populate global battery information
+  local battery_path=$(upower -i $(upower -e | grep BAT) | awk '/native-path/ {print $2}')
+  BATTERY_PERCENTAGE_FILE="/sys/class/power_supply/${battery_path}/capacity"
+  BATTERY_CHARGE_STATUS_FILE="/sys/class/power_supply/${battery_path}/status"
+
+  # Clean previous cache
+  rm "${BATTERY_CHARGING_STATUS_CACHE}"
+  rm "${BATTERY_PERCENTAGE_CATEGORY_CACHE}"
+
+  # Re-populate cache
+  monitor_battery_percentage
+  get_current_battery_charging_status > /dev/null
 }
 
 
 
-function get_battery_percentage()
+
+
+# Retrieve the current battery charging percentage from upower.
+function get_current_battery_percentage()
 {
   upower -i $(upower -e | grep BAT) | awk '/percentage/ {gsub(/%/,"",$2); print $2}'
 }
 
+# Retrieve the last known battery percentage category from the cache file.
+function get_last_battery_percentage_category()
+{
+  [[ -f "${BATTERY_PERCENTAGE_CATEGORY_CACHE}" ]] && cat "${BATTERY_PERCENTAGE_CATEGORY_CACHE}"
+}
+
+# Print a category based on how much charge the battery holds.
+# Cache the information in ${XDG_CACHE_DIR}.
+function get_battery_percentage_category()
+{
+  local -i percentage=$1
+  local category="none"
+
+  if (( ${percentage} <= ${DANGER_PERCENTAGE} )); then
+    category="danger"
+  elif (( ${percentage} <= ${WARNING_PERCENTAGE} )); then
+    category="warning"
+  elif (( ${percentage} <= ${NOTICE_PERCENTAGE} )); then
+    category="notice"
+  elif (( ${percentage} >= ${FULL_PERCENTAGE} )); then
+    category="full"
+  fi
+
+  echo "${category}" > "${BATTERY_PERCENTAGE_CATEGORY_CACHE}"
+  echo "${category}"
+}
+
+function monitor_battery_percentage()
+{
+  # Battery percentage
+  LAST_PERCENTAGE_CATEGORY=$(get_last_battery_percentage_category)
+  CURRENT_PERCENTAGE=$(get_current_battery_percentage)
+  CURRENT_PERCENTAGE_CATEGORY=$(get_battery_percentage_category ${CURRENT_PERCENTAGE})
+
+  if [[ "${LAST_PERCENTAGE_CATEGORY}" != "${CURRENT_PERCENTAGE_CATEGORY}" ]]; then
+    # Only notify when percentage category has changed
+    battery_"${CURRENT_PERCENTAGE_CATEGORY}"
+  fi
+}
+
+
+
+
+
+# Retrieve the current battery charging status from upower.
+# Cache the information in ${XDG_CACHE_DIR}.
 function get_current_battery_charging_status()
 {
   local current_status=$(upower -i $(upower -e | grep BAT) | awk '/state/ {print $2}')
@@ -31,72 +106,72 @@ function get_current_battery_charging_status()
   echo "${current_status}"
 }
 
+# Retrieve the last known battery charging status from the cache file.
 function get_last_battery_charging_status()
 {
-  cat "${BATTERY_CHARGING_STATUS_CACHE}"
+  [[ -f "${BATTERY_CHARGING_STATUS_CACHE}" ]] && cat "${BATTERY_CHARGING_STATUS_CACHE}"
 }
 
+# Notify the user that the battery is fully charged.
 function battery_full()
 {
-  notify FULL "󰁹 Battery Full!" "Battery Level: ${FULL_PERCENTAGE}%"
+  notify FULL "󰁹 Battery Full!"
 }
 
+# Notify the user with a mild battery level warning.
 function battery_notice()
 {
-  notify NOTICE "NOTICE" "󰁽 Battery Level: ${NOTICE_PERCENTAGE}%"
+  notify NOTICE "NOTICE" "󰁽 Battery Level: $(get_current_battery_percentage)%"
 }
 
+# Notify the user with a strong battery level warning.
 function battery_warning()
 {
-  notify WARNING "󰁼 WARNING" "Battery Level: ${WARNING_PERCENTAGE}%"
+  notify WARNING "󰁼 WARNING" "Battery Level: $(get_current_battery_percentage)%"
 }
 
+# Notify the user that the battery is CRITICALLY low.
 function battery_danger()
 {
-  notify CRITICAL "󱃍 DANGER" "Battery Critically Low!"
+  notify CRITICAL "󱃍 DANGER" "Battery Level: $(get_current_battery_percentage)%"
 }
 
+# Notify the user that the battery is discharging.
 function battery_discharging()
 {
-  notify GOOD "󰂄 Battery Charging!"
+  notify NORMAL "󰂄 Battery Charging!"
 }
 
+# Notify the user that the battery is charging.
 function battery_charging()
 {
-  notify NOTICE "󱟞 Battery Discharging..."
+  notify NORMAL "󱟞 Battery Discharging..."
+}
+
+function monitor_charging_status()
+{
+  # Battery charging status
+  LAST_CHARGING_STATUS=$(get_last_battery_charging_status)
+  CURRENT_CHARGING_STATUS=$(get_current_battery_charging_status)
+
+  if [[ "${CURRENT_CHARGING_STATUS}" = "discharging" && "${LAST_CHARGING_STATUS}" = "charging" ]]; then
+    # Battery status went from discharging to charging
+    battery_charging
+  elif [[ "${CURRENT_CHARGING_STATUS}" = "charging" && "${LAST_CHARGING_STATUS}" = "discharging" ]]; then
+    # Battery status has gone from charging to discharging
+    battery_discharging
+  fi
 }
 
 
 
 
 
-check_for_battery
+# Initialize global battery information
+initialize_battery_info
 
-
-while true; do
-  PERCENTAGE=$(get_battery_percentage)
-  LAST_STATUS=$(get_last_battery_charging_status)
-  CURRENT_STATUS=$(get_current_battery_charging_status)
-
-  # Battery percentage
-  if [[ ${PERCENTAGE} -le ${DANGER_PERCENTAGE} ]]; then
-    battery_danger
-  elif [[ ${PERCENTAGE} -le ${WARNING_PERCENTAGE} ]]; then
-    battery_warning
-  elif [[ ${PERCENTAGE} -le ${NOTICE_PERCENTAGE} ]]; then
-    battery_notice
-  elif [[ ${PERCENTAGE} -ge ${FULL_PERCENTAGE} ]]; then
-    battery_full
-  fi
-
-  # Battery charging state
-  if [[ "${CURRENT_STATUS}" = "discharging" && "${LAST_STATUS}" = "charging" ]]; then
-    battery_charging
-  elif [[ "${CURRENT_STATUS}" = "charging" && "${LAST_STATUS}" = "discharging" ]]; then
-    battery_discharging
-  fi
-
-  # Sleep until next watch interval
-  sleep ${WATCH_INTERVAL_S}
+# Watch battery percentage and charge status files for changes
+while inotifywait -e modify ${BATTERY_PERCENTAGE_FILE} ${BATTERY_CHARGE_STATUS_FILE}; do
+  monitor_battery_percentage
+  monitor_charging_status
 done
-
