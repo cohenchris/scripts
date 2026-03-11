@@ -136,8 +136,6 @@ function notify_battery_percentage()
 # Watch battery percentage source file for changes
 function watch_battery_percentage()
 {
-  notify_battery_percentage
-
   while true; do
     notify_battery_percentage
     sleep 1
@@ -178,7 +176,6 @@ function notify_battery_charging_status()
   # Battery charging status
   local last_charging_status=$(get_last_battery_charging_status)
   local current_charging_status=$(get_current_battery_charging_status)
-
 
   if [[ "${current_charging_status}" = "Discharging" && "${last_charging_status}" != "Discharging" ]]; then
     notify NORMAL "󱟞 Battery Discharging..."
