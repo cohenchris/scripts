@@ -9,9 +9,6 @@ set -u
 
 ########## DEFINES ##########
 #############################
-# Your username on the target OS
-MAIN_USER=""
-
 # Hardcode boot drives EFI partitions here in the form /dev/sdX or /dev/nvmeXnXpX
 # If you only have one drive, leave the second define blank
 # *_EFI is for the EFI boot partition path
@@ -61,7 +58,7 @@ mount_zroot_pool
 
 # 2. Chroot into /mnt and re-install kernel
 echo "Re-installing linux-lts and mkinitcpio..."
-arch-chroot /mnt sudo -u "${MAIN_USER}" pacman -Syu --noconfirm linux-lts mkinitcpio
+arch-chroot /mnt sudo pacman -Syu --noconfirm linux-lts mkinitcpio
 
 # 3. Unmount everything and export ZFS pools
 umount_zroot_pool
