@@ -410,7 +410,7 @@ function post_chroot_setup() {
   # Install ZFS and YADM
   echo
   echo "Installing and enabling ZFS utilities and services + YADM dotfiles manager..."
-  sudo -u ${USERNAME} paru -Syu --noconfirm yadm zfs-dkms zfs-utils
+  sudo -u ${USERNAME} paru -Syu --noconfirm yadm zfs-linux-lts zfs-utils
   sudo systemctl enable zfs.target \
                         zfs-import.target \
                         zfs-volumes.target \

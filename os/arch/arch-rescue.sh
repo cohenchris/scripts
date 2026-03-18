@@ -16,7 +16,7 @@ ZPOOL_DISK_1_EFI=""
 ZPOOL_DISK_2_EFI=""
 
 
-if [ -z "${MAIN_USER}" ] || [ -z "${ZPOOL_DISK_1_EFI}" ]; then
+if [ -z "${ZPOOL_DISK_1_EFI}" ]; then
   echo "ERROR! Please set all variables before running this script"
   exit 1
 fi
@@ -58,7 +58,7 @@ mount_zroot_pool
 
 # 2. Chroot into /mnt and re-install kernel
 echo "Re-installing linux-lts and mkinitcpio..."
-arch-chroot /mnt sudo pacman -Syu --noconfirm linux-lts mkinitcpio
+arch-chroot /mnt sudo pacman -Syu --noconfirm linux-lts mkinitcpio zfs-linux-lts zfs-utils
 
 # 3. Unmount everything and export ZFS pools
 umount_zroot_pool
