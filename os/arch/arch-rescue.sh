@@ -58,7 +58,7 @@ mount_zroot_pool
 
 # 2. Chroot into /mnt and re-install kernel
 echo "Re-installing linux-lts and mkinitcpio..."
-arch-chroot /mnt sudo pacman -Syu --noconfirm linux-lts mkinitcpio zfs-linux-lts zfs-utils
+arch-chroot /mnt sudo pacman -Syu --noconfirm linux-lts mkinitcpio zfs-linux-lts zfs-linux-lts-headers zfs-utils
 
 # 3. Unmount everything and export ZFS pools
 umount_zroot_pool
