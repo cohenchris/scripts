@@ -52,23 +52,43 @@ function umount_zroot_pool()
   rm -r /mnt/boot
 }
 
+function clone_efi()
+{
+  # Use dd to clone the first EFI boot partition to the second EFI boot partition
+  echo "Cloning mirrored EFI boot partitions..."
+  if [ -z "${ZPOOL_DISK_2_EFI}" ]; then
+    echo "No second disk specified for the pool zroot, skipping..."
+  else
+    dd if="${ZPOOL_DISK_1_EFI}" of="${ZPOOL_DISK_2_EFI}" status=progress
+  fi
+}
 
-# 1. Mount the ZFS pools and the first EFI boot partition
-mount_zroot_pool
+function update_packages()
+{
+  # Chroot into /mnt and re-install kernel
+  echo "Re-installing linux-lts, mkinitcpio, and zfs-linux..."
+  arch-chroot /mnt sudo pacman -Syu --noconfirm linux-lts mkinitcpio zfs-linux-lts zfs-linux-lts-headers zfs-utils
+}
 
-# 2. Chroot into /mnt and re-install kernel
-echo "Re-installing linux-lts and mkinitcpio..."
-arch-chroot /mnt sudo pacman -Syu --noconfirm linux-lts mkinitcpio zfs-linux-lts zfs-linux-lts-headers zfs-utils
+# Script is being executed directly (not sourced)
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  # 1. Mount the ZFS pools and the first EFI boot partition
+  mount_zroot_pool
 
-# 3. Unmount everything and export ZFS pools
-umount_zroot_pool
+  # 2. Chroot into /mnt and re-install kernel
+  update_packages
 
-# 4. Use dd to clone the first EFI boot partition to the second EFI boot partition
-echo "Cloning mirrored EFI boot partitions..."
-if [ -z "${ZPOOL_DISK_2_EFI}" ]; then
-  echo "No second disk specified for the pool zroot, skipping..."
-else
-  dd if="${ZPOOL_DISK_1_EFI}" of="${ZPOOL_DISK_2_EFI}" status=progress
+  if [[ $? -ne 0 ]]; then
+    echo "Package update failed, exiting..."
+    exit 1
+  fi
+
+  # 3. Unmount everything and export ZFS pools
+  umount_zroot_pool
+
+  # 4. Use dd to clone the first EFI boot partition to the second EFI boot partition
+  clone_efi
+
+  echo "Done!"
 fi
 
-echo "Done!"
