@@ -12,11 +12,11 @@ BATTERY_PERCENTAGE_SOURCE=""
 BATTERY_CHARGING_STATUS_SOURCE=""
 
 # Cache for the last known battery information
-BATTERY_CHARGING_STATUS_CACHE="${XDG_CACHE_HOME}/battery-status"
-BATTERY_PERCENTAGE_CATEGORY_CACHE="${XDG_CACHE_HOME}/battery-percentage-category"
+BATTERY_CHARGING_STATUS_CACHE="${XDG_CACHE_HOME:-${HOME}/.local/cache}/battery-status"
+BATTERY_PERCENTAGE_CATEGORY_CACHE="${XDG_CACHE_HOME:-${HOME}/.local/cache}/battery-percentage-category"
 
 # Temporary file to store PIDs of running forks
-PIDFILE="${XDG_CACHE_HOME}/battery-monitor-pids"
+PIDFILE="${XDG_CACHE_HOME:-${HOME}/.local/cache}/battery-monitor-pids"
 
 
 ########## INITIALIZATION ##########
