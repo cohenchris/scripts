@@ -27,6 +27,8 @@ ARCH_ENV_SETUP_DIR=$(dirname "$(realpath "$0")")/arch-env-setup
 echo "Installing Glance webserver service..."
 sudo -u "${USERNAME}" paru -Sy --noconfirm glances python-fastapi uvicorn python-jinja-time hddtemp python-docker python-matplotlib python-netifaces2
 cp "${ARCH_ENV_SETUP_DIR}"/glances.service /etc/systemd/system
+# Disable network sensors in glances.conf
+sudo sed -i '/^\[network\]/,/^disable=/ s/^disable=False/disable=True/' /etc/glances/glances.conf
 
 
 # Install network UPS tools and service

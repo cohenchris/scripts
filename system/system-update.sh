@@ -66,12 +66,12 @@ function update_openwrt()
 function update_opnsense()
 {
   # Update base system
-  sudo opnsense-update
+  opnsense-update
 
   # Update plugins/packages
-  sudo opnsense-update -p
-  sudo pkg update
-  sudo pkg upgrade
+  opnsense-update -p
+  pkg update
+  pkg upgrade
 }
 
 
@@ -84,7 +84,7 @@ if command -v apt &> /dev/null; then
 elif command -v apk &> /dev/null; then
   update_openwrt
 
-# Arch Linux Lab
+# Arch Linux
 elif command -v pacman &> /dev/null; then
   update_arch
 
