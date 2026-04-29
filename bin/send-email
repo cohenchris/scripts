@@ -5,22 +5,34 @@ set -e
 
 # Send an email
 #
-# send-email [ADDRESS] [SUBJECT] [ATTACHMENT?]
-#   ADDRESS     - destination email address
-#   SUBJECT     - subject of outgoing email
-#   ATTACHMENT? - path to log file which will be sent as an attachment (optional)
+# send-email -e ADDRESS -s SUBJECT [-f ATTACHMENT] [-r EXIT_CODE]
+#   -e ADDRESS    - destination email address
+#   -s SUBJECT    - subject of outgoing email
+#   -f ATTACHMENT - path to log file which will be sent as an attachment (optional)
+#   -r EXIT_CODE  - if provided, prepends SUBJECT with "SUCCESS - " or "ERROR - " (optional)
 # The email body is read from stdin
 #
 # Example command:
-#   echo "This is the body of an email" | send-email "test@example.com" "Email SUBJECT" /path/to/attachment
+#   echo "body" | send-email -e "test@example.com" -s "Email SUBJECT" -f /path/to/attachment -r 0
 
 # Number of times to attempt sending
 MAX_MAIL_ATTEMPTS=50
 
 # Parse arguments
-ADDRESS="${1}"
-SUBJECT="${2}"
-ATTACHMENT="${3}"
+while getopts "e:s:f:r:" opt; do
+  case $opt in
+    e) ADDRESS="${OPTARG}" ;;
+    s) SUBJECT="${OPTARG}" ;;
+    f) ATTACHMENT="${OPTARG}" ;;
+    r) RETURN_CODE="${OPTARG}" ;;
+    *) echo "Usage: send-email -e ADDRESS -s SUBJECT [-f ATTACHMENT] [-r EXIT_CODE]"; exit 1 ;;
+  esac
+done
+
+# Prepend subject with SUCCESS/ERROR if return code is provided
+if [ -n "${RETURN_CODE}" ]; then
+  [ "${RETURN_CODE}" -eq 0 ] && SUBJECT="SUCCESS - ${SUBJECT}" || SUBJECT="ERROR - ${SUBJECT}"
+fi
 
 # Read in body from piped in data and write to a temp file
 BODY=$(cat)
