@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+STATUS_CODE="$1"
+MESSAGE="$2"
+
+# If STATUS_CODE is negative, print MESSAGE to stderr and exit
+if [[ "${STATUS_CODE}" -ne 0 ]]; then
+  echo "${MESSAGE}" >&2
+  exit 1
+fi

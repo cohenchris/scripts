@@ -28,6 +28,7 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 - [Hyprlock Reload](#Hyprlock-Reload)
 - [Copy to Clipboard](#Copy-to-Clipboard)
 - [Battery Monitor](#Battery-Monitor)
+- [Check Bail](#Check-Bail)
 
 
 
@@ -47,12 +48,12 @@ if TYPE == "dir"    - interpret *THING* as a directory path, check that the dire
 
 
 ## Send Email
-[`send-email [ADDRESS] [SUBJECT] [ATTACHMENT?]`](send-email)
+[`send-email -e [EMAIL] -s [SUBJECT] -f [ATTACHMENT?] -r [EXIT_CODE?]`](send-email)
 
 Handy wrapper to send emails from the terminal.
 The body of the email is read from stdin. For example:
 
-`echo "This is the body of an email" | send-email "test@example.com" "Email SUBJECT" /path/to/attachment`
+`echo "body" | send-email -e "test@example.com" -s "Email SUBJECT" -f /path/to/attachment -r 0`
 
 
 
@@ -241,3 +242,11 @@ If the user provides a single filename as a `command`, this script will automati
 This script monitors the battery percentage and charging state when the relevant `/sys/class/power_supply` files are modified.
 It will send notifications when the battery starts charging or discharging, as well as when it reaches certain percentage thresholds.
 It will also immediately exit if there is no battery found.
+
+
+
+
+## Check Bail
+[`check-bail [STATUS_CODE] [MESSAGE]`](check-bail)
+
+This is a simple script that prints MESSAGE to stderr and exits if STATUS_CODE is negative.
