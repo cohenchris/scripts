@@ -212,7 +212,7 @@ if [ "$1" == "test" ]; then
   integrity_test
   exit
 elif [ "$1" == "report" ]; then
-  integrity_report | send-email "${EMAIL}" "Data Integrity Report ${DATE}"
+  integrity_report | send-email -e "${EMAIL}" -s "Data Integrity Report ${DATE}"
 else
   echo "Invalid argument - choose one of [test, report]."
 fi

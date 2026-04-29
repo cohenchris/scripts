@@ -78,7 +78,7 @@ function backup_finish() {
     local subject="${STATUS} - ${BACKUP_TYPE} backup ${DATE}"
   fi
 
-  cat "${MAIL_BODY_FILE}" | send-email "${EMAIL}" "${subject}" "${LOG_FILE}"
+  cat "${MAIL_BODY_FILE}" | send-email -e "${EMAIL}" -s "${subject}" -f "${LOG_FILE}"
 
   # Clean up
   rm "${MAIL_BODY_FILE}"

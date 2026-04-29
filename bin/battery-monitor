@@ -147,11 +147,9 @@ function watch_battery_percentage()
 ########## BATTERY CHARGING STATUS ##########
 
 # Retrieve the current battery charging status from power_supply kernel files.
-# Cache the information in ${XDG_CACHE_DIR}.
 function get_current_battery_charging_status()
 {
   if [[ -f "${BATTERY_CHARGING_STATUS_SOURCE}" ]]; then
-    cat "${BATTERY_CHARGING_STATUS_SOURCE}" > "${BATTERY_CHARGING_STATUS_CACHE}"
     cat "${BATTERY_CHARGING_STATUS_SOURCE}"
   else
     echo "Charging status source file \"${BATTERY_CHARGING_STATUS_SOURCE}\" not found..."
@@ -171,6 +169,7 @@ function get_last_battery_charging_status()
 }
 
 # Notify user if the charging state has changed
+# Cache the current charging status in ${XDG_CACHE_DIR}.
 function notify_battery_charging_status()
 {
   # Battery charging status
@@ -188,6 +187,9 @@ function notify_battery_charging_status()
   elif [[ "${current_charging_status}" = "Unknown" && "${last_charging_status}" != "Unknown" ]]; then
     notify NORMAL "󰂑 Battery state unknown..."
   fi
+
+  # Cache new battery charging status
+  echo "${current_charging_status}" > "${BATTERY_CHARGING_STATUS_CACHE}"
 }
 
 # Watch battery charging status source file for changes
