@@ -18,6 +18,12 @@ require var "${SERVER_BACKUP_KEEP_DAILY}" || exit 1
 require var "${SERVER_BACKUP_KEEP_WEEKLY}" || exit 1
 require var "${SERVER_BACKUP_KEEP_MONTHLY}" || exit 1
 
+# Send Minecraft shutdown warning message
+mail_log plain "Sending Minecraft shutdown warning message..."
+"${SERVER_DIR}/misc/scripts/minecraft-broadcast.sh" "Shutting down for daily maintenance in 1 minute, will be back shortly!"
+mail_log check "Minecraft Shutdown $?"
+sleep 60
+
 # Stop all Plex playback sessions with an informational message
 mail_log plain "Stopping Plex to prevent conflicts with server files..."
 "${SERVER_DIR}/media/scripts/plex-server-maintenance-broadcast.py"
