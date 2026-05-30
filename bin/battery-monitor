@@ -31,7 +31,7 @@ function initialize_battery_info()
   upower -e | grep BAT > /dev/null 2>&1
   if [[ $? -ne 0 ]]; then
     echo "No battery to monitor. Exiting..."
-    exit 0
+    exit 1
   fi
 
   # Kill off any stray processes of battery-monitor
