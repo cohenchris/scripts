@@ -11,6 +11,7 @@ OS-specific system configuration scripts which are mostly intended to be used on
 - [OPNSense](#OPNSense)
 - [OpenWRT](#OpenWRT)
 - [Email](#Email)
+- [ZFS Data Pool Disaster Recovery](#ZFS-Data-Pool-Disaster-Recovery)
 
 
 
@@ -44,3 +45,11 @@ Custom scripts, services, and configuration files for a machine running the Linu
 [`email/`](email/)
 
 Install and configure outbound email on the host machine, typically used for cron notifications.
+
+
+
+
+## ZFS Data Pool Disaster Recovery
+[`zfs/`](zfs/)
+
+Scripts to recreate a ZFS data pool from nothing, or to replace a single still-working drive in one. Covers data pools only (not the system/root ZFS pool, which is covered by the [Arch Linux](#Arch-Linux) and [OPNSense](#OPNSense) scripts above).
