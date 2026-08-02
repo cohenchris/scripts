@@ -159,8 +159,8 @@ ASHIFT=12
 
 # Ownership to restore on the pool's mountpoint after creation. GID 1000 has
 # no matching group name on this host (docker PUID/PGID convention) - keep it
-# numeric.
-OWNER="phrog"
+# numeric. OWNER is prompted for at runtime in recreate_from_nothing() rather
+# than hardcoded here.
 GROUP="1000"
 
 ########################
@@ -201,6 +201,13 @@ function recreate_from_nothing()
       echo "ERROR: pool '${POOL_NAME}' already exists - destroy it first if this is really what you want"
       return 1
     fi
+  fi
+
+  local OWNER
+  read -p "Enter the username to own '${MOUNTPOINT}': " OWNER
+  if [[ -z "${OWNER}" ]]; then
+    echo "ERROR: owner username cannot be empty"
+    return 1
   fi
 
   local device1 device2

@@ -8,7 +8,7 @@ fi
 
 # Prepare global variables
 WALLPAPER_DIR="${XDG_DATA_HOME:-${HOME}/.local/share}/wallpapers"
-MONITOR=$(hyprctl monitors | grep "Monitor" | awk '{print $2}')
+MONITORS=($(hyprctl monitors | grep "Monitor" | awk '{print $2}'))
 
 if [ ! -d "${WALLPAPER_DIR}" ]; then
   notify CRITICAL "  ERROR" "Wallpapers directory not found at ${WALLPAPER_DIR}"
@@ -38,8 +38,10 @@ function display_wallpaper()
   # Keep track of active selected_wallpaper
   ln -sf "${selected_wallpaper}" "${XDG_CACHE_HOME:-${HOME}/.local/cache}/active-wallpaper.jpg"
 
-  # Display selected_wallpaper
-  hyprctl hyprpaper wallpaper "${MONITOR},${selected_wallpaper}"
+  # Display selected_wallpaper on every monitor
+  for monitor in "${MONITORS[@]}"; do
+    hyprctl hyprpaper wallpaper "${monitor},${selected_wallpaper}"
+  done
 }
 
 
