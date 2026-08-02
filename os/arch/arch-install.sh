@@ -218,6 +218,7 @@ fi
                -O normalization=formD \
                -O mountpoint=none \
                -O devices=off \
+               -O autoexpand=on \
                -R /mnt \
                ${ZFS_ROOT_DEVICES_STRING}
 
