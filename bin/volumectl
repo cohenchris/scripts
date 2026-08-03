@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+# Volume adjustment step size (percent)
+STEP=5
+
+
+# Invalid number of arguments
+if [[ $# -ne 1 ]]; then
+  echo "Usage: volumectl [up|down|mute]"
+  exit 1
+fi
+
+
+# Raise the volume, showing the SwayOSD volume bar
+function volume_up() {
+  swayosd-client --output-volume "+${STEP}"
+}
+
+# Lower the volume, showing the SwayOSD volume bar
+function volume_down() {
+  swayosd-client --output-volume "-${STEP}"
+}
+
+# Toggle mute, showing the SwayOSD volume bar
+function volume_mute() {
+  swayosd-client --output-volume mute-toggle
+}
+
+
+# Handle command
+cmd="$1"
+
+if [[ "${cmd}" == "up" ]]; then
+  volume_up
+
+elif [[ "${cmd}" == "down" ]]; then
+  volume_down
+
+elif [[ "${cmd}" == "mute" ]]; then
+  volume_mute
+
+else
+  # Invalid command
+  echo "Usage: volumectl [up|down|mute]"
+  exit 1
+fi

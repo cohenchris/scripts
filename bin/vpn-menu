@@ -1,22 +1,59 @@
 #!/usr/bin/env bash
 
-# Configure the program to execute when sudo requires password entry
-WORKING_DIR=$(dirname "$(realpath "$0")")
-export SUDO_ASKPASS="${WORKING_DIR}/fuzzel-askpass"
-
 VPN_CONFIGS_LOCATION="${XDG_CONFIG_HOME:-${HOME}/.config}/wireguard"
+
+# Charm/wifitui-style accent colors
+ACCENT="42"
+GOOD_COLOR="35"
+BAD_COLOR="204"
+
+# Horizontal padding applied to the interactive gum widgets, which have no
+# margin option of their own
+H_PADDING=25
 
 if ! [[ -e "${VPN_CONFIGS_LOCATION}" && -n "$(ls -A "${VPN_CONFIGS_LOCATION}")" ]]; then
   notify CRITICAL "  ERROR" "No VPN configuration files found at \"${VPN_CONFIGS_LOCATION}\""
   exit 1
 fi
 
+function header()
+{
+  gum style --foreground "${ACCENT}" --bold --align center --width "$(tput cols)" "$1"
+}
+
+function status_msg()
+{
+  local color="$1"
+  local text="$2"
+  gum style --foreground "${color}" --bold --align center --width "$(tput cols)" "${text}"
+}
+
+function vpad()
+{
+  local rows
+  rows=$(tput lines)
+  for ((i = 0; i < rows / 4; i++)); do
+    echo
+  done
+}
+
 function connect_vpn()
 {
   # Which VPN server should we connect to?
   notify NORMAL "󰦝  Please select your preferred VPN server"
+  header "󰦝 Select a VPN server"
 
-  serverChoice=$(ls "${VPN_CONFIGS_LOCATION}" | sed 's/\.conf$//' | fuzzel --dmenu -p "Select a VPN server: ")
+  serverChoice=$(
+    ls "${VPN_CONFIGS_LOCATION}" | sed 's/\.conf$//' \
+      | gum filter \
+          --placeholder "Search VPN servers..." \
+          --prompt "❯ " \
+          --indicator "●" \
+          --indicator.foreground "${ACCENT}" \
+          --match.foreground "${ACCENT}" \
+          --padding "0 ${H_PADDING}" \
+          --height 12
+  )
 
   if [[ -z "${serverChoice}" ]]; then
     notify CRITICAL "  ERROR" "Must select a VPN server"
@@ -25,44 +62,50 @@ function connect_vpn()
 
   # Attempt to connect to user choice of VPN server
   notify NORMAL "󰦝  Connecting..." "Attempting to connect to VPN server \"${serverChoice}\""
+  header "Connecting to ${serverChoice}..."
 
-  sudo -A wg-quick up "${VPN_CONFIGS_LOCATION}/${serverChoice}.conf"
+  sudo wg-quick up "${VPN_CONFIGS_LOCATION}/${serverChoice}.conf"
   wgStatus=$?
 
   if [[ "${wgStatus}" -eq 0 ]]; then
     notify GOOD "  Success!" "Connection to VPN server \"${serverChoice}\" succeeded."
+    status_msg "${GOOD_COLOR}" "  Connected to ${serverChoice}"
   else
     notify CRITICAL "  ERROR" "Connection to VPN server \"${serverChoice}\" failed."
+    status_msg "${BAD_COLOR}" "  Failed to connect to ${serverChoice}"
     exit 1
   fi
 }
 
 function disconnect_vpn()
 {
+  header "󰦝 Currently connected to ${CONNECTION_NAME}"
+
   # Are you sure you would like to disconnect from VPN?
-  notify NORMAL "󰦝  Please Confirm" "Are you sure you would like to disconnect from VPN server \"${CONNECTION_NAME}\""
-  yn=$(printf 'Yes\nNo' | fuzzel --dmenu --prompt "Really disconnect from VPN? ")
-
-  case "${yn}" in
-    Yes)
-    ;;
-
-    *)
-      notify CRITICAL "  Aborting VPN disconnection"
-      exit
-    ;;
-  esac
+  if ! gum confirm \
+        --affirmative "Disconnect" \
+        --negative "Cancel" \
+        --prompt.foreground "${ACCENT}" \
+        --selected.background "${ACCENT}" \
+        --padding "0 ${H_PADDING}" \
+        "Disconnect from VPN server \"${CONNECTION_NAME}\"?"; then
+    notify CRITICAL "  Aborting VPN disconnection"
+    exit
+  fi
 
   # Disconnect from VPN
   notify NORMAL "󰦝  Disconnecting..." "Attempting to disconnect from VPN server \"${CONNECTION_NAME}\""
+  header "Disconnecting from ${CONNECTION_NAME}..."
 
-  sudo -A wg-quick down "${VPN_CONFIGS_LOCATION}/${CONNECTION_NAME}.conf"
+  sudo wg-quick down "${VPN_CONFIGS_LOCATION}/${CONNECTION_NAME}.conf"
   wgStatus=$?
 
   if [[ "${wgStatus}" -eq 0 ]]; then
     notify GOOD "  Disconnected!" "Successfully disconnected from VPN server \"${CONNECTION_NAME}\""
+    status_msg "${GOOD_COLOR}" "  Disconnected from ${CONNECTION_NAME}"
   else
     notify CRITICAL "  ERROR" "Failed to disconnect from VPN server \"${CONNECTION_NAME}\""
+    status_msg "${BAD_COLOR}" "  Failed to disconnect from ${CONNECTION_NAME}"
     exit 1
   fi
 }
@@ -83,6 +126,9 @@ do
   fi
 done < <(nmcli connection show)
 
+clear
+vpad
+
 if [[ "${CONNECTION_NAME}" == "" ]]; then
   # If there is no active connection, prompt the user to connect
   connect_vpn
@@ -90,4 +136,3 @@ else
   # If there is an active connection, prompt the user to disconnect
   disconnect_vpn
 fi
-

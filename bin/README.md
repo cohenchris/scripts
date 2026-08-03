@@ -29,6 +29,7 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 - [Copy to Clipboard](#Copy-to-Clipboard)
 - [Battery Monitor](#Battery-Monitor)
 - [Check Bail](#Check-Bail)
+- [Volume Control](#Volume-Control)
 
 
 
@@ -170,8 +171,8 @@ It will also open up a file manager at the location where the screenshot is save
 ## VPN Selection Menu
 [`vpn-menu`](vpn-menu)
 
-Fuzzel-based Wireguard VPN server selection menu.
-Relies on config files present in `${XDG_CONFIG_HOME}/wireguard` to scan for configured VPN server endpoints and presents them in a selectable list.
+Gum-based Wireguard VPN server selection menu.
+Relies on config files present in `${XDG_CONFIG_HOME}/wireguard` to scan for configured VPN server endpoints and presents them in a filterable list.
 The user may then navigate this list using arrow keys or vim directional bindings (h/j/k/l) and select the desired VPN server by pressing Enter.
 
 
@@ -250,3 +251,13 @@ It will also immediately exit if there is no battery found.
 [`check-bail [STATUS_CODE] [MESSAGE]`](check-bail)
 
 This is a simple script that prints MESSAGE to stderr and exits if STATUS_CODE is negative.
+
+
+
+
+## Volume Control
+[`volumectl [up|down|mute]`](volumectl)
+
+SwayOSD-based volume control wrapper.
+`volumectl up` and `volumectl down` adjust the volume by a fixed step (5%), and `volumectl mute` toggles mute.
+Each command displays the SwayOSD volume bar.
