@@ -11,6 +11,21 @@ for file in "$@"; do
   (( num_extraction++ ))
   notify NORMAL "Attempting to extract ${file_displayname}" "Extraction ${num_extraction}/${num_extractions}"
   if [ -f "${file}" ] ; then
+    mime_type=$(file --brief --mime-type "${file}")
+    case "${mime_type}" in
+      application/x-tar|application/x-bzip2|application/gzip|application/x-gzip|\
+      application/x-rar|application/x-rar-compressed|application/zip|\
+      application/x-compress|application/x-7z-compressed|application/zstd|\
+      application/java-archive|application/x-xz)
+        : # recognized archive type, proceed
+      ;;
+
+      *)
+        notify CRITICAL "ERROR" "'${file_displayname}' is not an archive (detected type: ${mime_type}), stopping extraction..."
+        exit 1
+      ;;
+    esac
+
     case "${file}" in
       *.tar.bz2)
         tar xvjf "${file}"
