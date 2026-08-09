@@ -1,0 +1,195 @@
+#!/usr/bin/env bash
+
+# Volume adjustment step size (percent)
+VOLUME_STEP=5
+
+# Brightness adjustment step size (percent)
+BRIGHTNESS_STEP=2
+
+# Night light temperature bounds/step (Kelvin)
+NIGHT_LIGHT_MIN_TEMP=1500
+NIGHT_LIGHT_MAX_TEMP=6000
+NIGHT_LIGHT_DEFAULT_TEMP=2500
+NIGHT_LIGHT_STEP=500
+
+# Where the current night light temperature is remembered between calls
+NIGHT_LIGHT_STATE_DIR="${XDG_CACHE_HOME:-$HOME/.local/cache}/hwctl"
+NIGHT_LIGHT_STATE_FILE="${NIGHT_LIGHT_STATE_DIR}/night-light-temp"
+
+
+function usage() {
+  echo "Usage: hwctl volume [up|down|mute]"
+  echo "       hwctl brightness [up|down]"
+  echo "       hwctl mic [mute]"
+  echo "       hwctl player [prev|play-pause|next|play|pause|stop|shuffle]"
+  echo "       hwctl night-light [up|down|default|reset]"
+  echo "       hwctl rfkill [toggle]"
+  exit 1
+}
+
+
+# Raise the volume, showing the SwayOSD volume bar
+function volume_up() {
+  swayosd-client --output-volume "+${VOLUME_STEP}"
+}
+
+# Lower the volume, showing the SwayOSD volume bar
+function volume_down() {
+  swayosd-client --output-volume "-${VOLUME_STEP}"
+}
+
+# Toggle mute, showing the SwayOSD volume bar
+function volume_mute() {
+  swayosd-client --output-volume mute-toggle
+}
+
+# Raise the brightness, showing the SwayOSD brightness bar
+function brightness_up() {
+  swayosd-client --brightness "+${BRIGHTNESS_STEP}"
+}
+
+# Lower the brightness, showing the SwayOSD brightness bar
+function brightness_down() {
+  swayosd-client --brightness "-${BRIGHTNESS_STEP}"
+}
+
+# Toggle microphone mute, showing the SwayOSD volume bar
+function mic_mute() {
+  swayosd-client --input-volume mute-toggle
+}
+
+# Run a playerctl command, showing the SwayOSD playerctl indicator
+function player_ctl() {
+  swayosd-client --playerctl "$1"
+}
+
+# Read the last-set night light temperature, defaulting to no filter
+function night_light_current_temp() {
+  if [[ -f "${NIGHT_LIGHT_STATE_FILE}" ]]; then
+    cat "${NIGHT_LIGHT_STATE_FILE}"
+  else
+    echo "${NIGHT_LIGHT_MAX_TEMP}"
+  fi
+}
+
+# Apply a night light temperature, remember it, and show a SwayOSD progress bar
+function night_light_set() {
+  local temp="$1"
+
+  if (( temp < NIGHT_LIGHT_MIN_TEMP )); then
+    temp="${NIGHT_LIGHT_MIN_TEMP}"
+  elif (( temp > NIGHT_LIGHT_MAX_TEMP )); then
+    temp="${NIGHT_LIGHT_MAX_TEMP}"
+  fi
+
+  if ! pgrep -x hyprsunset > /dev/null; then
+    hyprsunset &
+    disown
+  fi
+
+  hyprctl hyprsunset temperature "${temp}" > /dev/null
+
+  mkdir -p "${NIGHT_LIGHT_STATE_DIR}"
+  echo "${temp}" > "${NIGHT_LIGHT_STATE_FILE}"
+
+  local level
+  level=$(awk -v c="${temp}" -v mn="${NIGHT_LIGHT_MIN_TEMP}" -v mx="${NIGHT_LIGHT_MAX_TEMP}" \
+    'BEGIN { printf "%.2f", (mx - c) / (mx - mn) }')
+
+  swayosd-client --custom-progress "${level}" --custom-progress-text "${temp}K" --custom-icon "night-light-symbolic"
+}
+
+# Increase night light orange intensity (lower temperature)
+function night_light_up() {
+  night_light_set "$(( $(night_light_current_temp) - NIGHT_LIGHT_STEP ))"
+}
+
+# Decrease night light orange intensity (higher temperature)
+function night_light_down() {
+  night_light_set "$(( $(night_light_current_temp) + NIGHT_LIGHT_STEP ))"
+}
+
+# Preferred default night light temperature
+function night_light_default() {
+  night_light_set "${NIGHT_LIGHT_DEFAULT_TEMP}"
+}
+
+# Remove the night light filter entirely
+function night_light_reset() {
+  night_light_set "${NIGHT_LIGHT_MAX_TEMP}"
+}
+
+# Toggle airplane mode (WLAN radio kill), showing a SwayOSD message
+function rfkill_toggle() {
+  if ! rfkill --output TYPE,SOFT | grep -q wlan; then
+    swayosd-client --custom-message "No WLAN Device Found" --custom-icon "dialog-error-symbolic"
+    exit 1
+  fi
+
+  if rfkill --output TYPE,SOFT | grep wlan | grep -q unblocked; then
+    rfkill toggle wlan
+    swayosd-client --custom-message "Airplane Mode Enabled" --custom-icon "airplane-mode-symbolic"
+  else
+    rfkill toggle wlan
+    swayosd-client --custom-message "Airplane Mode Disabled" --custom-icon "network-wireless-symbolic"
+  fi
+}
+
+
+# Handle command
+category="$1"
+action="$2"
+
+case "${category}" in
+  volume)
+    case "${action}" in
+      up)   volume_up ;;
+      down) volume_down ;;
+      mute) volume_mute ;;
+      *)    usage ;;
+    esac
+    ;;
+
+  brightness)
+    case "${action}" in
+      up)   brightness_up ;;
+      down) brightness_down ;;
+      *)    usage ;;
+    esac
+    ;;
+
+  mic)
+    case "${action}" in
+      mute) mic_mute ;;
+      *)    usage ;;
+    esac
+    ;;
+
+  player)
+    case "${action}" in
+      prev|play-pause|next|play|pause|stop|shuffle) player_ctl "${action}" ;;
+      *) usage ;;
+    esac
+    ;;
+
+  night-light)
+    case "${action}" in
+      up)      night_light_up ;;
+      down)    night_light_down ;;
+      default) night_light_default ;;
+      reset)   night_light_reset ;;
+      *)       usage ;;
+    esac
+    ;;
+
+  rfkill)
+    case "${action}" in
+      toggle) rfkill_toggle ;;
+      *)      usage ;;
+    esac
+    ;;
+
+  *)
+    usage
+    ;;
+esac

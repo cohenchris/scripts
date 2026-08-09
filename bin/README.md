@@ -29,7 +29,7 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 - [Copy to Clipboard](#Copy-to-Clipboard)
 - [Battery Monitor](#Battery-Monitor)
 - [Check Bail](#Check-Bail)
-- [Volume Control](#Volume-Control)
+- [Hardware Control](#Hardware-Control)
 
 
 
@@ -255,9 +255,19 @@ This is a simple script that prints MESSAGE to stderr and exits if STATUS_CODE i
 
 
 
-## Volume Control
-[`volumectl [up|down|mute]`](volumectl)
+## Hardware Control
+[`hwctl [volume,brightness,mic,player,night-light,rfkill] [ACTION]`](hwctl)
 
-SwayOSD-based volume control wrapper.
-`volumectl up` and `volumectl down` adjust the volume by a fixed step (5%), and `volumectl mute` toggles mute.
-Each command displays the SwayOSD volume bar.
+SwayOSD-based wrapper for the hardware-level controls bound to hotkeys and waybar clicks: volume, brightness, microphone, media playback, night light, and the WLAN radio kill switch. Every command shows the relevant SwayOSD indicator.
+
+`hwctl volume [up|down|mute]` adjusts the output volume by a fixed step (5%), or toggles mute.
+
+`hwctl brightness [up|down]` adjusts the display brightness by a fixed step (2%).
+
+`hwctl mic mute` toggles the default microphone's mute state.
+
+`hwctl player [prev|play-pause|next|play|pause|stop|shuffle]` runs a playerctl command against the active media player.
+
+`hwctl night-light [up|down|default|reset]` adjusts the `hyprsunset` color temperature by a fixed step (500K), sets it to the preferred default (2500K), or removes the filter entirely (6000K). The current temperature is remembered in `${XDG_CACHE_HOME:-~/.local/cache}/hwctl/night-light-temp` so relative up/down steps and the SwayOSD progress bar stay accurate across calls.
+
+`hwctl rfkill toggle` toggles the WLAN radio (airplane mode) and shows a SwayOSD message reflecting the new state.
