@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # =============================================================================
-# batocera-metrics.py — Prints a JSON metrics snapshot to stdout
-# Called remotely over SSH by Home Assistant
+# system-monitor.py — Prints a JSON metrics snapshot to stdout
 # =============================================================================
 import ctypes
 import glob
@@ -148,9 +147,9 @@ def get_disks():
 def get_gpu():
     """NVIDIA GPU stats via NVML, called directly through ctypes.
 
-    nvidia-smi isn't available on this (immutable) OS, but the NVML shared
-    library ships alongside the driver's GL/Vulkan libs, so we bind to it
-    directly instead of shelling out to a CLI tool.
+    nvidia-smi isn't always available (e.g. on immutable OSes), but the NVML
+    shared library ships alongside the driver's GL/Vulkan libs, so we bind to
+    it directly instead of shelling out to a CLI tool.
     """
     try:
         try:

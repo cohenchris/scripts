@@ -22,6 +22,8 @@ Think of these as scripts that would require a solid amount of effort to port to
 - [Music Video Downloader](#Music-Video-Downloader)
   - [Prerequisites](#Prerequisites-2)
   - [Use](#Use-2)
+- [System Monitor](#System-Monitor)
+  - [Use](#Use-3)
 
 
 
@@ -137,3 +139,18 @@ This script assumes that:
 
 ### Use
 To use this script, invoke it with either `--infile` (path to a URL file) or `--playlist` (a YouTube playlist URL). These options are mutually exclusive.
+
+
+
+
+## System Monitor
+[`system-monitor.py`](system-monitor.py)
+
+This script prints a JSON snapshot of a system's health metrics to stdout, including uptime, CPU usage, memory/swap usage, per-core CPU temperatures, disk usage, and NVIDIA GPU stats (usage, memory, temperature) via direct NVML bindings.
+
+It's dependency-free (standard library only), which matters on immutable OSes that lack `nvidia-smi` or a package manager to install one.
+
+### Use
+```sh
+python3 system-monitor.py
+```
