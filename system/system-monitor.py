@@ -209,10 +209,14 @@ def get_gpu():
 def get_metrics():
     return {
         "uptime": get_uptime(),
-        "cpu_usage": get_cpu_usage(),
-        "memory_usage": get_memory_usage(),
-        "swap_usage": get_swap_usage(),
-        "cpu_temperature": get_cpu_temps(),
+        "cpu": {
+            "usage": get_cpu_usage(),
+            "temperature": get_cpu_temps(),
+        },
+        "memory": {
+            "usage": get_memory_usage(),
+            "swap_usage": get_swap_usage(),
+        },
         "disks": get_disks(),
         "gpu": get_gpu(),
     }
