@@ -195,9 +195,7 @@ def get_gpu():
             return {
                 "name": name_buf.value.decode(errors="replace"),
                 "usage": util.gpu,
-                "memory_usage": round(mem.used / mem.total * 100, 1) if mem.total else 0.0,
-                "memory_used_mib": mem.used // mib,
-                "memory_total_mib": mem.total // mib,
+                "vram_usage": round(mem.used / mem.total * 100, 1) if mem.total else 0.0,
                 "temperature": temp.value,
             }
         finally:
