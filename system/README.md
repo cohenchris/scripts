@@ -113,9 +113,9 @@ To unmount the same B2 bucket:
 
 
 ## Music Video Downloader
-[`mvdl.sh [FILE]`](mvdl.sh)
+[`mvdl.py (--infile FILE | --playlist URL)`](mvdl.py)
 
-This script reads in a file which contains newline-separated YouTube music video URLs.
+This script downloads YouTube music videos, either from a file containing newline-separated URLs or from a YouTube playlist URL.
 If there is a music file and music video file with the same name, Plex can automatically detect this and associate the two files.
 If there is a music file with an associated music video file, Plex will allow you to play either file.
 This script is an attempt to automate the process of pulling + renaming music videos for this feature.
@@ -132,7 +132,8 @@ This script is pretty hardcoded to my personal environment and directory structu
 ### Prerequisites
 This script assumes that:
 - You have filled out the [`.env`](sample.env) file
-- You have a plaintext file with newline-separated YouTube video URLs to download.
+- You have `yt-dlp` installed as a Python package (`pip install yt-dlp`)
+- You have either a plaintext file with newline-separated YouTube video URLs, or a YouTube playlist URL, to download.
 
 ### Use
-To use this script, simply invoke it and provide the URL file as input.
+To use this script, invoke it with either `--infile` (path to a URL file) or `--playlist` (a YouTube playlist URL). These options are mutually exclusive.
