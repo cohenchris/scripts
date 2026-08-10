@@ -2,6 +2,8 @@
 
 VPN_CONFIGS_LOCATION="${XDG_CONFIG_HOME:-${HOME}/.config}/wireguard"
 
+export SUDO_ASKPASS="${SUDO_ASKPASS:-$(command -v fuzzel-askpass)}"
+
 # Charm/wifitui-style accent colors
 ACCENT="42"
 GOOD_COLOR="35"
@@ -64,7 +66,7 @@ function connect_vpn()
   notify NORMAL "󰦝  Connecting..." "Attempting to connect to VPN server \"${serverChoice}\""
   header "Connecting to ${serverChoice}..."
 
-  sudo wg-quick up "${VPN_CONFIGS_LOCATION}/${serverChoice}.conf"
+  sudo -A wg-quick up "${VPN_CONFIGS_LOCATION}/${serverChoice}.conf"
   wgStatus=$?
 
   if [[ "${wgStatus}" -eq 0 ]]; then
@@ -97,7 +99,7 @@ function disconnect_vpn()
   notify NORMAL "󰦝  Disconnecting..." "Attempting to disconnect from VPN server \"${CONNECTION_NAME}\""
   header "Disconnecting from ${CONNECTION_NAME}..."
 
-  sudo wg-quick down "${VPN_CONFIGS_LOCATION}/${CONNECTION_NAME}.conf"
+  sudo -A wg-quick down "${VPN_CONFIGS_LOCATION}/${CONNECTION_NAME}.conf"
   wgStatus=$?
 
   if [[ "${wgStatus}" -eq 0 ]]; then
