@@ -9,7 +9,8 @@ if [[ "$(id -u)" -ne 0 ]]; then
     exit 1
 fi
 
-SCRIPTS_BASE_DIR=$(realpath "$(dirname "$(realpath "$0")")/../..")
+WORKING_DIR=$(dirname "$(realpath "$0")")
+SCRIPTS_BASE_DIR=$(realpath "${WORKING_DIR}/../..")
 
 echo "Updating packages and repositories..."
 pkg update
@@ -24,13 +25,13 @@ service smartd start
 # Install OPNSense backup action
 echo
 echo "Installing and configuring OPNSense backup OPNSense action..."
-cp ./actions_backupopnsense.conf /usr/local/opnsense/service/conf/actions.d
+cp "${WORKING_DIR}/actions_backupopnsense.conf" /usr/local/opnsense/service/conf/actions.d
 sed -i "" "s|<scriptsdir>|${SCRIPTS_BASE_DIR}|g" /usr/local/opnsense/service/conf/actions.d/actions_backupopnsense.conf
 
 # Install data integrity monitoring action
 echo
 echo "Installing and configuring data integrity monitoring OPNSense action..."
-cp ./actions_dataintegrity.conf /usr/local/opnsense/service/conf/actions.d
+cp "${WORKING_DIR}/actions_dataintegrity.conf" /usr/local/opnsense/service/conf/actions.d
 sed -i "" "s|<scriptsdir>|${SCRIPTS_BASE_DIR}|g" /usr/local/opnsense/service/conf/actions.d/actions_dataintegrity.conf
 
 # Restart configd to index new OPNSense actions

@@ -19,7 +19,7 @@
 # (partitioning, pool creation/replacement, ownership changes). DEBUG=0
 # (the default) runs for real. Every command run() handles is always logged
 # either way.
-DEBUG=1
+DEBUG=0
 
 # run(cmd...)
 #

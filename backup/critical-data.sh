@@ -24,6 +24,7 @@ bw_backup_file="bw-backup-${DATE}.json"
 
 # Login + save credentials (used by BW binary)
 export BW_SESSION=$(bw unlock --raw --passwordfile "${BW_PASS_FILE}")
+require var "${BW_SESSION}" || exit 1
 
 [ ! -d "${bw_backup_dir}" ] && mkdir -p "${bw_backup_dir}"
 cd "${bw_backup_dir}"

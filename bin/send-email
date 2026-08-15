@@ -37,6 +37,7 @@ fi
 # Read in body from piped in data and write to a temp file
 BODY=$(cat)
 BODY_TEMPFILE=$(mktemp)
+trap 'rm -f "${BODY_TEMPFILE}"' EXIT
 printf "%s\n" "${BODY}" > "${BODY_TEMPFILE}"
 
 require var "${EMAIL}"
@@ -63,6 +64,3 @@ while ! eval "${MUTT_CMD}"; do
 
   sleep 5
 done
-
-# Remove body tempfile
-rm "${BODY_TEMPFILE}"

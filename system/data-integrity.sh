@@ -50,6 +50,9 @@ function integrity_test() {
     borg_maintenance "${repo_path}" &
     sleep 30
   done
+
+  # Wait for all backgrounded maintenance jobs to finish before returning
+  wait
 }
 
 

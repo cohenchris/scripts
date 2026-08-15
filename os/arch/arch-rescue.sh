@@ -67,7 +67,7 @@ function update_packages()
 {
   # Chroot into /mnt and re-install kernel
   echo "Re-installing linux-lts, mkinitcpio, and zfs-linux..."
-  arch-chroot /mnt sudo pacman -Syu --noconfirm linux-lts mkinitcpio zfs-linux-lts zfs-linux-lts-headers zfs-utils
+  arch-chroot /mnt pacman -Syu --noconfirm linux-lts mkinitcpio zfs-linux-lts zfs-linux-lts-headers zfs-utils
 }
 
 # Script is being executed directly (not sourced)

@@ -3,6 +3,8 @@
 # Bail if attempting to substitute an unset variable
 set -u
 
+WORKING_DIR=$(dirname "$(realpath "$0")")
+
 
 if [[ "$(id -u)" -ne 0 ]]; then
     echo "This script must be run as root" 
@@ -139,7 +141,7 @@ function configure_msmtp()
   # Configure system-wide msmtprc
   echo "Configuring system-wide msmtprc..."
   mkdir -p $(dirname "${MSMTPRC_PATH}") 2>/dev/null
-  cp ./msmtprc "${MSMTPRC_PATH}"
+  cp "${WORKING_DIR}/msmtprc" "${MSMTPRC_PATH}"
   chmod 600 "${MSMTPRC_PATH}"
 
   # Splice msmtprc fields into the final config file
@@ -175,7 +177,7 @@ function configure_mutt()
   # Configure system-wide muttrc
   echo "Configuring system-wide muttrc..."
   mkdir -p $(dirname "${MUTTRC_PATH}") 2>/dev/null
-  cp ./muttrc "${MUTTRC_PATH}"
+  cp "${WORKING_DIR}/muttrc" "${MUTTRC_PATH}"
   chmod 644 "${MUTTRC_PATH}"
 
   # Splice muttrc fields into the final config file

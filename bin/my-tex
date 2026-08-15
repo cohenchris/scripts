@@ -81,7 +81,7 @@ function mytex_create()
 
   \newpage
   \printbibliography
-  \end{document}" >> ${filename_out}
+  \end{document}" > ${filename_out}
 }
 
 

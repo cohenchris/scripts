@@ -76,6 +76,17 @@ else
   exit 1
 fi
 
+# Ensure USBs are unmounted and temp mount directories are removed on exit,
+# regardless of whether the script succeeds or aborts partway through
+function cleanup()
+{
+  mountpoint -q "${USB1_MNT_PATH}" && umount "${USB1_MNT_PATH}"
+  mountpoint -q "${USB2_MNT_PATH}" && umount "${USB2_MNT_PATH}"
+  [[ -d "${USB1_MNT_PATH}" ]] && rmdir "${USB1_MNT_PATH}"
+  [[ -d "${USB2_MNT_PATH}" ]] && rmdir "${USB2_MNT_PATH}"
+}
+trap cleanup EXIT
+
 # Mount provided devices to their temporary mount directories
 echo "Mounting ${USB1_DEV_NAME} to ${USB1_MNT_PATH}..."
 
@@ -135,14 +146,3 @@ if [ -z "$(ls -A "${USB2_MNT_PATH}")" ]; then
 fi
 echo "Done!"
 echo
-
-####################
-#      CLEANUP     #
-####################
-echo
-echo "Cleaning up..."
-umount "${USB1_MNT_PATH}"
-umount "${USB2_MNT_PATH}"
-
-rm -r "${USB1_MNT_PATH}"
-rm -r "${USB2_MNT_PATH}"

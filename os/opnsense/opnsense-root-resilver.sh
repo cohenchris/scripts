@@ -61,6 +61,13 @@ EFI_PARTITION_NUMBER=""
 FREEBSD_BOOT_PARTITION_NUMBER=""
 ZFS_PARTITION_NUMBER=""
 
+if [ -z "${ZFS_POOL_NAME}" ] || [ -z "${OLD_BAD_DEVICE}" ] || [ -z "${OLD_GOOD_DEVICE}" ] || \
+   [ -z "${NEW_DEVICE}" ] || [ -z "${EFI_PARTITION_NUMBER}" ] || [ -z "${FREEBSD_BOOT_PARTITION_NUMBER}" ] || \
+   [ -z "${ZFS_PARTITION_NUMBER}" ]; then
+  echo "ERROR! Please set all variables before running this script"
+  exit 1
+fi
+
 # Detach old bad device from pool
 zpool detach ${OLD_BAD_DEVICE}p${ZFS_PARTITION_NUMBER}
 

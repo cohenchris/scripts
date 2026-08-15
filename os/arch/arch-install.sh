@@ -297,15 +297,17 @@ fi
   # CHROOT EXECUTION #
   ####################
   # Copy this script into your new Arch system to continue bootstrapping
+  local script_name
+  script_name=$(basename "$0")
   cp "$0" /mnt/root/
   cp "${WORKING_DIR}"/arch-packages /mnt/root
-  chmod +x /mnt/root/"$0"
+  chmod +x /mnt/root/"${script_name}"
 
   # Go into your new Arch partition and continue executing this script
-  arch-chroot /mnt /root/"$0"
+  arch-chroot /mnt /root/"${script_name}"
 
   # Delete bootstrapping script
-  rm /mnt/root/"$0"
+  rm /mnt/root/"${script_name}"
   rm /mnt/root/arch-packages
 }
 
