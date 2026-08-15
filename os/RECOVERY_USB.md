@@ -12,7 +12,7 @@ Pre-built ISO available on releases page
 ## OPNSense
 
 ### Installation Media
-Download the OPNSense installation image [here](https://opnsense.org/download/)>
+Download the OPNSense installation image [here](https://opnsense.org/download/)
 
 The `vga` image type is for installation using a monitor.
 The `serial` image type is for installation through the serial console port.

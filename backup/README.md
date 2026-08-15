@@ -59,7 +59,7 @@ This is a single device on my network that stores backups for my entire network.
 - [OpenWRT Backup](#OpenWRT-Backup)
   - [Prerequisites](#Prerequisites-6)
   - [Use](#Use-7)
-- [OPNSense + AdGuard Backup](#OPNSense-+-AdGuard-Backup)
+- [OPNSense + AdGuard Backup](#OPNSense--AdGuard-Backup)
   - [Prerequisites](#Prerequisites-7)
   - [Use](#Use-8)
 - [Server Backup](#Server-Backup)
@@ -220,7 +220,7 @@ Instead, it should be run manually at consistent intervals.
 Personally, I run this once per month.
 The USB drives that I use for this are placed into a fireproof safe.
 
-Please do not run [`critical-data.sh.sh`](critical-data.sh) during this script's execution - that script operates using the same directories that this script uses.
+Please do not run [`critical-data.sh`](critical-data.sh) during this script's execution - that script operates using the same directories that this script uses.
 
 
 

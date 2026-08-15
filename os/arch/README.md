@@ -20,7 +20,7 @@ The import script is tailored towards Arch Linux, but these services should work
 - [Rescue Corrupted EFI Boot Partition](#Rescue-Corrupted-EFI-Boot-Partition)
   - [Prerequisites](#Prerequisites-3)
   - [Use](#Use-3)
-- [Arch Env Setup])(#Arch-Env-Setup)
+- [Arch Env Setup](#Arch-Env-Setup)
   - [Prerequisites](#Prerequisites-4)
   - [Use](#Use-4)
 

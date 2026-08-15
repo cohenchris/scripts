@@ -11,7 +11,7 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 
 # Table of Contents
 
-- [Require Var, File, or Dir](#Require-Var,-File,-or-Dir)
+- [Require Var, File, or Dir](#Require-Var-File-or-Dir)
 - [Send Email](#Send-Email)
 - [Archive Extraction](#Archive-Extraction)
 - [Local E-Mail Sync](#Local-E-Mail-Sync)
@@ -137,7 +137,7 @@ This is intended to be used for autocompletion by another program, like neomutt.
 
 Custom pinentry program.
 If executed within a graphical environment, this script will run my custom fuzzel-based pinentry implementation.
-Otherwise, the script will fall back to the system default `pinentry` program.`
+Otherwise, the script will fall back to the system default `pinentry` program.
 I often use this to unlock my GPG keyring.
 
 To configure this program as pinentry for unlocking your GPG keyring, the following line should be in your `gpg-agent.conf` file:

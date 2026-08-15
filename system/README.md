@@ -16,7 +16,7 @@ Think of these as scripts that would require a solid amount of effort to port to
   - [Prerequisites](#Prerequisites)
   - [Use](#Use)
 - [System Update](#System-Update)
-- [Backblaze Bucket Quick Mount + Unmount via RClone](#Backblaze-Bucket-Quick-Mount-+-Unmount-via-RClone)
+- [Backblaze Bucket Quick Mount + Unmount via RClone](#Backblaze-Bucket-Quick-Mount--Unmount-via-RClone)
   - [Prerequisites](#Prerequisites-1)
   - [Use](#Use-1)
 - [Music Video Downloader](#Music-Video-Downloader)
@@ -24,25 +24,8 @@ Think of these as scripts that would require a solid amount of effort to port to
   - [Use](#Use-2)
 - [System Monitor](#System-Monitor)
   - [Use](#Use-3)
-
-
-
-## Borg Repository Maintenance
-[`borg-maintenance.sh`](borg-maintenance.sh)
-
-This script will run some health checks on each targeted borg repository.
-Each repository's contents will first be checked for data corruption.
-Afterwards, the repository is defragmented by deleting stale segment files.
-
-### Prerequisites
-This script assumes that:
-- You have filled out the [`.env`](sample.env) file
-
-### Use
-This script should be run manually periodically, maybe once per month or less.
-It may take a while to complete, and may require manual intervention depending on the health of the targeted borg repositories.
-You should avoid modifying any of the targeted repositories while this script is running.
-
+- [Systemd Watchdog](#Systemd-Watchdog)
+  - [Use](#Use-4)
 
 
 
@@ -153,4 +136,18 @@ It's dependency-free (standard library only), which matters on immutable OSes th
 ### Use
 ```sh
 python3 system-monitor.py
+```
+
+
+
+
+## Systemd Watchdog
+[`systemd-watchdog.sh <service>`](systemd-watchdog.sh)
+
+This script checks whether a given systemd service is currently active, and restarts it if it is not. If the given service does not exist, the script exits with an error.
+
+### Use
+Must be run as root, with the name of the systemd service to watch as the first argument. Intended to be run periodically via cron.
+```sh
+sudo ./systemd-watchdog.sh glances
 ```

@@ -12,6 +12,7 @@ OS-specific system configuration scripts which are mostly intended to be used on
 - [OpenWRT](#OpenWRT)
 - [Email](#Email)
 - [ZFS Data Pool Disaster Recovery](#ZFS-Data-Pool-Disaster-Recovery)
+- [Recovery USB Stick Information](#Recovery-USB-Stick-Information)
 
 
 
@@ -53,3 +54,11 @@ Install and configure outbound email on the host machine, typically used for cro
 [`zfs/`](zfs/)
 
 Scripts to recreate a ZFS data pool from nothing, or to replace a single still-working drive in one. Covers data pools only (not the system/root ZFS pool, which is covered by the [Arch Linux](#Arch-Linux) and [OPNSense](#OPNSense) scripts above).
+
+
+
+
+## Recovery USB Stick Information
+[`RECOVERY_USB.md`](RECOVERY_USB.md)
+
+Notes on preparing recovery USB media (installation and configuration-restoration drives) for Arch w/ ZFS, OPNSense, and OpenWRT.
