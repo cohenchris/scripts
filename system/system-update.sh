@@ -34,7 +34,7 @@ function update_arch()
   fi
 
   # Mirror EFI boot partitions
-  sudo "${SCRIPTS_DIR}/os/arch/arch-boot-mirror.sh" zroot
+  sudo "${SCRIPTS_DIR}/os/arch/boot-mirror.sh" zroot
 }
 
 function update_ubuntu()

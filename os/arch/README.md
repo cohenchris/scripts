@@ -20,15 +20,12 @@ The import script is tailored towards Arch Linux, but these services should work
 - [Rescue Corrupted EFI Boot Partition](#Rescue-Corrupted-EFI-Boot-Partition)
   - [Prerequisites](#Prerequisites-3)
   - [Use](#Use-3)
-- [Arch Env Setup](#Arch-Env-Setup)
-  - [Prerequisites](#Prerequisites-4)
-  - [Use](#Use-4)
 
 
 
 
 ## Install Arch on ZFS
-[`arch-install.sh`](arch-install.sh)
+[`install.sh`](install.sh)
 
 This is an all-in-one script to install Arch on two drives as a mirrored ZFS root pool.
 
@@ -39,6 +36,7 @@ It will:
 - Set up basic fresh Arch install things (e.g. users, hostname, NTP, sudo management, locale, etc.)
 - Install base packages for bare minimum functionality
 - Install AUR helper
+- Install and enable the Glances monitoring webserver
 - Configure bootctl bootloader
 - Sync EFI partition on both ZFS mirrored root drives to allow booting from either drive
 
@@ -57,7 +55,7 @@ When the script is done, you should reboot, remove the live USB, and boot into y
 
 
 ## Sync Mirrored EFI Boot Partitions
-[`arch-boot-mirror.sh [root_pool_name]`](arch-boot-mirror.sh)
+[`boot-mirror.sh [root_pool_name]`](boot-mirror.sh)
 
 This keeps a mirrored ZFS root pool's EFI partitions in sync.
 For this to work, one partition must be mounted at /boot, and the other must be unmounted.
@@ -88,7 +86,7 @@ This means that the script is called whether the EFI boot partition data is upda
 
 
 ## Replace and Resilver a Drive in a ZFS Root Pool
-[`arch-root-resilver.sh`](arch-root-resilver.sh)
+[`root-resilver.sh`](root-resilver.sh)
 
 In case of a drive failure, on your mirrored ZFS root pool, this script assists in seamlessly resilvering a replacement drive.
 It will resilver the ZFS partition, clone the EFI boot partition to the new drive, AND update the systemd.mount service which auto-mounts the EFI boot partition.
@@ -107,7 +105,7 @@ This script is intended to be used when directly booted from the surviving drive
 
 
 ## Rescue Corrupted EFI Boot Partition
-[`arch-rescue.sh`](arch-rescue.sh)
+[`rescue.sh`](rescue.sh)
 
 Since I have a ZFS root pool set up with two mirrored drives, there is some complication with maintaining the EFI boot partitions.
 Sometimes, they just break after an update if I'm not careful.
@@ -122,18 +120,3 @@ This script is meant to help get the system up and running more quickly than if 
 To use this script, boot into the live USB stick with Arch + ZFS.
 Then, simply run it!
 Everything should be taken care of, and if all commands ran successfully, you will have a working system on next reboot.
-
-
-
-
-## Arch Env Setup
-[`arch-env-setup.sh`](arch-env-setup.sh)
-
-This script configures common programs and daemons used for some of my Arch Linux installs.
-
-### Prerequisites
-- You have installed Arch Linux
-- You have rebooted from the live USB installer and logged in
-
-### Use
-To use this script, simply run it and enter any information requested.

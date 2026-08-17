@@ -11,6 +11,7 @@ OS-specific system configuration scripts which are mostly intended to be used on
 - [OPNSense](#OPNSense)
 - [OpenWRT](#OpenWRT)
 - [Email](#Email)
+- [Warden](#Warden)
 - [ZFS Data Pool Disaster Recovery](#ZFS-Data-Pool-Disaster-Recovery)
 - [Recovery USB Stick Information](#Recovery-USB-Stick-Information)
 
@@ -46,6 +47,14 @@ Custom scripts, services, and configuration files for a machine running the Linu
 [`email/`](email/)
 
 Install and configure outbound email on the host machine, typically used for cron notifications.
+
+
+
+
+## Warden
+[`warden/`](warden/)
+
+Custom scripts, services, and configuration files for a machine whose sole responsibility is running [Network UPS Tools](https://networkupstools.org/) (UPS monitoring/shutdown) and [Uptime Kuma](https://github.com/louislam/uptime-kuma) (uptime monitoring).
 
 
 

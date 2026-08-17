@@ -410,6 +410,27 @@ function post_chroot_setup() {
   rm -rf paru/
   cd
 
+  # Install glances dependencies and service
+  echo
+  echo "Installing Glances system monitor..."
+
+cat <<EOF > /etc/systemd/system/glances.service
+[Unit]
+Description=Glances
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/glances -w
+Restart=on-abort
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+  sed -i '/^\[network\]/,/^disable=/ s/^disable=False/disable=True/' /etc/glances/glances.conf
+  systemctl enable glances.service
+
   # Install ZFS and YADM
   echo
   echo "Installing and enabling ZFS utilities and services + YADM dotfiles manager..."

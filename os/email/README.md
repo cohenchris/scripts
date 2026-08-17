@@ -48,7 +48,7 @@ chmod 600 /etc/msmtprc
 ```
 
 
-2. Automated setup using [`email-setup.sh`](email-setup.sh)
+2. Automated setup using [`setup.sh`](setup.sh)
 
 
 
@@ -77,13 +77,13 @@ cp ./muttrc /root/.muttrc
 ```
 
 
-2. Automated setup using [`email-setup.sh`](email-setup.sh)
+2. Automated setup using [`setup.sh`](setup.sh)
 
 
 
 
 ## Automated Email Setup Script
-[`email-setup.sh`](email-setup.sh)
+[`setup.sh`](setup.sh)
 
 This is a system-agnostic script which installs and configures email on the local machine.
 This is a two-part system - `msmtp` as an SMTP client, and `mutt` as an email client.
@@ -95,5 +95,5 @@ With this information, both `msmtp` and `mutt` will be configured based on the s
 ### Use
 Call this script from the command line:
 ```sh
-./email-setup.sh
+./setup.sh
 ```

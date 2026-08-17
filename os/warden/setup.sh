@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 
+# Bail if attempting to substitute an unset variable
+set -u
+
+WORKING_DIR=$(dirname "$(realpath "$0")")
+
 if [[ "$(id -u)" -ne 0 ]]; then
-    echo "This script must be run as root" 
+    echo "This script must be run as root"
     exit 1
 fi
 
@@ -20,31 +25,44 @@ case "${yn}" in
 esac
 
 
-ARCH_ENV_SETUP_DIR=$(dirname "$(realpath "$0")")/arch-env-setup
+# Install and configure Network UPS Tools, then start monitoring the UPS
+function setup_nut()
+{
+  echo "Installing Network UPS Tools..."
+  sudo -u "${USERNAME}" paru -Sy --noconfirm nut
+
+  echo "Configuring Network UPS Tools..."
+  cp "${WORKING_DIR}"/nut/* /etc/nut
+  chown -R root:nut /etc/nut/*
+  chmod 640 /etc/nut/*
+
+  echo "Starting Network UPS Tools services..."
+  upsdrvctl start
+  systemctl enable --now nut.target nut-driver.target nut-driver-enumerator.service
+}
 
 
-# Install glances dependencies and service
-echo "Installing Glance webserver service..."
-sudo -u "${USERNAME}" paru -Sy --noconfirm glances python-fastapi uvicorn python-jinja-time hddtemp python-docker python-matplotlib python-netifaces2
-cp "${ARCH_ENV_SETUP_DIR}"/glances.service /etc/systemd/system
-# Disable network sensors in glances.conf
-sudo sed -i '/^\[network\]/,/^disable=/ s/^disable=False/disable=True/' /etc/glances/glances.conf
+# Install Docker, then deploy Uptime Kuma via its compose file
+function setup_uptime_kuma()
+{
+  echo "Installing Docker..."
+  sudo -u "${USERNAME}" paru -Sy --noconfirm docker docker-compose
+  systemctl enable --now docker.service
+  usermod -aG docker "${USERNAME}"
+
+  echo "Deploying Uptime Kuma..."
+  UPTIME_KUMA_DIR="/home/${USERNAME}/uptimekuma"
+  sudo -u "${USERNAME}" mkdir -p "${UPTIME_KUMA_DIR}"
+  cp "${WORKING_DIR}"/uptimekuma-compose.yaml "${UPTIME_KUMA_DIR}"/docker-compose.yml
+  chown "${USERNAME}":"${USERNAME}" "${UPTIME_KUMA_DIR}"/docker-compose.yaml
+
+  cd "${UPTIME_KUMA_DIR}"
+  sudo -u "${USERNAME}" docker compose up -d
+}
 
 
-# Install network UPS tools and service
-echo
-echo "Installing and configuring Network UPS tools..."
-sudo -u "${USERNAME}" paru -Sy --noconfirm nut
-cp "${ARCH_ENV_SETUP_DIR}"/nut/* /etc/nut
-chown -R root:nut /etc/nut/*
-chmod 640 /etc/nut/*
-
-
-# Reload systemd, then enable + start services
-systemctl daemon-reload
-systemctl enable --now glances.service
-upsdrvctl start
-systemctl enable --now nut.target nut-driver.target nut-driver-enumerator.service
+setup_nut
+setup_uptime_kuma
 
 
 echo
