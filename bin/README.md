@@ -28,7 +28,6 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 - [Hyprlock Reload](#Hyprlock-Reload)
 - [Copy to Clipboard](#Copy-to-Clipboard)
 - [Battery Monitor](#Battery-Monitor)
-- [Check Bail](#Check-Bail)
 - [Hardware Control](#Hardware-Control)
 
 
@@ -243,14 +242,6 @@ If the user provides a single filename as a `command`, this script will automati
 This script monitors the battery percentage and charging state when the relevant `/sys/class/power_supply` files are modified.
 It will send notifications when the battery starts charging or discharging, as well as when it reaches certain percentage thresholds.
 It will also immediately exit if there is no battery found.
-
-
-
-
-## Check Bail
-[`check-bail [STATUS_CODE] [MESSAGE]`](check-bail)
-
-This is a simple script that prints MESSAGE to stderr and exits if STATUS_CODE is negative.
 
 
 
