@@ -21,7 +21,7 @@ def get_uptime():
         for line in f:
             if line.startswith("btime"):
                 btime = int(line.split()[1])
-                return datetime.fromtimestamp(btime).strftime("%b %-d, %Y at %I:%M %p")
+                return datetime.fromtimestamp(btime).strftime("%B %-d, %Y at %I:%M %p")
     return None
 
 
