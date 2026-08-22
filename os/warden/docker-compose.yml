@@ -1,0 +1,33 @@
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:2-slim
+    container_name: uptime-kuma
+    network_mode: host
+    volumes:
+      - ./config:/app/data
+    ports:
+      - 80:3001
+    restart: always
+
+  nut:
+    image: instantlinux/nut-upsd:latest
+    container_name: nut
+    environment:
+      - API_USER=${UPS_USER}
+      - API_PASSWORD=${UPS_PASSWORD}
+      - DRIVER=${UPS_DRIVER}
+      - INSTCMDS=all
+      - MAXAGE=25
+      - NAME=ups
+      - POLLINTERVAL=15
+      - PORT=${UPS_USB_DEVICE}
+      - SDORDER=0
+      - SECRETNAME=${UPS_PASSWORD}
+      - SERIAL=${UPS_SERIALNUM}
+      - SERVER=primary
+      - VENDORID=${UPS_VENDORID}
+    devices:
+      - ${UPS_USB_DEVICE}
+    ports:
+      - 3493:3493
+    restart: always

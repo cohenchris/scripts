@@ -25,44 +25,29 @@ case "${yn}" in
 esac
 
 
-# Install and configure Network UPS Tools, then start monitoring the UPS
-function setup_nut()
-{
-  echo "Installing Network UPS Tools..."
-  sudo -u "${USERNAME}" paru -Sy --noconfirm nut
-
-  echo "Configuring Network UPS Tools..."
-  cp "${WORKING_DIR}"/nut/* /etc/nut
-  chown -R root:nut /etc/nut/*
-  chmod 640 /etc/nut/*
-
-  echo "Starting Network UPS Tools services..."
-  upsdrvctl start
-  systemctl enable --now nut.target nut-driver.target nut-driver-enumerator.service
-}
-
-
-# Install Docker, then deploy Uptime Kuma via its compose file
-function setup_uptime_kuma()
+# Install Docker, then deploy the Network UPS Tools + Uptime Kuma stack via its compose file
+function setup_warden_stack()
 {
   echo "Installing Docker..."
   sudo -u "${USERNAME}" paru -Sy --noconfirm docker docker-compose
   systemctl enable --now docker.service
   usermod -aG docker "${USERNAME}"
 
-  echo "Deploying Uptime Kuma..."
-  UPTIME_KUMA_DIR="/home/${USERNAME}/uptimekuma"
-  sudo -u "${USERNAME}" mkdir -p "${UPTIME_KUMA_DIR}"
-  cp "${WORKING_DIR}"/uptimekuma-compose.yaml "${UPTIME_KUMA_DIR}"/docker-compose.yml
-  chown "${USERNAME}":"${USERNAME}" "${UPTIME_KUMA_DIR}"/docker-compose.yaml
+  echo "Deploying Network UPS Tools + Uptime Kuma..."
+  WARDEN_DIR="/home/${USERNAME}/warden"
+  sudo -u "${USERNAME}" mkdir -p "${WARDEN_DIR}"
+  cp "${WORKING_DIR}"/docker-compose.yml "${WARDEN_DIR}"/docker-compose.yml
+  cp "${WORKING_DIR}"/sample.env "${WARDEN_DIR}"/.env
+  chown "${USERNAME}":"${USERNAME}" "${WARDEN_DIR}"/docker-compose.yml "${WARDEN_DIR}"/.env
 
-  cd "${UPTIME_KUMA_DIR}"
+  echo "NOTE: ${WARDEN_DIR}/.env was created from sample.env - update it with your UPS settings before the stack will work correctly."
+
+  cd "${WARDEN_DIR}"
   sudo -u "${USERNAME}" docker compose up -d
 }
 
 
-setup_nut
-setup_uptime_kuma
+setup_warden_stack
 
 
 echo
