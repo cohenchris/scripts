@@ -175,7 +175,7 @@ MUSIC_BORG_REPO="/backups/music"
 MUSICVIDEOS_BACKUP_DIR="/backups/musicvideos"
 # Fallback if the local 'backups' pool is also gone - restore from the remote
 # backup server instead by pointing the two variables above at these values.
-REMOTE_BACKUP_SERVER="backups@backups.lan"
+REMOTE_BACKUP_SERVER="backups@warden.lan"
 REMOTE_MUSIC_BORG_REPO="${REMOTE_BACKUP_SERVER}:/backups/music"
 REMOTE_MUSICVIDEOS_BACKUP_DIR="${REMOTE_BACKUP_SERVER}:/backups/musicvideos"
 

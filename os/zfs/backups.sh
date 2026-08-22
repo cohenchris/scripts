@@ -163,7 +163,7 @@ GROUP="root"
 
 # Remote backup server - referenced only for the informational message in
 # recreate_from_nothing() below.
-REMOTE_BACKUP_SERVER="backups@backups.lan"
+REMOTE_BACKUP_SERVER="backups@warden.lan"
 
 
 # recreate_from_nothing()

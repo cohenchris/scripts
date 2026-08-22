@@ -172,7 +172,7 @@ GROUP="http"
 BORG_REPO="/backups/files"
 # Fallback if the local 'backups' pool is also gone - restore from the remote
 # backup server instead by setting BORG_REPO="${REMOTE_BORG_REPO}" above.
-REMOTE_BACKUP_SERVER="backups@backups.lan"
+REMOTE_BACKUP_SERVER="backups@warden.lan"
 REMOTE_BORG_REPO="${REMOTE_BACKUP_SERVER}:/backups/files"
 
 
