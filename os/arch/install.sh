@@ -399,6 +399,17 @@ function post_chroot_setup() {
   echo "Enabling systemd-resolved..."
   systemctl enable systemd-resolved
 
+  # Configure repository mirrors
+  echo
+  echo "Enabling package repository mirrors..."
+  systemctl enable reflector.service
+  reflector --latest 5 \
+    --age 12 \
+    --protocol https \
+    --sort rate \
+    --save /etc/pacman.d/mirrorlist
+  pacman -Syyy
+
   # Install paru AUR helper
   echo
   echo "Installing paru AUR helper..."
