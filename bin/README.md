@@ -29,6 +29,7 @@ For example, one of the scripts in here is a file extraction wrapper which uses 
 - [Copy to Clipboard](#Copy-to-Clipboard)
 - [Battery Monitor](#Battery-Monitor)
 - [Hardware Control](#Hardware-Control)
+- [XDG Desktop Portal Hyprland Watchdog](#XDG-Desktop-Portal-Hyprland-Watchdog)
 
 
 
@@ -262,3 +263,19 @@ SwayOSD-based wrapper for the hardware-level controls bound to hotkeys and wayba
 `hwctl night-light [up|down|default|reset]` adjusts the `hyprsunset` color temperature by a fixed step (500K), sets it to the preferred default (2500K), or removes the filter entirely (6000K). The current temperature is remembered in `${XDG_CACHE_HOME:-~/.local/cache}/hwctl/night-light-temp` so relative up/down steps and the SwayOSD progress bar stay accurate across calls.
 
 `hwctl rfkill toggle` toggles the WLAN radio (airplane mode) and shows a SwayOSD message reflecting the new state.
+
+
+
+
+## XDG Desktop Portal Hyprland Watchdog
+[`xdg-desktop-portal-hyprland-watchdog`](xdg-desktop-portal-hyprland-watchdog)
+
+`xdg-desktop-portal-hyprland` has a long-standing, recurring upstream bug where it occasionally deadlocks and spins at ~100% CPU instead of exiting cleanly once Hyprland is gone (e.g. after a crash, logout, or a switch back to the login tty). See [hyprwm/xdg-desktop-portal-hyprland#103](https://github.com/hyprwm/xdg-desktop-portal-hyprland/issues/103) for one such report; it keeps resurfacing across releases.
+
+This script performs a single check and exits - it's meant to be invoked periodically via cron (or a systemd timer), for example:
+
+```cron
+* * * * * /path/to/xdg-desktop-portal-hyprland-watchdog
+```
+
+It only pays attention while Hyprland is *not* running, since that is the only situation this bug has been observed in. CPU usage can only be measured as a delta between two points in time, so state is cached between invocations in `${XDG_CACHE_HOME}/xdg-desktop-portal-hyprland-watchdog`. Once the portal process has been measured pegged above the CPU threshold on a couple of consecutive runs in a row, it runs `killall xdg-desktop-portal-hyprland` so a fresh instance can be spawned on demand the next time it's needed.

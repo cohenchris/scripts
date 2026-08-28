@@ -1,0 +1,149 @@
+#!/usr/bin/env bash
+
+# xdg-desktop-portal-hyprland occasionally deadlocks and spins at ~100% CPU
+# instead of exiting cleanly once Hyprland exits (e.g. after a crash, logout,
+# or a switch back to the login tty). This is a long-standing, recurring
+# upstream bug - see https://github.com/hyprwm/xdg-desktop-portal-hyprland/issues/103
+#
+# This script performs a single check and exits - it is meant to be invoked
+# periodically via cron (or a systemd timer). It only acts while Hyprland is
+# NOT running (i.e. from the login tty, which is when this bug has been
+# observed to happen). CPU usage can only be measured as a delta between two
+# points in time, so state (which PID is being watched, its CPU ticks so
+# far, and how many consecutive runs it's been over the threshold) is cached
+# between invocations. Once the portal process has been pegged above the CPU
+# threshold for a couple of consecutive runs in a row, it is killed off so a
+# fresh instance can be spawned on demand.
+
+PORTAL_PROCESS="xdg-desktop-portal-hyprland"
+COMPOSITOR_PROCESS="Hyprland"
+
+CPU_THRESHOLD_PERCENT=90
+SUSTAINED_CHECKS_REQUIRED=2
+
+CACHE_DIR="${XDG_CACHE_HOME:-${HOME}/.local/cache}/xdg-desktop-portal-hyprland-watchdog"
+STATE_FILE="${CACHE_DIR}/state"
+
+CLK_TCK=$(getconf CLK_TCK)
+
+
+########## PROCESS LOOKUP ##########
+
+# Scan /proc once for both the compositor and portal PIDs, populating the
+# hyprland_pid and portal_pid globals (empty if not found). Resolving
+# /proc/*/exe (rather than matching on comm, which the kernel truncates to
+# 15 characters) avoids false matches - notably against this script's own
+# name, which shares the same prefix as the portal's.
+function find_relevant_pids()
+{
+  local proc_dir pid exe
+
+  hyprland_pid=""
+  portal_pid=""
+
+  for proc_dir in /proc/[0-9]*; do
+    pid="${proc_dir##*/}"
+    exe=$(readlink "${proc_dir}/exe" 2>/dev/null) || continue
+
+    case "${exe##*/}" in
+      "${COMPOSITOR_PROCESS}") hyprland_pid="${pid}" ;;
+      "${PORTAL_PROCESS}") portal_pid="${pid}" ;;
+    esac
+  done
+}
+
+
+########## CPU USAGE ##########
+
+# Print the total CPU ticks (utime + stime) consumed by a PID so far.
+function get_cpu_ticks()
+{
+  local pid="$1"
+  local stat_line fields
+
+  stat_line=$(cat "/proc/${pid}/stat" 2>/dev/null) || return 1
+  stat_line="${stat_line#*) }"
+  fields=(${stat_line})
+
+  # utime and stime are the 14th and 15th fields of /proc/PID/stat, which
+  # are the 12th and 13th fields remaining after stripping "pid (comm) ".
+  echo $(( ${fields[11]} + ${fields[12]} ))
+}
+
+
+########## STATE CACHE ##########
+
+function clear_state()
+{
+  rm -f "${STATE_FILE}"
+}
+
+# Populate the watched_pid, watched_cpu_ticks, watched_sample_ns, and
+# watched_high_checks globals from the previous run. Returns 1 (with the
+# globals left empty) if there is no usable prior state.
+function load_state()
+{
+  watched_pid=""
+  watched_cpu_ticks=""
+  watched_sample_ns=""
+  watched_high_checks=""
+
+  [[ -f "${STATE_FILE}" ]] || return 1
+  read -r watched_pid watched_cpu_ticks watched_sample_ns watched_high_checks < "${STATE_FILE}"
+  [[ -n "${watched_sample_ns}" ]] || return 1
+}
+
+function save_state()
+{
+  mkdir -p "${CACHE_DIR}"
+  echo "$1 $2 $3 $4" > "${STATE_FILE}"
+}
+
+
+########## MAIN ##########
+
+find_relevant_pids
+
+# The bug only manifests once Hyprland is gone, e.g. back on the login tty.
+if [[ -n "${hyprland_pid}" ]] || [[ -z "${portal_pid}" ]]; then
+  clear_state
+  exit 0
+fi
+
+current_cpu_ticks=$(get_cpu_ticks "${portal_pid}")
+current_sample_ns=$(date +%s%N)
+if [[ -z "${current_cpu_ticks}" ]]; then
+  clear_state
+  exit 0
+fi
+
+# If the portal process was just (re)started, or there is no prior state to
+# compare against yet, just start tracking it for the next run.
+if ! load_state || [[ "${portal_pid}" != "${watched_pid}" ]]; then
+  save_state "${portal_pid}" "${current_cpu_ticks}" "${current_sample_ns}" 0
+  exit 0
+fi
+
+# Measure actual elapsed wall-clock time between runs (rather than assuming
+# a fixed cron interval), since cron invocations can drift or be skipped.
+elapsed_ns=$(( current_sample_ns - watched_sample_ns ))
+if (( elapsed_ns <= 0 )); then
+  save_state "${portal_pid}" "${current_cpu_ticks}" "${current_sample_ns}" "${watched_high_checks}"
+  exit 0
+fi
+
+cpu_percent=$(( (current_cpu_ticks - watched_cpu_ticks) * 100 * 1000000000 / (CLK_TCK * elapsed_ns) ))
+
+if (( cpu_percent >= CPU_THRESHOLD_PERCENT )); then
+  watched_high_checks=$(( watched_high_checks + 1 ))
+else
+  watched_high_checks=0
+fi
+
+if (( watched_high_checks >= SUSTAINED_CHECKS_REQUIRED )); then
+  notify CRITICAL "xdg-desktop-portal-hyprland deadlocked" "Killing PID ${portal_pid} after ${cpu_percent}% CPU over ${SUSTAINED_CHECKS_REQUIRED} consecutive checks"
+  killall "${PORTAL_PROCESS}"
+  clear_state
+else
+  save_state "${portal_pid}" "${current_cpu_ticks}" "${current_sample_ns}" "${watched_high_checks}"
+fi
