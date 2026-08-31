@@ -6,8 +6,9 @@ services:
       - ./config:/app/data
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - 80:3001
+      - 3001:3001
     restart: always
+
 
   nut:
     image: instantlinux/nut-upsd:latest
@@ -31,3 +32,19 @@ services:
     ports:
       - 3493:3493
     restart: always
+
+
+  whatsupdocker:
+    image: getwud/wud:latest
+    container_name: whatsupdocker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - TZ
+      - WUD_REGISTRY_HUB_PUBLIC_LOGIN=${DOCKER_LOGIN}
+      - WUD_REGISTRY_HUB_PUBLIC_PASSWORD=${DOCKER_TOKEN}
+      - WUD_AUTH_BASIC_CHRIS_USER=${WUD_USERNAME}
+      - WUD_AUTH_BASIC_CHRIS_HASH=${WUD_HTPASSWD_HASH}
+    restart: always
+    ports:
+      - 3000:3000
