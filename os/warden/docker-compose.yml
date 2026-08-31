@@ -41,6 +41,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - TZ
+      - WUD_WATCHER_LOCAL_SOCKER=/var/run/docker.sock
+      - WUD_WATCHER_REMOTE_HOST=${WUD_REMOTE_HOST}
+      - WUD_WATCHER_REMOTE_PORT=2375
       - WUD_REGISTRY_HUB_PUBLIC_LOGIN=${DOCKER_LOGIN}
       - WUD_REGISTRY_HUB_PUBLIC_PASSWORD=${DOCKER_TOKEN}
       - WUD_AUTH_BASIC_CHRIS_USER=${WUD_USERNAME}
