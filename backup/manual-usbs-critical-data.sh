@@ -11,6 +11,9 @@ USB1_MNT_PATH=/mnt/usb1
 USB2_MNT_PATH=/mnt/usb2
 source "${WORKING_DIR}/.env"
 
+# Name of the critical data directory as it will appear on the root of each USB
+CRITICAL_DATA_DIR_NAME=$(basename "${CRITICAL_DATA_LOCAL_BACKUP_DIR}")
+
 # Include bin/ directory from this repository in the system PATH
 SCRIPTS_DIR=$(realpath "${WORKING_DIR}"/../bin)
 export PATH="${PATH}:${SCRIPTS_DIR}"
@@ -116,15 +119,52 @@ rm -r "${USB2_MNT_PATH:?}"/*
 ####################
 #  COPY + DECRYPT  #
 ####################
-# First, copy base critical data backup to usb1
+# First, copy the base critical data backup to usb1. Copy the directory itself
+# (not just its contents) so it lands as a subdirectory on the root of the drive.
 echo
-echo "Copying critical data backup to ${USB1_MNT_PATH}..."
-cp -r "${CRITICAL_DATA_LOCAL_BACKUP_DIR}"/* "${USB1_MNT_PATH}"
+echo "Copying critical data backup to ${USB1_MNT_PATH}/${CRITICAL_DATA_DIR_NAME}..."
+cp -r "${CRITICAL_DATA_LOCAL_BACKUP_DIR}" "${USB1_MNT_PATH}"
 
 # Decrypt backup_codes.txt on usb1
 BACKUP_CODES_PASSWORD=$(cat "${BACKUP_CODES_PASS_FILE}")
-echo -e "${BACKUP_CODES_PASSWORD}\n:X\n\n\n:wq\n" | /usr/bin/vim -es -u NONE -i NONE "${USB1_MNT_PATH}/mfa/backup_codes.txt"
+echo -e "${BACKUP_CODES_PASSWORD}\n:X\n\n\n:wq\n" | /usr/bin/vim -es -u NONE -i NONE "${USB1_MNT_PATH}/${CRITICAL_DATA_DIR_NAME}/mfa/backup_codes.txt"
 unset BACKUP_CODES_PASSWORD
+
+####################
+#     CHECKSUM     #
+####################
+# Generate a checksum manifest of the critical data directory, stored alongside
+# it in the parent directory (the root of the drive). Paths in the manifest are
+# relative to the drive root so it can be verified in place with `sha256sum -c`.
+echo
+echo "Generating checksum manifest at ${USB1_MNT_PATH}/${CRITICAL_DATA_DIR_NAME}.sha256..."
+( cd "${USB1_MNT_PATH}" && find "${CRITICAL_DATA_DIR_NAME}" -type f -exec sha256sum {} + | sort -k2 ) > "${USB1_MNT_PATH}/${CRITICAL_DATA_DIR_NAME}.sha256"
+
+# Drop a short README describing how to verify the checksum manifest
+cat <<EOF > "${USB1_MNT_PATH}/README.md"
+# Critical data backup
+
+This drive holds a backup of critical data in the \`${CRITICAL_DATA_DIR_NAME}/\`
+directory. \`${CRITICAL_DATA_DIR_NAME}.sha256\` is a SHA-256 checksum manifest of
+every file in that directory.
+
+## Verifying the backup
+
+From the root of this drive, run:
+
+    sha256sum -c ${CRITICAL_DATA_DIR_NAME}.sha256
+
+Every line should report \`OK\`. A \`FAILED\` line means that file no longer
+matches the checksum recorded when the backup was made (corruption or
+tampering); a \`No such file or directory\` line means a file is missing.
+
+## Regenerating the manifest
+
+If you intentionally change the contents of \`${CRITICAL_DATA_DIR_NAME}/\`, rebuild
+the manifest from the root of this drive with:
+
+    find ${CRITICAL_DATA_DIR_NAME} -type f -exec sha256sum {} + | sort -k2 > ${CRITICAL_DATA_DIR_NAME}.sha256
+EOF
 
 ####################
 #       CLONE      #

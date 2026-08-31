@@ -210,8 +210,19 @@ This script will conflict with [`critical-data.sh`](critical-data.sh).
 As part of my 3-2-1 backup system, I have 2x USB sticks in a fireproof safe with the very basics that I would need to restore backups in a worst-case-scenario.
 This script is highly tailored to my exact [`critical-data.sh`](critical-data.sh) backup structure and contents.
 
+When run, this script will:
+1. Prompt for the two target USB device names and confirm them against `fdisk -l` output
+2. Mount both devices and wipe their existing contents
+3. Copy the local critical data backup onto the first USB as a subdirectory on the drive root (named after `CRITICAL_DATA_LOCAL_BACKUP_DIR`, e.g. `critical-data/`), rather than dumping its contents loose at the root
+4. Decrypt `mfa/backup_codes.txt` in place using the password in `BACKUP_CODES_PASS_FILE`
+5. Generate a SHA-256 checksum manifest (`<critical-data-dir>.sha256`) covering every file in the backup directory, stored at the drive root with paths relative to the root so it can be verified in place with `sha256sum -c`
+6. Write a `README.md` to the drive root explaining how to verify and regenerate the checksum manifest
+7. Clone the full contents of the first USB (backup directory, checksum manifest, and README) to the second USB
+8. Verify that both drives are non-empty before finishing
+
 ### Prerequisites
 - Variables for this script are filled out in [`.env`](sample.env) file
+- `BACKUP_CODES_PASS_FILE` points to a file containing the password for the encrypted `backup_codes.txt`
 - 2 devices are plugged into your local machine which the backup data will be copied to
 
 ### Use
@@ -219,6 +230,8 @@ This script should **NOT** be run as a cron job.
 Instead, it should be run manually at consistent intervals.
 Personally, I run this once per month.
 The USB drives that I use for this are placed into a fireproof safe.
+
+To confirm a drive is still intact, mount it and run `sha256sum -c <critical-data-dir>.sha256` from the drive root - every line should report `OK`.
 
 Please do not run [`critical-data.sh`](critical-data.sh) during this script's execution - that script operates using the same directories that this script uses.
 
