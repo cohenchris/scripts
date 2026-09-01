@@ -8,6 +8,8 @@ services:
     ports:
       - 3001:3001
     restart: always
+    labels:
+      - wud.tag.include=^\d+\.\d+\.\d+-slim$ # include labels in the format #.#.#-slim
 
 
   nut:
@@ -32,6 +34,8 @@ services:
     ports:
       - 3493:3493
     restart: always
+    labels:
+      - wud.tag.include=^\d+\.\d+\.\d+-r\d+$
 
 
   whatsupdocker:
@@ -51,3 +55,5 @@ services:
     restart: always
     ports:
       - 3000:3000
+    labels:
+      - wud.tag.include=^\d+\.\d+\.\d+$
