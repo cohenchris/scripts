@@ -41,7 +41,7 @@ else
 fi
 
 # Push the result to the monitoring webhook and capture the response
-RESPONSE=$(curl -s -G "${WEBHOOK_URL}" \
+RESPONSE=$(curl "${WEBHOOK_URL}" \
   --data-urlencode "status=${STATUS}" \
   --data-urlencode "msg=${MSG}" \
   --data-urlencode "ping=${PING}")
