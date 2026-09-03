@@ -26,6 +26,9 @@ Think of these as scripts that would require a solid amount of effort to port to
   - [Use](#Use-3)
 - [Systemd Watchdog](#Systemd-Watchdog)
   - [Use](#Use-4)
+- [WireGuard Uptime](#WireGuard-Uptime)
+  - [Prerequisites](#Prerequisites-3)
+  - [Use](#Use-5)
 
 
 
@@ -150,4 +153,27 @@ This script checks whether a given systemd service is currently active, and rest
 Must be run as root, with the name of the systemd service to watch as the first argument. Intended to be run periodically via cron.
 ```sh
 sudo ./systemd-watchdog.sh glances
+```
+
+
+
+
+## WireGuard Uptime
+[`wireguard-uptime.sh`](wireguard-uptime.sh)
+
+This script monitors a WireGuard tunnel and reports its health to a push-monitoring webhook (such as an [Uptime Kuma](https://github.com/louislam/uptime-kuma) push monitor).
+
+1. Check whether the configured WireGuard interface has an established peer
+2. If it does, ping a known host through the tunnel to confirm traffic actually flows
+3. Push the resulting status (`up`/`down`), a human-readable message, and the round-trip latency to the webhook
+
+### Prerequisites
+This script assumes that:
+- You have filled out the [`.env`](sample.env) file (`WG_INTERFACE` and `WEBHOOK_URL`)
+- `wg`, `ping`, and `curl` are installed on your machine
+
+### Use
+It is intended to run periodically via cron. It takes no arguments.
+```sh
+./wireguard-uptime.sh
 ```
