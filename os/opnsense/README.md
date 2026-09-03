@@ -120,7 +120,7 @@ service configd restart
 ```
 Manually test by running:
 ```sh
-configctl wireguarduptime backup
+configctl wireguarduptime push
 ```
 
 2. Automated setup using [`opnsense-env-setup.sh`](opnsense-env-setup.sh)
