@@ -34,6 +34,12 @@ echo "Installing and configuring data integrity monitoring OPNSense action..."
 cp "${WORKING_DIR}/actions_dataintegrity.conf" /usr/local/opnsense/service/conf/actions.d
 sed -i "" "s|<scriptsdir>|${SCRIPTS_BASE_DIR}|g" /usr/local/opnsense/service/conf/actions.d/actions_dataintegrity.conf
 
+# Install WireGuard uptime monitoring action
+echo
+echo "Installing and configuring WireGuard uptime monitoring OPNSense action..."
+cp "${WORKING_DIR}/actions_wireguarduptime.conf" /usr/local/opnsense/service/conf/actions.d
+sed -i "" "s|<scriptsdir>|${SCRIPTS_BASE_DIR}|g" /usr/local/opnsense/service/conf/actions.d/actions_wireguarduptime.conf
+
 # Restart configd to index new OPNSense actions
 echo
 echo "Restarting config to index new OPNSense actions..."

@@ -13,11 +13,14 @@ Custom scripts, services, and configuration files for a FreeBSD-based OPNSense d
 - [OPNSense Action to Monitor Disk Health](#OPNSense-Action-to-Monitor-Disk-Health)
   - [Prerequisites](#Prerequisites-1)
   - [Use](#Use-1)
-- [Replace and Resilver a Drive in a ZFS Root Pool](#Replace-and-Resilver-a-Drive-in-a-ZFS-Root-Pool)
+- [OPNSense Action to Monitor WireGuard Uptime](#OPNSense-Action-to-Monitor-WireGuard-Uptime)
   - [Prerequisites](#Prerequisites-2)
   - [Use](#Use-2)
-- [OPNSense Fresh Install Setup Script](#OPNSense-Fresh-Install-Setup-Script)
+- [Replace and Resilver a Drive in a ZFS Root Pool](#Replace-and-Resilver-a-Drive-in-a-ZFS-Root-Pool)
+  - [Prerequisites](#Prerequisites-3)
   - [Use](#Use-3)
+- [OPNSense Fresh Install Setup Script](#OPNSense-Fresh-Install-Setup-Script)
+  - [Use](#Use-4)
 
 
 
@@ -84,6 +87,40 @@ service configd restart
 Manually test by running:
 ```sh
 configctl dataintegrity backup
+```
+
+2. Automated setup using [`opnsense-env-setup.sh`](opnsense-env-setup.sh)
+
+
+
+
+## OPNSense Action to Monitor WireGuard Uptime
+[`actions_wireguarduptime.conf`](actions_wireguarduptime.conf)
+
+This is an "OPNSense action", which is essentially a cron job that can be configured from the OPNSense web UI.
+This action will run a script which checks that the WireGuard interface has an established peer and is passing traffic, then pushes the resulting status and round-trip latency to a push-monitoring webhook (such as an [Uptime Kuma](https://github.com/louislam/uptime-kuma) push monitor).
+For more details on the exact functionality of said script, please check out [`wireguard-uptime.sh`](../../system/wireguard-uptime.sh) in the `system` directory.
+
+After this action is installed, you may schedule it from the OPNSense web UI (System --> Settings --> Cron).
+
+### Prerequisites
+- You have populated the [`.env`](../../system/sample.env) file for [`wireguard-uptime.sh`](../../system/wireguard-uptime.sh) (`WG_INTERFACE` and `WEBHOOK_URL`)
+- You have a push-monitoring webhook to report to (such as an Uptime Kuma push monitor)
+
+### Use
+Two options are available to setup this OPNSense action:
+
+1. Manual setup
+First, edit `actions_wireguarduptime.conf` and replace <scriptsdir> with the path to the BASE of this git repository.
+Then, run the following:
+
+```sh
+cp ./actions_wireguarduptime.conf /usr/local/opnsense/service/conf/actions.d
+service configd restart
+```
+Manually test by running:
+```sh
+configctl wireguarduptime backup
 ```
 
 2. Automated setup using [`opnsense-env-setup.sh`](opnsense-env-setup.sh)
