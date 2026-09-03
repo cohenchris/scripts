@@ -47,3 +47,7 @@ service configd restart
 
 echo
 echo "Setup complete! Please schedule cron jobs for your new actions from the OPNSense web UI."
+echo
+echo "IMPORTANT: The scripts these actions call require their .env files to be filled out first:"
+echo "  - ${SCRIPTS_BASE_DIR}/backup/.env  (cp backup/sample.env .env) for actions_backupopnsense.conf"
+echo "  - ${SCRIPTS_BASE_DIR}/system/.env  (cp system/sample.env .env) for actions_dataintegrity.conf and actions_wireguarduptime.conf"

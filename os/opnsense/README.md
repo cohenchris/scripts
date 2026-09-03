@@ -101,6 +101,8 @@ This is an "OPNSense action", which is essentially a cron job that can be config
 This action will run a script which checks that the WireGuard interface has an established peer and is passing traffic, then pushes the resulting status and round-trip latency to a push-monitoring webhook (such as an [Uptime Kuma](https://github.com/louislam/uptime-kuma) push monitor).
 For more details on the exact functionality of said script, please check out [`wireguard-uptime.sh`](../../system/wireguard-uptime.sh) in the `system` directory.
 
+**NOTE:** This action does nothing until you have run `cp sample.env .env` in [`../../system/`](../../system/) and filled out `WG_INTERFACE` and `WEBHOOK_URL`.
+
 After this action is installed, you may schedule it from the OPNSense web UI (System --> Settings --> Cron).
 
 ### Prerequisites

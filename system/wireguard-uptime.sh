@@ -8,8 +8,14 @@
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source "${WORKING_DIR}/.env"
 
+# Add my custom PATH to the user's environment
+# This would usually be set in the environment itself (either cron or the user's profile).
+# OPNSense takes control of crontab and we cannot set the correct PATH for cron.
+# Therefore, we set it manually here.
+export PATH="${PATH}:${WORKING_DIR}/../bin"
+
 # Host pinged to confirm the tunnel is passing traffic (Google DNS)
-PING_TARGET="8.8.8.8"
+PING_TARGET="9.9.9.9"
 
 
 # Ensure required variables are set
