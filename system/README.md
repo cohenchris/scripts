@@ -23,11 +23,12 @@ Think of these as scripts that would require a solid amount of effort to port to
   - [Prerequisites](#Prerequisites-2)
   - [Use](#Use-2)
 - [System Monitor](#System-Monitor)
+  - [Prerequisites](#Prerequisites-3)
   - [Use](#Use-3)
 - [Systemd Watchdog](#Systemd-Watchdog)
   - [Use](#Use-4)
 - [WireGuard Uptime](#WireGuard-Uptime)
-  - [Prerequisites](#Prerequisites-3)
+  - [Prerequisites](#Prerequisites-4)
   - [Use](#Use-5)
 
 
@@ -135,6 +136,10 @@ To use this script, invoke it with either `--infile` (path to a URL file) or `--
 This script prints a JSON snapshot of a system's health metrics to stdout, including uptime, CPU usage, memory/swap usage, per-core CPU temperatures, disk usage, and NVIDIA GPU stats (usage, memory, temperature) via direct NVML bindings.
 
 It's dependency-free (standard library only), which matters on immutable OSes that lack `nvidia-smi` or a package manager to install one.
+
+### Prerequisites
+This script assumes that:
+- You have filled out the [`.env`](sample.env) file (`SYSTEM_MONITOR_DISKS`). If omitted, it defaults to just `/`.
 
 ### Use
 ```sh

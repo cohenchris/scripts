@@ -6,10 +6,46 @@ import ctypes
 import glob
 import json
 import os
+import re
 import time
 from datetime import datetime
 
-MONITOR_PATHS = ["/", "/userdata"]
+
+def _load_env_disks():
+    """Read SYSTEM_MONITOR_DISKS from the .env file next to this script.
+
+    .env uses the same bash-array syntax as the other scripts in this repo
+    (see sample.env), e.g.:
+        SYSTEM_MONITOR_DISKS=(
+        "/"
+        "/userdata"
+        )
+    Falls back to ["/"] if .env or the variable is missing/empty.
+    """
+    env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+    try:
+        with open(env_path) as f:
+            content = f.read()
+    except OSError:
+        return ["/"]
+
+    match = re.search(r"SYSTEM_MONITOR_DISKS=\((.*?)\)", content, re.DOTALL)
+    if not match:
+        return ["/"]
+
+    disks = []
+    for line in match.group(1).splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        quoted = re.match(r'"([^"]*)"', line)
+        if quoted:
+            disks.append(quoted.group(1))
+
+    return disks or ["/"]
+
+
+MONITOR_PATHS = _load_env_disks()
 
 # NVML temperature sensor enum: NVML_TEMPERATURE_GPU
 NVML_TEMPERATURE_GPU = 0
