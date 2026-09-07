@@ -8,6 +8,12 @@ services:
     ports:
       - 3001:3001
     restart: always
+    healthcheck:
+      test: ["CMD", "extra/healthcheck"]
+      interval: 60s
+      timeout: 30s
+      start_period: 180s
+      retries: 5
     labels:
       - wud.tag.include=^\d+\.\d+\.\d+-slim$ # include labels in the format #.#.#-slim
 
@@ -34,6 +40,12 @@ services:
     ports:
       - 3493:3493
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "upsc ups@localhost:3493 ups.status || exit 1"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
     labels:
       - wud.tag.include=^\d+\.\d+\.\d+-r\d+$
 
@@ -55,5 +67,11 @@ services:
     restart: always
     ports:
       - 3000:3000
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
     labels:
       - wud.tag.include=^\d+\.\d+\.\d+$
