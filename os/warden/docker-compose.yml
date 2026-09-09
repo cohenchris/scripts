@@ -3,7 +3,7 @@ services:
     image: louislam/uptime-kuma:2-slim
     container_name: uptime-kuma
     volumes:
-      - ./config:/app/data
+      - ./config/uptime-kuma:/app/data
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - 3001:3001
@@ -75,3 +75,15 @@ services:
       retries: 5
     labels:
       - wud.tag.include=^\d+\.\d+\.\d+$
+
+
+  signal-cli:
+    image: bbernhard/signal-cli-rest-api
+    container_name: signal-api
+    restart: always
+    ports:
+        - 8080:8080
+    volumes:
+      - ./config/signal:/home/.local/share/signal-cli
+    environment:
+        - MODE=native
