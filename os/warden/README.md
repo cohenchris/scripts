@@ -26,7 +26,12 @@ Custom scripts, services, and configuration files for my watchdog pi.
 
 - **Network UPS Tools (NUT)** - monitors a USB-connected UPS via [`instantlinux/nut-upsd`](https://hub.docker.com/r/instantlinux/nut-upsd), listening on port 3493
 - **Uptime Kuma** - a self-hosted uptime monitoring tool with a web UI, served on port 3001
-- **What's Up Docker (WUD)** - watches running containers for newer image tags via [`getwud/wud`](https://github.com/getwud/wud), with a web UI served on port 3000. It watches both the local Docker socket and a remote Docker host (reached over the plain Docker API on port 2375), and authenticates to Docker Hub with an access token to avoid anonymous pull-rate limits.
+- **What's Up Docker (WUD)** - watches running containers for newer image tags via [`getwud/wud`](https://github.com/getwud/wud), with a web UI served on port 3000. It watches both the local Docker socket and a remote Docker host (reached over the plain Docker API on port 2375), and authenticates to Docker Hub with an access token to avoid anonymous pull-rate limits. Every other container in the stack carries a `wud.tag.include` label so WUD only flags real version bumps, ignoring `latest`/`-dev`/`-ci`/etc noise on Docker Hub:
+  - `uptime-kuma` - `#.#.#-slim`
+  - `nut` - `#.#.#-rN`
+  - `whatsupdocker` - `#.#.#`
+  - `signal-cli` - `#.#`
+  - `browserless` - `#.#.#-chrome-stable`
 
 ### Prerequisites
 - `docker` and `docker-compose` are installed

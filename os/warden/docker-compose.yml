@@ -3,7 +3,7 @@ services:
     image: louislam/uptime-kuma:2-slim
     container_name: uptime-kuma
     volumes:
-      - ./config/uptime-kuma:/app/data
+      - ${CONFIG}/uptime-kuma:/app/data
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - 3001:3001
@@ -82,8 +82,35 @@ services:
     container_name: signal-api
     restart: always
     ports:
-        - 8080:8080
+      - 8080:8080
     volumes:
-      - ./config/signal:/home/.local/share/signal-cli
+      - ${CONFIG}/signal:/home/.local/share/signal-cli
     environment:
-        - MODE=native
+      - MODE=native
+    labels:
+      - wud.tag.include=^\d+\.\d+$
+
+
+  browserless:
+    #    image: ghcr.io/browserless/firefox:latest
+    image: browserless/chrome
+    container_name: browserless
+    shm_size: "2g"
+    ports:
+      - 3000:3000
+    environment:
+      - MAX_CONCURRENT_SESSIONS=20        # how many browser sessions can run at once
+      - QUEUED=100                        # how many requests can wait in queue beyond that
+      - CONNECTION_TIMEOUT=60000          # ms before an idle/stuck session is killed
+      - MAX_QUEUE_LENGTH=100              # hard cap; excess get rejected outright
+      - PREBOOT_CHROME=true               # keeps a pool of Chrome instances warm
+      - KEEP_ALIVE=true
+      - DEFAULT_LAUNCH_ARGS=["--ignore-certificate-errors"]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/pressure"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    labels:
+      - wud.tag.include=^\d+\.\d+\.\d+-chrome-stable$
