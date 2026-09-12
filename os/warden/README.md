@@ -30,7 +30,7 @@ Custom scripts, services, and configuration files for my watchdog pi.
   - `uptime-kuma` - `#.#.#-slim`
   - `nut` - `#.#.#-rN`
   - `whatsupdocker` - `#.#.#`
-  - `signal-cli` - `#.#`
+  - `signal` - `#.#`
   - `browserless` - `#.#.#-chrome-stable`
 
 ### Prerequisites

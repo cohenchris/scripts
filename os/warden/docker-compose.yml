@@ -77,9 +77,9 @@ services:
       - wud.tag.include=^\d+\.\d+\.\d+$
 
 
-  signal-cli:
+  signal:
     image: bbernhard/signal-cli-rest-api
-    container_name: signal-api
+    container_name: signal
     restart: always
     ports:
       - 8080:8080
@@ -87,6 +87,12 @@ services:
       - ${CONFIG}/signal:/home/.local/share/signal-cli
     environment:
       - MODE=native
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/v1/about"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
     labels:
       - wud.tag.include=^\d+\.\d+$
 
