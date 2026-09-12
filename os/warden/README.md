@@ -13,6 +13,10 @@ Custom scripts, services, and configuration files for my watchdog pi.
   - [Use](#Use)
 - [Automated Setup Script](#Automated-Setup-Script)
   - [Use](#Use-1)
+- [Network Shutdown Script](#Network-Shutdown-Script)
+  - [Prerequisites](#Prerequisites-1)
+  - [Configuration](#Configuration-1)
+  - [Use](#Use-2)
 
 
 
@@ -76,3 +80,50 @@ sudo ./setup.sh
 You will be prompted for the username to operate as (used for `paru` calls and to own `~/warden`).
 
 The script creates `~/warden/.env` from `sample.env` on every run - after setup, edit it with your actual UPS and WUD settings and run `docker compose up -d` again from `~/warden` to pick up the changes.
+
+
+
+
+## Network Shutdown Script
+[`shutdown-network.sh`](shutdown-network.sh)
+
+Meant to be wired in as the host `upsmon`'s `SHUTDOWNCMD` on warden (the Docker Compose stack only runs `upsd` - it doesn't monitor the UPS itself). When the UPS reaches low battery, or upsmon otherwise issues a forced shutdown, this script runs instead of a bare `shutdown` and:
+
+1. Sends a notification through a Home Assistant webhook
+2. Shuts down every other server on the network (`shutdown_all_devices`)
+3. Powers off warden itself, last (`shutdown_self`)
+
+> **Status:** steps 1 and 3 are implemented. `shutdown_all_devices` is currently a stub - see the comment above it in the script for the intended shape (an SSH poweroff loop over a server inventory). Router and AP are intentionally left up so the run can finish; killing mains via the UPS itself is out of scope.
+
+### Prerequisites
+- Passwordless root SSH from warden to every server it shuts down, once `shutdown_all_devices` is filled in - `upsmon` runs `SHUTDOWNCMD` as root
+- Host `upsmon` installed and configured on warden (`paru -S nut`), with `SHUTDOWNCMD` pointed at this script's path in `/etc/nut/upsmon.conf`, then `systemctl enable --now nut-monitor.service`
+- A Home Assistant webhook to notify on shutdown
+
+### Configuration
+Add to `.env` in this directory (copy [`sample.env`](sample.env) if you haven't already - it has the placeholder key):
+- `HA_WEBHOOK_ENDPOINT` - Home Assistant webhook URL the script POSTs `{title, body}` to
+
+Optional environment overrides:
+- `NOTIFY_TITLE` / `NOTIFY_BODY` - notification text
+- `NOTIFY_TIMEOUT` - seconds to wait on the webhook request (default `10`)
+- `DRY_RUN=1` - log every step without sending the notification or powering anything off
+
+### Use
+Test the wiring first - logs only, nothing is powered off:
+```sh
+DRY_RUN=1 ./shutdown-network.sh
+# or
+./shutdown-network.sh --dry-run
+```
+
+Once host `upsmon` is configured with this script as its `SHUTDOWNCMD`, a real end-to-end test is:
+```sh
+sudo upsmon -c fsd
+```
+This actually shuts down the network, so only run it once `shutdown_all_devices` is implemented and everything above is in place.
+
+Logs go to stderr and syslog under the `shutdown-network` tag:
+```sh
+journalctl -t shutdown-network
+```
