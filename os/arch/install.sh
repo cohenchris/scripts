@@ -344,6 +344,18 @@ function post_chroot_setup() {
   # Enable NTP
   echo "Enabling NTP..."
   timedatectl set-ntp true
+  systemctl enable systemd-timesyncd
+
+  echo
+  read -p "Would you like to set a custom NTP server? (y/N) " yn
+
+  case ${yn} in
+    [Yy]* )
+      read -p "Enter NTP server address: " NTP_SERVER
+      echo -e "[Time]\nNTP=${NTP_SERVER}" > /etc/systemd/timesyncd.conf
+      ;;
+    *     ) ;;
+  esac
 
   # Set language and time zone
   echo
