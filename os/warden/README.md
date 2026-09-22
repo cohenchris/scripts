@@ -73,16 +73,16 @@ Uptime Kuma's data will persist in `~/warden/config`, and its web UI will be ava
 This script fully configures this machine's responsibilities: NUT, Uptime Kuma, and What's Up Docker, all deployed together via [`docker-compose.yml`](docker-compose.yml).
 
 It will:
-- Install `docker` and `docker-compose`, enable the Docker service, and add your user to the `docker` group
+- Install `docker` and `docker-compose` via `apt-get`, enable the Docker service, and add your user to the `docker` group
 - Copy [`docker-compose.yml`](docker-compose.yml) and [`sample.env`](sample.env) (renamed to `.env`) into `~/warden`
 - Bring the stack up with `docker compose up -d`
 
 ### Use
-Call this script as root from the command line:
+Call this script as your normal (non-root) user - it escalates internally with `sudo` where needed:
 ```sh
-sudo ./setup.sh
+./setup.sh
 ```
-You will be prompted for the username to operate as (used for `paru` calls and to own `~/warden`).
+It operates as the invoking user (`$USER`) - no username prompt, and it will refuse to run if invoked as root.
 
 The script creates `~/warden/.env` from `sample.env` on every run - after setup, edit it with your actual UPS and WUD settings and run `docker compose up -d` again from `~/warden` to pick up the changes.
 
