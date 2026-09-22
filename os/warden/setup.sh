@@ -11,13 +11,42 @@ if [[ "$(id -u)" -eq 0 ]]; then
 fi
 
 # Install Docker, then deploy the Network UPS Tools + Uptime Kuma stack via its compose file
-function setup_warden_stack()
+function install_docker()
 {
   echo "Installing Docker..."
-  sudo apt-get install docker-compose
-  sudo systemctl enable --now docker.service
+  # Add Docker's official GPG key:
+  sudo apt update
+  sudo apt install ca-certificates curl
+  sudo install -m 0755 -d /etc/apt/keyrings
+  sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+  sudo chmod a+r /etc/apt/keyrings/docker.asc
+  
+  # Add the repository to Apt sources:
+  sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/debian
+Suites: $(. /etc/os-release && echo "$VERSION_CODENAME")
+Components: stable
+Architectures: $(dpkg --print-architecture)
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
+  
+  sudo apt update
+
+  # Add user to the docker group
+  sudo groupadd docker
   sudo usermod -aG docker "${USER}"
 
+  # Install Docker
+  sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+  # Start Docker service
+  sudo systemctl enable docker
+  sudo systemctl start docker
+
+}
+
+function deploy_docker_containers() {
   echo "Deploying Docker Containers..."
   WARDEN_DIR="/home/${USER}/warden"
   sudo -u "${USER}" mkdir -p "${WARDEN_DIR}"
@@ -32,7 +61,8 @@ function setup_warden_stack()
 }
 
 
-setup_warden_stack
+install_docker
+deploy_docker_containers
 
 
 echo
