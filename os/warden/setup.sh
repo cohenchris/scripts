@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Bail if attempting to substitute an unset variable
-set -u
+set -eu
 
 WORKING_DIR=$(dirname "$(realpath "$0")")
 
@@ -14,7 +14,7 @@ fi
 function setup_warden_stack()
 {
   echo "Installing Docker..."
-  sudo apt-get install docker docker-compose
+  sudo apt-get install docker-compose
   sudo systemctl enable --now docker.service
   sudo usermod -aG docker "${USER}"
 
