@@ -14,7 +14,7 @@ fi
 function setup_warden_stack()
 {
   echo "Installing Docker..."
-  sudo apt-get docker docker-compose
+  sudo apt-get install docker docker-compose
   sudo systemctl enable --now docker.service
   sudo usermod -aG docker "${USER}"
 
