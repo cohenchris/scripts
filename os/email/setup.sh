@@ -13,13 +13,13 @@ fi
 
 
 # Determine which client is running this script
-# Raspbian Backup Server
+# Warden (Debian)
 if command -v apt &> /dev/null; then
-  REALNAME="Backup Server"
+  REALNAME="Warden"
 # OpenWRT
 elif command -v apk &> /dev/null; then
   REALNAME="OpenWRT"
-# Arch Linux Lab
+# Phrog (Arch Linux)
 elif command -v pacman &> /dev/null; then
   REALNAME="Phrog"
 # OPNSense (FreeBSD)
@@ -63,9 +63,9 @@ function install_dependencies()
   # Exit immediately if a command exits with a non-zero status
   set -e
 
-  # Raspbian Backup Server
-  if [[ "${REALNAME}" = "Backup Server" ]]; then
-    echo "Installing packages for Raspbian backup server..."
+  # Warden (Debian)
+  if [[ "${REALNAME}" = "Warden" ]]; then
+    echo "Installing packages for Warden..."
     apt-get update && apt-get upgrade
     apt install mutt msmtp msmtp-mta
 
@@ -75,9 +75,9 @@ function install_dependencies()
     apk update
     apk add coreutils-realpath curl mutt msmtp msmtp-mta
 
-  # Arch Linux Lab
+  # Phrog Lab (Arch Linux)
   elif [[ "${REALNAME}" = "Phrog" ]]; then
-    echo "Installing packages for lab..."
+    echo "Installing packages for Phrog..."
     pacman -Syu
     pacman -S msmtp msmtp-mta mutt
 
