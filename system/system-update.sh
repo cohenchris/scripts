@@ -47,6 +47,7 @@ function update_ubuntu()
 function update_openwrt()
 {
   apk update
+  apk upgrade
 
   echo "!!!!!!!!!! WARNING !!!!!!!!!!"
   echo "About to perform a system upgrade!"
