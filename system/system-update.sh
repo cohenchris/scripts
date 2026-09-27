@@ -37,11 +37,26 @@ function update_arch()
   sudo "${SCRIPTS_DIR}/os/arch/boot-mirror.sh" zroot
 }
 
-function update_ubuntu()
+function update_debian()
 {
-  sudo apt-get update -y
-  sudo apt-get upgrade -y
-  sudo apt-get autoremove -y
+  # Never stop to prompt (debconf questions, conffile conflicts), keep existing config files
+  local apt_opts=(-y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold")
+
+  # Refresh package lists
+  sudo apt-get update
+
+  # Upgrade all packages, including ones that need new dependencies installed
+  # or old ones removed (plain 'upgrade' holds these back, e.g. new kernels)
+  sudo DEBIAN_FRONTEND=noninteractive apt-get "${apt_opts[@]}" full-upgrade
+
+  # Remove orphaned dependencies (and their config files) and clear package cache
+  sudo apt-get -y autoremove --purge
+  sudo apt-get clean
+
+  # Debian flags when an update (e.g. kernel, libc) needs a reboot to take effect
+  if [[ -f /var/run/reboot-required ]]; then
+    echo "NOTE: a reboot is required to finish applying updates."
+  fi
 }
 
 function update_openwrt()
@@ -77,9 +92,9 @@ function update_opnsense()
 
 
 # Determine which client is running this script
-# Ubuntu-based Linux
-if command -v apt &> /dev/null; then
-  update_ubuntu
+# Debian-based Linux
+if command -v apt-get &> /dev/null; then
+  update_debian
 
 # OpenWRT
 elif command -v apk &> /dev/null; then
