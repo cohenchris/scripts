@@ -5,6 +5,12 @@ set -e
 # Bail if attempting to substitute an unset variable
 set -u
 
+# User must run as root
+if [[ "$(id -u)" -ne 0 ]]; then
+    echo "This script must be run as root"
+    exit 1
+fi
+
 # Set up environment
 WORKING_DIR=$(dirname "$(realpath "$0")")
 USB1_MNT_PATH=/mnt/usb1

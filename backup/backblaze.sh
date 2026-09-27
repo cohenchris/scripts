@@ -77,6 +77,7 @@ function backblaze_sync() {
 }
 
 
+
 # Set up environment
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source "${WORKING_DIR}/.env"

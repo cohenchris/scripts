@@ -3,6 +3,12 @@
 # To restore: borg extract /backups/music::<backup_name>
 #   note: execute this where you would like the 'music' folder to be placed
 
+# User must run as root
+if [[ "$(id -u)" -ne 0 ]]; then
+    echo "This script must be run as root"
+    exit 1
+fi
+
 # Set up environment
 WORKING_DIR=$(dirname "$(realpath "$0")")
 source "${WORKING_DIR}/.env"
