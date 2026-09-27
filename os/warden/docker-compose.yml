@@ -102,8 +102,9 @@ services:
     image: browserless/chrome
     container_name: browserless
     shm_size: "2g"
+    restart: always
     ports:
-      - 3000:3000
+      - 3002:3000
     environment:
       - MAX_CONCURRENT_SESSIONS=20        # how many browser sessions can run at once
       - QUEUED=100                        # how many requests can wait in queue beyond that
