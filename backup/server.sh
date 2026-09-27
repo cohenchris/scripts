@@ -20,7 +20,7 @@ require var "${SERVER_BACKUP_KEEP_MONTHLY}" || exit 1
 
 # Send Minecraft shutdown warning message
 mail_log plain "Sending Minecraft shutdown warning message..."
-"${SERVER_DIR}/misc/scripts/minecraft-broadcast.sh" "Shutting down for daily maintenance in 1 minute, will be back shortly!"
+"${SERVER_DIR}/games/scripts/minecraft-broadcast.sh" "Shutting down for daily maintenance in 1 minute, will be back shortly!"
 mail_log check "Minecraft Shutdown" $?
 sleep 30 # 30s sleep for minecraft + 15s sleep for plex + 15s after docker stop before container is shut down = ~1m
 
