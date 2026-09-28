@@ -45,13 +45,54 @@ if [ "${REALNAME}" = "OPNSense" ]; then
   MSMTP_BIN="/usr/local/bin/msmtp"
   MUTTRC_PATH="/usr/local/etc/Muttrc"
   TLS_TRUST_FILE="/usr/local/share/certs/ca-root-nss.crt"
+  GROUPADD_CMD="pw groupadd"
 else
   # Linux paths
   MSMTPRC_PATH="/etc/msmtprc"
   MSMTP_BIN="/usr/bin/msmtp"
   MUTTRC_PATH="/etc/Muttrc"
   TLS_TRUST_FILE="/etc/ssl/certs/ca-certificates.crt"
+  GROUPADD_CMD="groupadd"
 fi
+
+# Group which owns the config files, members can send email
+EMAIL_GROUP="email"
+
+
+# Create the group which owns the config files
+function create_email_group()
+{
+  local group_exists=0
+  local confirm=""
+
+  # Check if the group already exists
+  if grep -q "^${EMAIL_GROUP}:" /etc/group; then
+    group_exists=1
+  fi
+
+  # If it exists, ask the user whether to reuse it
+  if [[ "${group_exists}" -eq 1 ]]; then
+    echo "Group \"${EMAIL_GROUP}\" already exists."
+    echo "Continuing will reuse it, and all of its current members will be able to read the SMTP password."
+    read -p "Continue anyway? [y/N]: " confirm
+
+    if [[ "${confirm}" != "y" && "${confirm}" != "Y" ]]; then
+      echo "Aborting..."
+      exit 1
+    fi
+
+    echo "Reusing existing group \"${EMAIL_GROUP}\"..."
+  else
+    echo "Creating group \"${EMAIL_GROUP}\"..."
+  fi
+
+  ${GROUPADD_CMD} "${EMAIL_GROUP}"
+
+  if [[ $? -ne 0 ]]; then
+    echo "ERROR: Failed to create group \"${EMAIL_GROUP}\"."
+    exit 1
+  fi
+}
 
 
 # Install packages which are required for email to be sent
@@ -138,7 +179,8 @@ function configure_msmtp()
   echo "Configuring system-wide msmtprc..."
   mkdir -p $(dirname "${MSMTPRC_PATH}") 2>/dev/null
   cp "${WORKING_DIR}/msmtprc" "${MSMTPRC_PATH}"
-  chmod 600 "${MSMTPRC_PATH}"
+  chown "root:${EMAIL_GROUP}" "${MSMTPRC_PATH}"
+  chmod 640 "${MSMTPRC_PATH}"
 
   # Splice msmtprc fields into the final config file
   if [ "${REALNAME}" = "OPNSense" ]; then
@@ -174,7 +216,8 @@ function configure_mutt()
   echo "Configuring system-wide muttrc..."
   mkdir -p $(dirname "${MUTTRC_PATH}") 2>/dev/null
   cp "${WORKING_DIR}/muttrc" "${MUTTRC_PATH}"
-  chmod 644 "${MUTTRC_PATH}"
+  chown "root:${EMAIL_GROUP}" "${MUTTRC_PATH}"
+  chmod 640 "${MUTTRC_PATH}"
 
   # Splice muttrc fields into the final config file
   if [ "${REALNAME}" = "OPNSense" ]; then
@@ -203,9 +246,11 @@ function configure_mutt()
 
 install_dependencies
 get_email_credentials
+create_email_group
 configure_msmtp
 configure_mutt
 
 
 echo
-echo "Successfully configured email!"
+echo "Successfully configured!"
+echo "Please add your user to the \"email\" group to start sending email."
