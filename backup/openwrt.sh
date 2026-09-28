@@ -27,4 +27,9 @@ mail_log plain "Backing up OpenWRT data to remote backup server..."
 scp "${OPENWRT_LOCAL_BACKUP_DIR}/${BACKUP_NAME}.tar.gz" "${REMOTE_BACKUP_SERVER}:${OPENWRT_REMOTE_BACKUP_DIR}"
 mail_log check "Remote OpenWRT backup" $?
 
+# Remove local backup so it doesn't take up space
+mail_log plain "Removing local backup due to space concerns..."
+rm "${OPENWRT_LOCAL_BACKUP_DIR}/${BACKUP_NAME}.tar.gz"
+mail_log check "Local backup prune" $?
+
 backup_finish
