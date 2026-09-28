@@ -207,7 +207,12 @@ fi
 SMART_DRIVES=($(smartctl --scan | awk '{print $1}'))
 
 # Create array of all ZFS pools
-ZFS_POOLS=($(zpool list -H -o name))
+ZFS_POOLS=()
+if command -v zpool &>/dev/null; then
+  ZFS_POOLS=($(zpool list -H -o name))
+else
+  echo "WARNING: zpool is not installed, skipping ZFS checks. If you have ZFS pools, install ZFS to monitor them." >&2
+fi
 
 
 # Parse and handle arguments
