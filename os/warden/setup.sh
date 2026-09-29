@@ -4,6 +4,7 @@
 set -eu
 
 WORKING_DIR=$(dirname "$(realpath "$0")")
+WARDEN_DIR="/home/${USER}/warden"
 
 if [[ "$(id -u)" -eq 0 ]]; then
     echo "This script must NOT be run as root"
@@ -48,7 +49,6 @@ EOF
 
 function deploy_docker_containers() {
   echo "Deploying Docker Containers..."
-  WARDEN_DIR="/home/${USER}/warden"
   sudo -u "${USER}" mkdir -p "${WARDEN_DIR}"
 
   # Copy the warden folder, minus setup.sh and README.md (skip if already running
@@ -78,8 +78,63 @@ function deploy_docker_containers() {
 }
 
 
+# Install host upsmon and point it at the containerized upsd, with
+# shutdown-network.sh as its SHUTDOWNCMD. The container only runs upsd - this is
+# what actually watches the UPS and triggers the network shutdown.
+function configure_upsmon()
+{
+  echo "Configuring upsmon..."
+  local shutdown_script="${WARDEN_DIR}/shutdown-network.sh"
+  # Published by the nut container in docker-compose.yml
+  local nut_port=3493
+
+  # Read the upsd credentials from .env in a subshell, so nothing else in it
+  # leaks into this script
+  local ups_user ups_password
+  ups_user=$(source "${WARDEN_DIR}"/.env && printf '%s' "${UPS_USER:-}")
+  ups_password=$(source "${WARDEN_DIR}"/.env && printf '%s' "${UPS_PASSWORD:-}")
+
+  if [[ -z "${ups_user}" || -z "${ups_password}" ]]; then
+    echo "WARNING: UPS_USER/UPS_PASSWORD are not set in ${WARDEN_DIR}/.env - skipping upsmon setup. Set them and re-run."
+    return 0
+  fi
+
+  # Escape for a double-quoted NUT config value
+  ups_password="${ups_password//\\/\\\\}"
+  ups_password="${ups_password//\"/\\\"}"
+
+  sudo apt install nut-client
+
+  # Keep the stock config around the first time we overwrite it
+  sudo cp -n /etc/nut/nut.conf /etc/nut/nut.conf.orig
+  sudo cp -n /etc/nut/upsmon.conf /etc/nut/upsmon.conf.orig
+
+  # upsd is in docker, so this host is only a network client
+  echo "MODE=netclient" | sudo tee /etc/nut/nut.conf > /dev/null
+
+  # upsmon runs SHUTDOWNCMD as root
+  sudo tee /etc/nut/upsmon.conf > /dev/null <<EOF
+MONITOR ups@localhost:${nut_port} 1 "${ups_user}" "${ups_password}" primary
+MINSUPPLIES 1
+SHUTDOWNCMD "${shutdown_script}"
+EOF
+  # Contains the upsd password
+  sudo chown root:nut /etc/nut/upsmon.conf
+  sudo chmod 640 /etc/nut/upsmon.conf
+
+  sudo systemctl enable nut-monitor.service
+  sudo systemctl restart nut-monitor.service
+
+  # The container may still be starting, so only warn
+  if ! upsc "ups@localhost:${nut_port}" ups.status > /dev/null 2>&1; then
+    echo "WARNING: could not reach upsd at localhost:${nut_port} yet - check 'docker compose ps' and 'journalctl -u nut-monitor'"
+  fi
+}
+
+
 install_docker
 deploy_docker_containers
+configure_upsmon
 
 
 echo

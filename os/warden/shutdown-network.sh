@@ -17,19 +17,32 @@ set -u
 
 #################### Configuration ####################
 
-# DRY_RUN=1 (or --dry-run) still sends the real Signal notification, but powers
-# nothing off (neither the other servers nor warden). Use it to test the wiring.
+# DRY_RUN=1 (or --dry-run) still sends the real Signal notifications (tagged
+# [DRY RUN]), but powers nothing off (neither the other servers nor warden). Use
+# it to test the wiring.
 DRY_RUN="${DRY_RUN:-0}"
 
-# Notification text
+# Initial notification text
 title="UPS on battery - shutting down"
 body="Warden issued a network-wide shutdown: the UPS reached low battery. All servers are powering off now."
 
 # Seconds to wait on the notification request before giving up
 NOTIFY_TIMEOUT=10
 
+# Seconds between scheduling warden's own poweroff and it happening, so the
+# final notification can go out in the meantime
+SELF_SHUTDOWN_DELAY=10
+
 # Signal endpoint/numbers are read from .env - see sample.env. Defaults are
 # applied in load_env().
+
+# Shutdown targets are also read from .env. They must be declared here, at the
+# top level: .env is sourced inside load_env(), and without a global
+# `declare -A` the assignment there would create an indexed array instead.
+#   SHUTDOWN_CMDS  - user@host -> command to run on it
+#   SHUTDOWN_ORDER - user@host targets in the order to shut them down
+declare -A SHUTDOWN_CMDS=()
+SHUTDOWN_ORDER=()
 
 ######################################################
 
@@ -73,16 +86,24 @@ function json_escape()
 }
 
 
-# Send title/body as a Signal message via the signal-cli REST API
+# Send a message to SIGNAL_RECIPIENTS via the signal-cli REST API.
+#
+# Usage: send_notification <message>
+# Returns 0 if the API accepted it (HTTP 2xx), 1 otherwise.
 function send_notification()
 {
+  local message="$1"
+
   if [[ -z "${SIGNAL_SENDER}" || -z "${SIGNAL_RECIPIENTS}" ]]; then
     log "ERROR: SIGNAL_SENDER and SIGNAL_RECIPIENTS must be set - skipping notification"
     return 1
   fi
 
+  if [[ "${DRY_RUN}" == "1" ]]; then
+    message="[DRY RUN] ${message}"
+  fi
+
   local url="${SIGNAL_API_ENDPOINT%/}/v2/send"
-  local message="${title}"$'\n\n'"${body}"
 
   # Build the recipients JSON array
   local recipient recipients_json=""
@@ -107,39 +128,102 @@ function send_notification()
 }
 
 
-# Shut down every other machine on the network.
+# Shut down every other machine on the network over SSH, running
+# SHUTDOWN_CMDS[target] on each target in SHUTDOWN_ORDER (both from .env).
 #
-# TODO(chris): implement. Suggested shape - loop over an inventory and poweroff
-# over SSH as root:
-#
-#   local hosts=(backups.lan console.lan kvm.lan lab.lan albumwall.lan)
-#   for host in "${hosts[@]}"; do
-#     log "powering off ${host}"
-#     if [[ "${DRY_RUN}" == "1" ]]; then continue; fi
-#     ssh -o BatchMode=yes -o ConnectTimeout=5 "root@${host}" 'systemctl poweroff' \
-#       || log "WARNING: failed to reach ${host}"
-#   done
-#
-# Do NOT shut down warden here - shutdown_self() handles that last. Leave
-# network gear (router.lan, ap.lan) up so the run can finish.
+# Do NOT shut down warden here - shutdown_self() handles that last.
 function shutdown_all_devices()
 {
-  log "shutdown_all_devices: not implemented yet - nothing to do"
+  if [[ ${#SHUTDOWN_ORDER[@]} -eq 0 ]]; then
+    log "WARNING: SHUTDOWN_ORDER is empty - no devices to shut down"
+    return 0
+  fi
+
+  # Warn about targets that have a command but would never be run
+  local target
+  for target in "${!SHUTDOWN_CMDS[@]}"; do
+    if [[ " ${SHUTDOWN_ORDER[*]} " != *" ${target} "* ]]; then
+      log "WARNING: ${target} is in SHUTDOWN_CMDS but not SHUTDOWN_ORDER - skipping it"
+    fi
+  done
+
+  # user@host -> ssh exit code
+  local -A results=()
+  local cmd rc failed=0
+
+  for target in "${SHUTDOWN_ORDER[@]}"; do
+    # :- so a missing entry is reported instead of tripping `set -u`
+    cmd="${SHUTDOWN_CMDS[${target}]:-}"
+
+    if [[ -z "${cmd}" ]]; then
+      log "ERROR: no command for ${target} in SHUTDOWN_CMDS - skipping it"
+      results["${target}"]="no command"
+      failed=1
+      send_notification "❌ Shutdown failed for ${target#*@}"
+      continue
+    fi
+
+    if [[ "${DRY_RUN}" == "1" ]]; then
+      log "[dry-run] would run '${cmd}' on ${target}"
+      results["${target}"]="dry-run"
+      send_notification "✅ ${target#*@} shutdown successfully"
+      continue
+    fi
+
+    log "powering off ${target} ('${cmd}')"
+    ssh -o BatchMode=yes -o ConnectTimeout=5 "${target}" "${cmd}"
+    rc=$?
+    results["${target}"]="${rc}"
+
+    # Machine name in notifications is the host part of user@host
+    if [[ ${rc} -ne 0 ]]; then
+      log "WARNING: '${cmd}' on ${target} exited ${rc}"
+      failed=1
+      send_notification "❌ Shutdown failed for ${target#*@}"
+    else
+      send_notification "✅ ${target#*@} shutdown successfully"
+    fi
+  done
+
+  log "shutdown_all_devices summary:"
+  for target in "${SHUTDOWN_ORDER[@]}"; do
+    log "  ${target}: ${results[${target}]}"
+  done
+
+  return ${failed}
 }
 
 
 # Power off this machine (warden), last.
+#
+# The poweroff is scheduled SELF_SHUTDOWN_DELAY seconds out, and the final
+# notification is sent while it waits - nothing can be sent once it's off.
+# systemd-run hands the timer to PID 1, so it still fires even if upsmon (and
+# this script with it) gets killed as the system goes down.
 function shutdown_self()
 {
+  local name="${HOSTNAME%%.*}"
+
   if [[ "${DRY_RUN}" == "1" ]]; then
-    log "[dry-run] would power off warden now"
+    log "[dry-run] would schedule ${name} poweroff in ${SELF_SHUTDOWN_DELAY}s"
+    send_notification "✅ ${name} shutdown successfully"$'\n\n'"Shutdown complete"
     return 0
   fi
 
-  log "powering off warden"
-  # Equivalent to the SHUTDOWNCMD upsmon would otherwise have run
-  /sbin/shutdown -h +0 "UPS low battery - warden shutting down" \
-    || systemctl poweroff
+  log "scheduling ${name} poweroff in ${SELF_SHUTDOWN_DELAY}s"
+  # AccuracySec defaults to 1 minute, which would let the timer fire late
+  if systemd-run --on-active="${SELF_SHUTDOWN_DELAY}"  \
+                 --timer-property=AccuracySec=1s       \
+                 systemctl poweroff; then
+    send_notification "✅ ${name} shutdown successfully"$'\n\n'"Shutdown complete"
+    return 0
+  fi
+
+  # Scheduling failed - report it, then power off right away anyway rather
+  # than let the UPS die under a running machine
+  log "ERROR: failed to schedule ${name} poweroff - powering off now"
+  send_notification "❌ Shutdown failed for ${name}"
+  systemctl poweroff
 }
 
 
@@ -155,7 +239,7 @@ function main()
 
   log "network shutdown initiated (DRY_RUN=${DRY_RUN})"
   load_env
-  send_notification || log "continuing despite notification failure"
+  send_notification "${title}"$'\n\n'"${body}" || log "continuing despite notification failure"
   shutdown_all_devices
   shutdown_self
 }

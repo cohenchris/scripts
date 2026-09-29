@@ -16,13 +16,5 @@ PATH=/usr/sbin:/usr/bin:/sbin:/bin:${SCRIPTS_BASE_DIR}/bin
 0 3 * * 0 (${SCRIPTS_BASE_DIR}/backup/openwrt.sh)
 EOF
 
-# Point system DNS to router over localhost
-echo "Installing custom DNS settings pointing to router..."
-cat <<EOF > /etc/resolv.conf
-search lan
-nameserver 10.24.0.1
-nameserver ::1
-EOF
-
 echo
 echo "Setup complete!"
