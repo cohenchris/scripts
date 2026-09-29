@@ -114,10 +114,10 @@ Add to `.env` in this directory (copy [`sample.env`](sample.env) if you haven't 
 The notification text (`title`/`body`) and request timeout (`NOTIFY_TIMEOUT`) are hardcoded in the script's Configuration section.
 
 Optional:
-- `DRY_RUN=1` (environment variable or `--dry-run`) - log every step without sending the notification or powering anything off
+- `DRY_RUN=1` (environment variable or `--dry-run`) - send the real Signal notification, but power nothing off (neither the other servers nor warden)
 
 ### Use
-Test the wiring first - logs only, nothing is powered off:
+Test the wiring first - sends the real Signal notification, but nothing is powered off:
 ```sh
 DRY_RUN=1 ./shutdown-network.sh
 # or

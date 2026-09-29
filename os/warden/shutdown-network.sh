@@ -17,8 +17,8 @@ set -u
 
 #################### Configuration ####################
 
-# DRY_RUN=1 (or --dry-run) logs every step without sending the notification
-# or powering anything off. Use it to test the wiring.
+# DRY_RUN=1 (or --dry-run) still sends the real Signal notification, but powers
+# nothing off (neither the other servers nor warden). Use it to test the wiring.
 DRY_RUN="${DRY_RUN:-0}"
 
 # Notification text
@@ -83,11 +83,6 @@ function send_notification()
 
   local url="${SIGNAL_API_ENDPOINT%/}/v2/send"
   local message="${title}"$'\n\n'"${body}"
-
-  if [[ "${DRY_RUN}" == "1" ]]; then
-    log "[dry-run] would POST to ${url} from ${SIGNAL_SENDER} to [${SIGNAL_RECIPIENTS}]: '${message}'"
-    return 0
-  fi
 
   # Build the recipients JSON array
   local recipient recipients_json=""
