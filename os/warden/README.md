@@ -54,7 +54,7 @@ WUD also reads `TZ` from the environment the `docker compose` command runs in, s
 
 ```sh
 mkdir -p ~/warden
-cp -a ./. ~/warden/
+cp -a docker-compose.yml sample.env shutdown-network.sh ~/warden/
 cp ~/warden/sample.env ~/warden/.env
 # now edit ~/warden/.env with your UPS and WUD settings
 docker compose -f ~/warden/docker-compose.yml up -d
@@ -74,7 +74,7 @@ This script fully configures this machine's responsibilities: NUT, Uptime Kuma, 
 
 It will:
 - Install `docker` and `docker-compose` via `apt-get`, enable the Docker service, and add your user to the `docker` group
-- Copy this entire folder into `~/warden`, then create `~/warden/.env` from [`sample.env`](sample.env) if no `.env` exists there yet
+- Copy this folder into `~/warden` (everything except `setup.sh` and `README.md`), then create `~/warden/.env` from [`sample.env`](sample.env) if no `.env` exists there yet
 - Bring the stack up with `docker compose up -d`
 
 ### Use

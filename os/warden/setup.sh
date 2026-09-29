@@ -51,9 +51,18 @@ function deploy_docker_containers() {
   WARDEN_DIR="/home/${USER}/warden"
   sudo -u "${USER}" mkdir -p "${WARDEN_DIR}"
 
-  # Copy the entire warden folder (skip if already running from the destination)
+  # Copy the warden folder, minus setup.sh and README.md (skip if already running
+  # from the destination). dotglob so hidden files like .env are included.
   if [[ "$(realpath "${WORKING_DIR}")" != "$(realpath "${WARDEN_DIR}")" ]]; then
-    cp -a "${WORKING_DIR}"/. "${WARDEN_DIR}"/
+    shopt -s dotglob
+    local f
+    for f in "${WORKING_DIR}"/*; do
+      case "$(basename "${f}")" in
+        setup.sh|README.md) continue ;;
+      esac
+      cp -a "${f}" "${WARDEN_DIR}"/
+    done
+    shopt -u dotglob
   fi
 
   # Seed .env from sample.env only if one wasn't copied over or already present
