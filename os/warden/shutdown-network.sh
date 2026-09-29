@@ -94,13 +94,13 @@ function send_notification()
   payload="{\"message\": \"$(json_escape "${message}")\", \"number\": \"$(json_escape "${SIGNAL_SENDER}")\", \"recipients\": [${recipients_json}]}"
 
   local http_code
-  http_code=$(curl -s -o /dev/null                               \
-                  -w "%{http_code}"                               \
-                  --max-time "${NOTIFY_TIMEOUT}"                  \
-                  -X POST                                         \
-                  -H "Content-Type: application/json"             \
-                  -d "${payload}"                                 \
-                  "${url}")
+  http_code=$(curl -X POST                                         \
+                   -H "Content-Type: application/json"             \
+		   "${url}"                                        \
+                   -d "${payload}"                                 \
+                   -s -o /dev/null                                 \
+                   -w "%{http_code}"                               \
+		   --max-time "${NOTIFY_TIMEOUT}")                 \
 
   log "signal send returned HTTP ${http_code}"
   [[ "${http_code}" =~ ^2 ]]

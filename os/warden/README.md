@@ -107,7 +107,7 @@ Meant to be wired in as the host `upsmon`'s `SHUTDOWNCMD` on warden (the Docker 
 
 ### Configuration
 Add to `.env` in this directory (copy [`sample.env`](sample.env) if you haven't already - it has the placeholder key):
-- `SIGNAL_API_ENDPOINT` - base URL of the signal-cli REST API (default `http://localhost:8080`); the script POSTs to `<endpoint>/v2/send`
+- `SIGNAL_API_ENDPOINT` - base URL of the signal-cli REST API (default `http://localhost:8080`); the script POSTs to `<endpoint>/v2/send`, so don't include `/v2/send` yourself
 - `SIGNAL_SENDER` - Signal number registered/linked in the `signal` container, used as the sender
 - `SIGNAL_RECIPIENTS` - space-separated phone numbers and/or group IDs (`group.xxxx`) to message
 
