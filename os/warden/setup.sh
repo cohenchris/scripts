@@ -50,11 +50,19 @@ function deploy_docker_containers() {
   echo "Deploying Docker Containers..."
   WARDEN_DIR="/home/${USER}/warden"
   sudo -u "${USER}" mkdir -p "${WARDEN_DIR}"
-  cp "${WORKING_DIR}"/docker-compose.yml "${WARDEN_DIR}"/docker-compose.yml
-  cp "${WORKING_DIR}"/sample.env "${WARDEN_DIR}"/.env
-  chown "${USER}":"${USER}" "${WARDEN_DIR}"/docker-compose.yml "${WARDEN_DIR}"/.env
 
-  echo "NOTE: ${WARDEN_DIR}/.env was created from sample.env - update it with your UPS settings before the stack will work correctly."
+  # Copy the entire warden folder (skip if already running from the destination)
+  if [[ "$(realpath "${WORKING_DIR}")" != "$(realpath "${WARDEN_DIR}")" ]]; then
+    cp -a "${WORKING_DIR}"/. "${WARDEN_DIR}"/
+  fi
+
+  # Seed .env from sample.env only if one wasn't copied over or already present
+  if [[ ! -f "${WARDEN_DIR}"/.env ]]; then
+    cp "${WARDEN_DIR}"/sample.env "${WARDEN_DIR}"/.env
+    echo "NOTE: ${WARDEN_DIR}/.env was created from sample.env - update it with your UPS settings before the stack will work correctly."
+  fi
+
+  chown -R "${USER}":"${USER}" "${WARDEN_DIR}"
 
   cd "${WARDEN_DIR}"
   sudo -u "${USER}" docker compose up -d

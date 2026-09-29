@@ -54,8 +54,8 @@ WUD also reads `TZ` from the environment the `docker compose` command runs in, s
 
 ```sh
 mkdir -p ~/warden
-cp ./docker-compose.yml ~/warden
-cp ./sample.env ~/warden/.env
+cp -a ./. ~/warden/
+cp ~/warden/sample.env ~/warden/.env
 # now edit ~/warden/.env with your UPS and WUD settings
 docker compose -f ~/warden/docker-compose.yml up -d
 ```
@@ -74,7 +74,7 @@ This script fully configures this machine's responsibilities: NUT, Uptime Kuma, 
 
 It will:
 - Install `docker` and `docker-compose` via `apt-get`, enable the Docker service, and add your user to the `docker` group
-- Copy [`docker-compose.yml`](docker-compose.yml) and [`sample.env`](sample.env) (renamed to `.env`) into `~/warden`
+- Copy this entire folder into `~/warden`, then create `~/warden/.env` from [`sample.env`](sample.env) if no `.env` exists there yet
 - Bring the stack up with `docker compose up -d`
 
 ### Use
@@ -84,7 +84,7 @@ Call this script as your normal (non-root) user - it escalates internally with `
 ```
 It operates as the invoking user (`$USER`) - no username prompt, and it will refuse to run if invoked as root.
 
-The script creates `~/warden/.env` from `sample.env` on every run - after setup, edit it with your actual UPS and WUD settings and run `docker compose up -d` again from `~/warden` to pick up the changes.
+If this folder already has a `.env`, it is copied along with everything else (overwriting `~/warden/.env`); otherwise an existing `~/warden/.env` is left alone, and a fresh one is only created from `sample.env` when none exists. After setup, edit it with your actual UPS and WUD settings and run `docker compose up -d` again from `~/warden` to pick up the changes.
 
 
 
@@ -94,7 +94,7 @@ The script creates `~/warden/.env` from `sample.env` on every run - after setup,
 
 Meant to be wired in as the host `upsmon`'s `SHUTDOWNCMD` on warden (the Docker Compose stack only runs `upsd` - it doesn't monitor the UPS itself). When the UPS reaches low battery, or upsmon otherwise issues a forced shutdown, this script runs instead of a bare `shutdown` and:
 
-1. Sends a notification through a Home Assistant webhook
+1. Sends a Signal message through the `signal` container's signal-cli REST API
 2. Shuts down every other server on the network (`shutdown_all_devices`)
 3. Powers off warden itself, last (`shutdown_self`)
 
@@ -103,16 +103,18 @@ Meant to be wired in as the host `upsmon`'s `SHUTDOWNCMD` on warden (the Docker 
 ### Prerequisites
 - Passwordless root SSH from warden to every server it shuts down, once `shutdown_all_devices` is filled in - `upsmon` runs `SHUTDOWNCMD` as root
 - Host `upsmon` installed and configured on warden (`paru -S nut`), with `SHUTDOWNCMD` pointed at this script's path in `/etc/nut/upsmon.conf`, then `systemctl enable --now nut-monitor.service`
-- A Home Assistant webhook to notify on shutdown
+- The `signal` container running with a registered or linked sender number
 
 ### Configuration
 Add to `.env` in this directory (copy [`sample.env`](sample.env) if you haven't already - it has the placeholder key):
-- `HA_WEBHOOK_ENDPOINT` - Home Assistant webhook URL the script POSTs `{title, body}` to
+- `SIGNAL_API_ENDPOINT` - base URL of the signal-cli REST API (default `http://localhost:8080`); the script POSTs to `<endpoint>/v2/send`
+- `SIGNAL_SENDER` - Signal number registered/linked in the `signal` container, used as the sender
+- `SIGNAL_RECIPIENTS` - space-separated phone numbers and/or group IDs (`group.xxxx`) to message
 
-Optional environment overrides:
-- `NOTIFY_TITLE` / `NOTIFY_BODY` - notification text
-- `NOTIFY_TIMEOUT` - seconds to wait on the webhook request (default `10`)
-- `DRY_RUN=1` - log every step without sending the notification or powering anything off
+The notification text (`title`/`body`) and request timeout (`NOTIFY_TIMEOUT`) are hardcoded in the script's Configuration section.
+
+Optional:
+- `DRY_RUN=1` (environment variable or `--dry-run`) - log every step without sending the notification or powering anything off
 
 ### Use
 Test the wiring first - logs only, nothing is powered off:

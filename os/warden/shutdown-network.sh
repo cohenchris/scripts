@@ -6,7 +6,7 @@
 # UPS reaches low battery (or an FSD is issued), upsmon runs this script instead
 # of a bare `shutdown`. It:
 #
-#   1. Sends a notification through a Home Assistant webhook
+#   1. Sends a Signal message through the local signal-cli REST API container
 #   2. Shuts down every other machine on the network  (shutdown_all_devices)
 #   3. Powers off this machine (warden) last          (shutdown_self)
 #
@@ -21,12 +21,15 @@ set -u
 # or powering anything off. Use it to test the wiring.
 DRY_RUN="${DRY_RUN:-0}"
 
-# Notification text (override via NOTIFY_TITLE / NOTIFY_BODY)
-title="${NOTIFY_TITLE:-UPS on battery - shutting down}"
-body="${NOTIFY_BODY:-Warden issued a network-wide shutdown: the UPS reached low battery. All servers are powering off now.}"
+# Notification text
+title="UPS on battery - shutting down"
+body="Warden issued a network-wide shutdown: the UPS reached low battery. All servers are powering off now."
 
 # Seconds to wait on the notification request before giving up
-NOTIFY_TIMEOUT="${NOTIFY_TIMEOUT:-10}"
+NOTIFY_TIMEOUT=10
+
+# Signal endpoint/numbers are read from .env - see sample.env. Defaults are
+# applied in load_env().
 
 ######################################################
 
@@ -42,26 +45,58 @@ function log()
 
 
 # Initialize environment - source .env from the script's own directory
-# (matches system/b2-mount.sh)
+# (matches system/b2-mount.sh), then apply defaults for anything left unset
 function load_env()
 {
   WORKING_DIR=$(dirname "$(realpath "$0")")
   source ${WORKING_DIR}/.env
+
+  # Base URL of the signal-cli REST API (bbernhard/signal-cli-rest-api)
+  SIGNAL_API_ENDPOINT="${SIGNAL_API_ENDPOINT:-http://localhost:8080}"
+  # Registered Signal number the message is sent from
+  SIGNAL_SENDER="${SIGNAL_SENDER:-}"
+  # Space-separated recipients: phone numbers and/or group IDs (group.xxxx)
+  SIGNAL_RECIPIENTS="${SIGNAL_RECIPIENTS:-}"
 }
 
 
-# POST a title/body to the Home Assistant webhook
+# Escape a string for embedding inside a JSON string literal
+function json_escape()
+{
+  local s="$1"
+  s="${s//\\/\\\\}"
+  s="${s//\"/\\\"}"
+  s="${s//$'\n'/\\n}"
+  s="${s//$'\r'/\\r}"
+  s="${s//$'\t'/\\t}"
+  printf '%s' "${s}"
+}
+
+
+# Send title/body as a Signal message via the signal-cli REST API
 function send_notification()
 {
-  if [[ -z "${HA_WEBHOOK_ENDPOINT:-}" ]]; then
-    log "ERROR: HA_WEBHOOK_ENDPOINT is not set - skipping notification"
+  if [[ -z "${SIGNAL_SENDER}" || -z "${SIGNAL_RECIPIENTS}" ]]; then
+    log "ERROR: SIGNAL_SENDER and SIGNAL_RECIPIENTS must be set - skipping notification"
     return 1
   fi
 
+  local url="${SIGNAL_API_ENDPOINT%/}/v2/send"
+  local message="${title}"$'\n\n'"${body}"
+
   if [[ "${DRY_RUN}" == "1" ]]; then
-    log "[dry-run] would POST to ${HA_WEBHOOK_ENDPOINT}: title='${title}' body='${body}'"
+    log "[dry-run] would POST to ${url} from ${SIGNAL_SENDER} to [${SIGNAL_RECIPIENTS}]: '${message}'"
     return 0
   fi
+
+  # Build the recipients JSON array
+  local recipient recipients_json=""
+  for recipient in ${SIGNAL_RECIPIENTS}; do
+    recipients_json+="${recipients_json:+,}\"$(json_escape "${recipient}")\""
+  done
+
+  local payload
+  payload="{\"message\": \"$(json_escape "${message}")\", \"number\": \"$(json_escape "${SIGNAL_SENDER}")\", \"recipients\": [${recipients_json}]}"
 
   local http_code
   http_code=$(curl -s -o /dev/null                               \
@@ -69,10 +104,10 @@ function send_notification()
                   --max-time "${NOTIFY_TIMEOUT}"                  \
                   -X POST                                         \
                   -H "Content-Type: application/json"             \
-                  -d "{\"title\": \"${title}\", \"body\": \"${body}\"}"  \
-                  "${HA_WEBHOOK_ENDPOINT}")
+                  -d "${payload}"                                 \
+                  "${url}")
 
-  log "notification POST returned HTTP ${http_code}"
+  log "signal send returned HTTP ${http_code}"
   [[ "${http_code}" =~ ^2 ]]
 }
 
