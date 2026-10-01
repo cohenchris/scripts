@@ -43,7 +43,7 @@ Custom scripts, services, and configuration files for my watchdog pi.
 - An `htpasswd` password hash for the WUD web UI login
 
 ### Configuration
-Copy [`sample.env`](sample.env) to `.env` and fill it in before bringing the stack up:
+Copy [`docker/sample.env`](docker/sample.env) to `docker/.env` and fill it in before bringing the stack up:
 - **Network UPS Tools** - UPS user/password, driver, USB device path, serial number, and vendor ID
 - **What's Up Docker** - Docker Hub username (`DOCKER_LOGIN`) and access token (`DOCKER_TOKEN`), web UI username (`WUD_USERNAME`) and password hash (`WUD_HTPASSWD_HASH`), and the IP of the remote Docker host to monitor (`WUD_REMOTE_HOST`)
 
@@ -53,16 +53,14 @@ WUD also reads `TZ` from the environment the `docker compose` command runs in, s
 1. Manual setup
 
 ```sh
-mkdir -p ~/warden
-cp -a docker-compose.yml sample.env shutdown-network.sh sample.shutdown-network.conf ~/warden/
-cp ~/warden/sample.env ~/warden/.env
-cp ~/warden/sample.shutdown-network.conf ~/warden/.shutdown-network.conf
-# now edit ~/warden/.env with your UPS and WUD settings, and
-# ~/warden/.shutdown-network.conf with your Signal settings and shutdown targets
-docker compose -f ~/warden/docker-compose.yml up -d
+mkdir -p ~/docker
+cp -a docker/. ~/docker/
+cp ~/docker/sample.env ~/docker/.env
+# now edit ~/docker/.env with your UPS and WUD settings
+docker compose -f ~/docker/docker-compose.yml up -d
 ```
 
-Uptime Kuma's data will persist in `~/warden/config`, and its web UI will be available on port 3001. WUD's web UI will be available on port 3000.
+Uptime Kuma's data will persist in `~/docker/config`, and its web UI will be available on port 3001. WUD's web UI will be available on port 3000.
 
 2. Automated setup using [`setup.sh`](setup.sh)
 
@@ -72,12 +70,12 @@ Uptime Kuma's data will persist in `~/warden/config`, and its web UI will be ava
 ## Automated Setup Script
 [`setup.sh`](setup.sh)
 
-This script fully configures this machine's responsibilities: NUT, Uptime Kuma, and What's Up Docker, all deployed together via [`docker-compose.yml`](docker-compose.yml).
+This script fully configures this machine's responsibilities: NUT, Uptime Kuma, and What's Up Docker, all deployed together via [`docker/docker-compose.yml`](docker/docker-compose.yml).
 
 It will:
 - Install `docker` and `docker-compose` via `apt-get`, enable the Docker service, and add your user to the `docker` group
-- Copy this folder into `~/warden` (everything except `setup.sh` and `README.md`), then create `~/warden/.env` from [`sample.env`](sample.env) and `~/warden/.shutdown-network.conf` from [`sample.shutdown-network.conf`](sample.shutdown-network.conf) if they don't exist there yet
-- Bring the stack up with `docker compose up -d`
+- Copy the whole [`docker/`](docker) folder into `~/docker` - it does not create `.env` or bring the stack up
+- Install host `upsmon` (credentials from `~/docker/.env`) and point its `SHUTDOWNCMD` at [`scripts/shutdown-network.sh`](scripts/shutdown-network.sh) in this repo (it runs in place, not copied). The script's `.shutdown-network.conf` is left to you
 
 ### Use
 Call this script as your normal (non-root) user - it escalates internally with `sudo` where needed:
@@ -86,13 +84,13 @@ Call this script as your normal (non-root) user - it escalates internally with `
 ```
 It operates as the invoking user (`$USER`) - no username prompt, and it will refuse to run if invoked as root.
 
-If this folder already has a `.env`, it is copied along with everything else (overwriting `~/warden/.env`); otherwise an existing `~/warden/.env` is left alone, and a fresh one is only created from `sample.env` when none exists. After setup, edit it with your actual UPS and WUD settings and run `docker compose up -d` again from `~/warden` to pick up the changes.
+If `docker/` already has a `.env`, it is copied along with everything else (overwriting `~/docker/.env`); otherwise an existing `~/docker/.env` is left alone. If `~/docker/.env` doesn't exist (or lacks `UPS_USER`/`UPS_PASSWORD`), upsmon setup is skipped - create it from `sample.env`, re-run, and bring the stack up yourself with `docker compose up -d` from `~/docker`.
 
 
 
 
 ## Network Shutdown Script
-[`shutdown-network.sh`](shutdown-network.sh)
+[`scripts/shutdown-network.sh`](scripts/shutdown-network.sh)
 
 Meant to be wired in as the host `upsmon`'s `SHUTDOWNCMD` on warden (the Docker Compose stack only runs `upsd` - it doesn't monitor the UPS itself). When the UPS reaches low battery, or upsmon otherwise issues a forced shutdown, this script runs instead of a bare `shutdown` and:
 
@@ -104,11 +102,11 @@ Meant to be wired in as the host `upsmon`'s `SHUTDOWNCMD` on warden (the Docker 
 
 ### Prerequisites
 - Passwordless root SSH from warden to every server it shuts down, once `shutdown_all_devices` is filled in - `upsmon` runs `SHUTDOWNCMD` as root
-- Host `upsmon` installed and configured on warden (`paru -S nut`), with `SHUTDOWNCMD` pointed at this script's path in `/etc/nut/upsmon.conf`, then `systemctl enable --now nut-monitor.service`
+- Host `upsmon` installed and configured on warden (`paru -S nut`), with `SHUTDOWNCMD` pointed at this script's path in the repo (it runs in place) in `/etc/nut/upsmon.conf`, then `systemctl enable --now nut-monitor.service`
 - The `signal` container running with a registered or linked sender number
 
 ### Configuration
-The script reads its own config from `.shutdown-network.conf` in its directory, separate from the compose stack's `.env` (copy [`sample.shutdown-network.conf`](sample.shutdown-network.conf) if you haven't already - it has the placeholder keys). It is sourced as bash:
+The script reads its own config from `.shutdown-network.conf` in its directory, separate from the compose stack's `.env` (copy [`sample.shutdown-network.conf`](scripts/sample.shutdown-network.conf) if you haven't already - it has the placeholder keys). It is sourced as bash:
 - `SIGNAL_API_ENDPOINT` - base URL of the signal-cli REST API (default `http://localhost:8080`); the script POSTs to `<endpoint>/v2/send`, so don't include `/v2/send` yourself
 - `SIGNAL_SENDER` - Signal number registered/linked in the `signal` container, used as the sender
 - `SIGNAL_RECIPIENTS` - space-separated phone numbers and/or group IDs (`group.xxxx`) to message
@@ -128,9 +126,9 @@ Optional:
 ### Use
 Test the wiring first - sends the real Signal notification, but nothing is powered off:
 ```sh
-DRY_RUN=1 ./shutdown-network.sh
+DRY_RUN=1 ./scripts/shutdown-network.sh
 # or
-./shutdown-network.sh --dry-run
+./scripts/shutdown-network.sh --dry-run
 ```
 
 Once host `upsmon` is configured with this script as its `SHUTDOWNCMD`, a real end-to-end test is:

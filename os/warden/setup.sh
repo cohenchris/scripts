@@ -4,14 +4,16 @@
 set -eu
 
 WORKING_DIR=$(dirname "$(realpath "$0")")
-WARDEN_DIR="/home/${USER}/warden"
+# The compose stack is copied here; the shutdown script runs in place from this repo
+DOCKER_DIR="/home/${USER}/docker"
+SHUTDOWN_SCRIPT="${WORKING_DIR}/scripts/shutdown-network.sh"
 
 if [[ "$(id -u)" -eq 0 ]]; then
     echo "This script must NOT be run as root"
     exit 1
 fi
 
-# Install Docker, then deploy the Network UPS Tools + Uptime Kuma stack via its compose file
+# Install Docker
 function install_docker()
 {
   echo "Installing Docker..."
@@ -47,40 +49,15 @@ EOF
 
 }
 
-function deploy_docker_containers() {
-  echo "Deploying Docker Containers..."
-  sudo -u "${USER}" mkdir -p "${WARDEN_DIR}"
+# Copy the compose stack into place. Creating .env and bringing the stack up
+# are left to the user.
+function copy_docker_folder()
+{
+  echo "Copying Docker Compose stack to ${DOCKER_DIR}..."
+  mkdir -p "${DOCKER_DIR}"
 
-  # Copy the warden folder, minus setup.sh and README.md (skip if already running
-  # from the destination). dotglob so hidden files like .env are included.
-  if [[ "$(realpath "${WORKING_DIR}")" != "$(realpath "${WARDEN_DIR}")" ]]; then
-    shopt -s dotglob
-    local f
-    for f in "${WORKING_DIR}"/*; do
-      case "$(basename "${f}")" in
-        setup.sh|README.md) continue ;;
-      esac
-      cp -a "${f}" "${WARDEN_DIR}"/
-    done
-    shopt -u dotglob
-  fi
-
-  # Seed .env from sample.env only if one wasn't copied over or already present
-  if [[ ! -f "${WARDEN_DIR}"/.env ]]; then
-    cp "${WARDEN_DIR}"/sample.env "${WARDEN_DIR}"/.env
-    echo "NOTE: ${WARDEN_DIR}/.env was created from sample.env - update it with your UPS settings before the stack will work correctly."
-  fi
-
-  # Same for the shutdown script's config
-  if [[ ! -f "${WARDEN_DIR}"/.shutdown-network.conf ]]; then
-    cp "${WARDEN_DIR}"/sample.shutdown-network.conf "${WARDEN_DIR}"/.shutdown-network.conf
-    echo "NOTE: ${WARDEN_DIR}/.shutdown-network.conf was created from sample.shutdown-network.conf - update it with your Signal settings and shutdown targets."
-  fi
-
-  chown -R "${USER}":"${USER}" "${WARDEN_DIR}"
-
-  cd "${WARDEN_DIR}"
-  sudo -u "${USER}" docker compose up -d
+  # Copy the whole docker/ folder, hidden files (like .env) included
+  cp -a "${WORKING_DIR}"/docker/. "${DOCKER_DIR}"/
 }
 
 
@@ -90,18 +67,22 @@ function deploy_docker_containers() {
 function configure_upsmon()
 {
   echo "Configuring upsmon..."
-  local shutdown_script="${WARDEN_DIR}/shutdown-network.sh"
   # Published by the nut container in docker-compose.yml
   local nut_port=3493
 
   # Read the upsd credentials from .env in a subshell, so nothing else in it
   # leaks into this script
+  if [[ ! -f "${DOCKER_DIR}"/.env ]]; then
+    echo "WARNING: ${DOCKER_DIR}/.env does not exist - skipping upsmon setup. Create it from sample.env and re-run."
+    return 0
+  fi
+
   local ups_user ups_password
-  ups_user=$(source "${WARDEN_DIR}"/.env && printf '%s' "${UPS_USER:-}")
-  ups_password=$(source "${WARDEN_DIR}"/.env && printf '%s' "${UPS_PASSWORD:-}")
+  ups_user=$(source "${DOCKER_DIR}"/.env && printf '%s' "${UPS_USER:-}")
+  ups_password=$(source "${DOCKER_DIR}"/.env && printf '%s' "${UPS_PASSWORD:-}")
 
   if [[ -z "${ups_user}" || -z "${ups_password}" ]]; then
-    echo "WARNING: UPS_USER/UPS_PASSWORD are not set in ${WARDEN_DIR}/.env - skipping upsmon setup. Set them and re-run."
+    echo "WARNING: UPS_USER/UPS_PASSWORD are not set in ${DOCKER_DIR}/.env - skipping upsmon setup. Set them and re-run."
     return 0
   fi
 
@@ -122,7 +103,7 @@ function configure_upsmon()
   sudo tee /etc/nut/upsmon.conf > /dev/null <<EOF
 MONITOR ups@localhost:${nut_port} 1 "${ups_user}" "${ups_password}" primary
 MINSUPPLIES 1
-SHUTDOWNCMD "${shutdown_script}"
+SHUTDOWNCMD "${SHUTDOWN_SCRIPT}"
 EOF
   # Contains the upsd password
   sudo chown root:nut /etc/nut/upsmon.conf
@@ -131,15 +112,15 @@ EOF
   sudo systemctl enable nut-monitor.service
   sudo systemctl restart nut-monitor.service
 
-  # The container may still be starting, so only warn
+  # The stack isn't brought up by this script, so only warn
   if ! upsc "ups@localhost:${nut_port}" ups.status > /dev/null 2>&1; then
-    echo "WARNING: could not reach upsd at localhost:${nut_port} yet - check 'docker compose ps' and 'journalctl -u nut-monitor'"
+    echo "WARNING: could not reach upsd at localhost:${nut_port} - bring the stack up with 'docker compose up -d' in ${DOCKER_DIR}, then check 'journalctl -u nut-monitor'"
   fi
 }
 
 
 install_docker
-deploy_docker_containers
+copy_docker_folder
 configure_upsmon
 
 
