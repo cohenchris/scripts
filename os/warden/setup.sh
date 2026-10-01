@@ -71,6 +71,12 @@ function deploy_docker_containers() {
     echo "NOTE: ${WARDEN_DIR}/.env was created from sample.env - update it with your UPS settings before the stack will work correctly."
   fi
 
+  # Same for the shutdown script's config
+  if [[ ! -f "${WARDEN_DIR}"/.shutdown-network.conf ]]; then
+    cp "${WARDEN_DIR}"/sample.shutdown-network.conf "${WARDEN_DIR}"/.shutdown-network.conf
+    echo "NOTE: ${WARDEN_DIR}/.shutdown-network.conf was created from sample.shutdown-network.conf - update it with your Signal settings and shutdown targets."
+  fi
+
   chown -R "${USER}":"${USER}" "${WARDEN_DIR}"
 
   cd "${WARDEN_DIR}"

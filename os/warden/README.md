@@ -54,9 +54,11 @@ WUD also reads `TZ` from the environment the `docker compose` command runs in, s
 
 ```sh
 mkdir -p ~/warden
-cp -a docker-compose.yml sample.env shutdown-network.sh ~/warden/
+cp -a docker-compose.yml sample.env shutdown-network.sh sample.shutdown-network.conf ~/warden/
 cp ~/warden/sample.env ~/warden/.env
-# now edit ~/warden/.env with your UPS and WUD settings
+cp ~/warden/sample.shutdown-network.conf ~/warden/.shutdown-network.conf
+# now edit ~/warden/.env with your UPS and WUD settings, and
+# ~/warden/.shutdown-network.conf with your Signal settings and shutdown targets
 docker compose -f ~/warden/docker-compose.yml up -d
 ```
 
@@ -74,7 +76,7 @@ This script fully configures this machine's responsibilities: NUT, Uptime Kuma, 
 
 It will:
 - Install `docker` and `docker-compose` via `apt-get`, enable the Docker service, and add your user to the `docker` group
-- Copy this folder into `~/warden` (everything except `setup.sh` and `README.md`), then create `~/warden/.env` from [`sample.env`](sample.env) if no `.env` exists there yet
+- Copy this folder into `~/warden` (everything except `setup.sh` and `README.md`), then create `~/warden/.env` from [`sample.env`](sample.env) and `~/warden/.shutdown-network.conf` from [`sample.shutdown-network.conf`](sample.shutdown-network.conf) if they don't exist there yet
 - Bring the stack up with `docker compose up -d`
 
 ### Use
@@ -106,10 +108,17 @@ Meant to be wired in as the host `upsmon`'s `SHUTDOWNCMD` on warden (the Docker 
 - The `signal` container running with a registered or linked sender number
 
 ### Configuration
-Add to `.env` in this directory (copy [`sample.env`](sample.env) if you haven't already - it has the placeholder key):
+The script reads its own config from `.shutdown-network.conf` in its directory, separate from the compose stack's `.env` (copy [`sample.shutdown-network.conf`](sample.shutdown-network.conf) if you haven't already - it has the placeholder keys). It is sourced as bash:
 - `SIGNAL_API_ENDPOINT` - base URL of the signal-cli REST API (default `http://localhost:8080`); the script POSTs to `<endpoint>/v2/send`, so don't include `/v2/send` yourself
 - `SIGNAL_SENDER` - Signal number registered/linked in the `signal` container, used as the sender
 - `SIGNAL_RECIPIENTS` - space-separated phone numbers and/or group IDs (`group.xxxx`) to message
+- `SHUTDOWN_CMDS` - bash array of `"user@host command"` entries, shut down in the order listed (put anything the others are reached through, like the router, last). Don't list warden - it always powers off last:
+  ```sh
+  SHUTDOWN_CMDS=(
+    "root@server1.lan systemctl poweroff"
+    "root@router.lan poweroff"
+  )
+  ```
 
 The notification text (`title`/`body`) and request timeout (`NOTIFY_TIMEOUT`) are hardcoded in the script's Configuration section.
 

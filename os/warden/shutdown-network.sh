@@ -33,16 +33,13 @@ NOTIFY_TIMEOUT=10
 # final notification can go out in the meantime
 SELF_SHUTDOWN_DELAY=10
 
-# Signal endpoint/numbers are read from .env - see sample.env. Defaults are
-# applied in load_env().
+# Signal endpoint/numbers and shutdown targets are read from
+# .shutdown-network.conf - see sample.shutdown-network.conf. Defaults are applied
+# in load_config().
 
-# Shutdown targets are also read from .env. They must be declared here, at the
-# top level: .env is sourced inside load_env(), and without a global
-# `declare -A` the assignment there would create an indexed array instead.
-#   SHUTDOWN_CMDS  - user@host -> command to run on it
-#   SHUTDOWN_ORDER - user@host targets in the order to shut them down
-declare -A SHUTDOWN_CMDS=()
-SHUTDOWN_ORDER=()
+# "user@host command..." entries, shut down in array order. Defaulted here so
+# `set -u` doesn't trip if the config leaves it out.
+SHUTDOWN_CMDS=()
 
 ######################################################
 
@@ -57,12 +54,19 @@ function log()
 }
 
 
-# Initialize environment - source .env from the script's own directory
-# (matches system/b2-mount.sh), then apply defaults for anything left unset
-function load_env()
+# Source .shutdown-network.conf from the script's own directory, then apply
+# defaults for anything left unset. A missing config is logged but not fatal -
+# warden still needs to power itself off.
+function load_config()
 {
   WORKING_DIR=$(dirname "$(realpath "$0")")
-  source ${WORKING_DIR}/.env
+  local config="${WORKING_DIR}/.shutdown-network.conf"
+
+  if [[ -f "${config}" ]]; then
+    source "${config}"
+  else
+    log "ERROR: ${config} not found - see sample.shutdown-network.conf"
+  fi
 
   # Base URL of the signal-cli REST API (bbernhard/signal-cli-rest-api)
   SIGNAL_API_ENDPOINT="${SIGNAL_API_ENDPOINT:-http://localhost:8080}"
@@ -128,36 +132,30 @@ function send_notification()
 }
 
 
-# Shut down every other machine on the network over SSH, running
-# SHUTDOWN_CMDS[target] on each target in SHUTDOWN_ORDER (both from .env).
+# Shut down every other machine on the network over SSH, in SHUTDOWN_CMDS order.
+# Each entry is "user@host command...": everything up to the first space is the
+# SSH target, the rest is the command run on it.
 #
 # Do NOT shut down warden here - shutdown_self() handles that last.
 function shutdown_all_devices()
 {
-  if [[ ${#SHUTDOWN_ORDER[@]} -eq 0 ]]; then
-    log "WARNING: SHUTDOWN_ORDER is empty - no devices to shut down"
+  if [[ ${#SHUTDOWN_CMDS[@]} -eq 0 ]]; then
+    log "WARNING: SHUTDOWN_CMDS is empty - no devices to shut down"
     return 0
   fi
 
-  # Warn about targets that have a command but would never be run
-  local target
-  for target in "${!SHUTDOWN_CMDS[@]}"; do
-    if [[ " ${SHUTDOWN_ORDER[*]} " != *" ${target} "* ]]; then
-      log "WARNING: ${target} is in SHUTDOWN_CMDS but not SHUTDOWN_ORDER - skipping it"
-    fi
-  done
+  # "target: result" lines, in shutdown order
+  local -a results=()
+  local entry target cmd rc failed=0
 
-  # user@host -> ssh exit code
-  local -A results=()
-  local cmd rc failed=0
+  for entry in "${SHUTDOWN_CMDS[@]}"; do
+    target="${entry%% *}"
+    cmd="${entry#* }"
 
-  for target in "${SHUTDOWN_ORDER[@]}"; do
-    # :- so a missing entry is reported instead of tripping `set -u`
-    cmd="${SHUTDOWN_CMDS[${target}]:-}"
-
-    if [[ -z "${cmd}" ]]; then
-      log "ERROR: no command for ${target} in SHUTDOWN_CMDS - skipping it"
-      results["${target}"]="no command"
+    # No space means no command (cmd == entry); an empty one is no better
+    if [[ "${entry}" != *" "* || -z "${cmd// /}" ]]; then
+      log "ERROR: no command for '${target}' in SHUTDOWN_CMDS - skipping it"
+      results+=("${target}: no command")
       failed=1
       send_notification "❌ Shutdown failed for ${target#*@}"
       continue
@@ -165,7 +163,7 @@ function shutdown_all_devices()
 
     if [[ "${DRY_RUN}" == "1" ]]; then
       log "[dry-run] would run '${cmd}' on ${target}"
-      results["${target}"]="dry-run"
+      results+=("${target}: dry-run")
       send_notification "✅ ${target#*@} shutdown successfully"
       continue
     fi
@@ -173,7 +171,7 @@ function shutdown_all_devices()
     log "powering off ${target} ('${cmd}')"
     ssh -o BatchMode=yes -o ConnectTimeout=5 "${target}" "${cmd}"
     rc=$?
-    results["${target}"]="${rc}"
+    results+=("${target}: ${rc}")
 
     # Machine name in notifications is the host part of user@host
     if [[ ${rc} -ne 0 ]]; then
@@ -186,8 +184,8 @@ function shutdown_all_devices()
   done
 
   log "shutdown_all_devices summary:"
-  for target in "${SHUTDOWN_ORDER[@]}"; do
-    log "  ${target}: ${results[${target}]}"
+  for entry in "${results[@]}"; do
+    log "  ${entry}"
   done
 
   return ${failed}
@@ -238,7 +236,7 @@ function main()
   done
 
   log "network shutdown initiated (DRY_RUN=${DRY_RUN})"
-  load_env
+  load_config
   send_notification "${title}"$'\n\n'"${body}" || log "continuing despite notification failure"
   shutdown_all_devices
   shutdown_self
