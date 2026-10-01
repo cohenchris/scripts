@@ -60,7 +60,7 @@ cp ~/docker/sample.env ~/docker/.env
 docker compose -f ~/docker/docker-compose.yml up -d
 ```
 
-Uptime Kuma's data will persist in `~/docker/config`, and its web UI will be available on port 3001. WUD's web UI will be available on port 3000.
+Uptime Kuma's data will persist in `${CONFIG}/uptime-kuma` (`CONFIG` is set in `.env`), and its web UI will be available on port 3001. WUD's web UI will be available on port 3000.
 
 2. Automated setup using [`setup.sh`](setup.sh)
 
