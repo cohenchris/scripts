@@ -16,6 +16,7 @@ Custom scripts, services, and configuration files for a FreeBSD-based OPNSense d
 - [OPNSense Action to Monitor WireGuard Uptime](#OPNSense-Action-to-Monitor-WireGuard-Uptime)
   - [Prerequisites](#Prerequisites-2)
   - [Use](#Use-2)
+- [SNMP Extensions](#SNMP-Extensions)
 - [Replace and Resilver a Drive in a ZFS Root Pool](#Replace-and-Resilver-a-Drive-in-a-ZFS-Root-Pool)
   - [Prerequisites](#Prerequisites-3)
   - [Use](#Use-3)
@@ -126,6 +127,15 @@ configctl wireguarduptime push
 ```
 
 2. Automated setup using [`opnsense-env-setup.sh`](opnsense-env-setup.sh)
+
+
+
+
+## SNMP Extensions
+[`snmp/`](snmp/)
+
+Scripts and configuration to expose custom metrics over SNMP, such as the system health metrics from [`system-monitor.py`](../../system/system-monitor.py), so they can be polled by any SNMP monitoring tool.
+For more details, please check out the [`snmp` README](snmp/README.md).
 
 
 

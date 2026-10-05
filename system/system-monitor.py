@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 # =============================================================================
 # system-monitor.py — Prints a JSON metrics snapshot to stdout
+#
+# Supports Linux (/proc, /sys) and FreeBSD (sysctl, swapctl).
 # =============================================================================
 import ctypes
 import glob
 import json
 import os
 import re
+import subprocess
+import sys
 import time
 from datetime import datetime
 
@@ -46,6 +50,8 @@ def _load_env_disks():
 
 
 MONITOR_PATHS = _load_env_disks()
+
+IS_FREEBSD = sys.platform.startswith("freebsd")
 
 # NVML temperature sensor enum: NVML_TEMPERATURE_GPU
 NVML_TEMPERATURE_GPU = 0
@@ -240,16 +246,138 @@ def get_gpu():
         return None
 
 
+# =============================================================================
+# FreeBSD — no /proc or /sys, so everything comes from sysctl(8)/swapctl(8)
+# =============================================================================
+def _sysctl(*args):
+    """Run `sysctl <args>` and return stdout, or None on failure."""
+    try:
+        result = subprocess.run(
+            ["sysctl", *args], capture_output=True, text=True, check=True
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    return result.stdout.strip()
+
+
+def get_uptime_freebsd():
+    """Boot time from kern.boottime, e.g. '{ sec = 1742269920, usec = 0 } ...'."""
+    out = _sysctl("-n", "kern.boottime")
+    match = re.search(r"sec = (\d+)", out or "")
+    if not match:
+        return None
+    btime = int(match.group(1))
+    return datetime.fromtimestamp(btime).strftime("%B %-d, %Y at %I:%M %p")
+
+
+def get_cpu_usage_freebsd():
+    """Overall CPU usage %, sampled over 1 second from kern.cp_time.
+
+    kern.cp_time is aggregate ticks: user nice sys intr idle.
+    """
+    def read_cp_time():
+        fields = [int(x) for x in _sysctl("-n", "kern.cp_time").split()]
+        return sum(fields), fields[4]
+
+    total1, idle1 = read_cp_time()
+    time.sleep(1)
+    total2, idle2 = read_cp_time()
+
+    total_delta = total2 - total1
+    idle_delta = idle2 - idle1
+    if total_delta <= 0:
+        return 0.0
+    return round((1 - idle_delta / total_delta) * 100, 1)
+
+
+def get_memory_usage_freebsd():
+    """Memory usage %, treating free + inactive pages as available.
+
+    This is the closest FreeBSD analogue to Linux's MemAvailable.
+    """
+    names = [
+        "vm.stats.vm.v_page_count",
+        "vm.stats.vm.v_free_count",
+        "vm.stats.vm.v_inactive_count",
+    ]
+    out = _sysctl("-n", *names)
+    if out is None:
+        return 0.0
+    total, free, inactive = (int(x) for x in out.split())
+    if total <= 0:
+        return 0.0
+    return round((total - free - inactive) / total * 100, 1)
+
+
+def get_swap_usage_freebsd():
+    """Swap usage % from `swapctl -sk` ('Total:  <total_kb>  <used_kb>')."""
+    try:
+        out = subprocess.run(
+            ["swapctl", "-sk"], capture_output=True, text=True, check=True
+        ).stdout
+    except (OSError, subprocess.CalledProcessError):
+        return 0.0
+    match = re.search(r"Total:\s+(\d+)\s+(\d+)", out)
+    if not match:
+        return 0.0
+    total, used = int(match.group(1)), int(match.group(2))
+    if total <= 0:
+        return 0.0
+    return round(used / total * 100, 1)
+
+
+def get_cpu_temps_freebsd():
+    """Per-CPU temps in Celsius, or None if unavailable.
+
+    dev.cpu.N.temperature requires the coretemp(4) (Intel) or amdtemp(4)
+    (AMD) kernel module. Falls back to ACPI thermal zones.
+    """
+    temps = []
+
+    # `sysctl -e` prints name=value lines, e.g. dev.cpu.0.temperature=45.0C
+    out = _sysctl("-e", "dev.cpu") or ""
+    per_cpu = {
+        int(m.group(1)): float(m.group(2))
+        for m in re.finditer(r"^dev\.cpu\.(\d+)\.temperature=([\d.]+)C", out, re.M)
+    }
+    temps = [round(per_cpu[i], 1) for i in sorted(per_cpu)]
+
+    # --- ACPI thermal zone fallback ---
+    if not temps:
+        out = _sysctl("-e", "hw.acpi.thermal") or ""
+        for m in re.finditer(r"^hw\.acpi\.thermal\.tz\d+\.temperature=([\d.]+)C", out, re.M):
+            temps.append(round(float(m.group(1)), 1))
+
+    return temps or None
+
+
 def get_metrics():
+    if IS_FREEBSD:
+        uptime, cpu_usage, cpu_temps, mem_usage, swap_usage = (
+            get_uptime_freebsd,
+            get_cpu_usage_freebsd,
+            get_cpu_temps_freebsd,
+            get_memory_usage_freebsd,
+            get_swap_usage_freebsd,
+        )
+    else:
+        uptime, cpu_usage, cpu_temps, mem_usage, swap_usage = (
+            get_uptime,
+            get_cpu_usage,
+            get_cpu_temps,
+            get_memory_usage,
+            get_swap_usage,
+        )
+
     return {
-        "uptime": get_uptime(),
+        "uptime": uptime(),
         "cpu": {
-            "usage": get_cpu_usage(),
-            "temperature": get_cpu_temps(),
+            "usage": cpu_usage(),
+            "temperature": cpu_temps(),
         },
         "memory": {
-            "usage": get_memory_usage(),
-            "swap_usage": get_swap_usage(),
+            "usage": mem_usage(),
+            "swap_usage": swap_usage(),
         },
         "disks": get_disks(),
         "gpu": get_gpu(),

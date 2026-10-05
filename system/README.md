@@ -137,9 +137,12 @@ This script prints a JSON snapshot of a system's health metrics to stdout, inclu
 
 It's dependency-free (standard library only), which matters on immutable OSes that lack `nvidia-smi` or a package manager to install one.
 
+It supports Linux (via `/proc` and `/sys`) and FreeBSD (via `sysctl` and `swapctl`).
+
 ### Prerequisites
 This script assumes that:
 - You have filled out the [`.env`](sample.env) file (`SYSTEM_MONITOR_DISKS`). If omitted, it defaults to just `/`.
+- On FreeBSD, for CPU temperatures, the `coretemp` (Intel) or `amdtemp` (AMD) kernel module is loaded (e.g. `coretemp_load="YES"` in `/boot/loader.conf`). Otherwise it falls back to ACPI thermal zones, if any.
 
 ### Use
 ```sh
