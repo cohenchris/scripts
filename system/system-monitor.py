@@ -15,8 +15,24 @@ import time
 from datetime import datetime
 
 
-def _load_env_disks():
-    """Read SYSTEM_MONITOR_DISKS from the .env file next to this script.
+def _read_env():
+    """Contents of the .env file next to this script, or "" if missing."""
+    env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+    try:
+        with open(env_path) as f:
+            return f.read()
+    except OSError:
+        return ""
+
+
+def _load_env_var(name):
+    """Read a scalar variable (NAME="value") from .env, or None if missing/empty."""
+    match = re.search(rf'^{name}="([^"]*)"', _read_env(), re.M)
+    return (match.group(1).strip() or None) if match else None
+
+
+def _load_env_array(name):
+    """Read a bash-array variable from the .env file next to this script.
 
     .env uses the same bash-array syntax as the other scripts in this repo
     (see sample.env), e.g.:
@@ -24,32 +40,27 @@ def _load_env_disks():
         "/"
         "/userdata"
         )
-    Falls back to ["/"] if .env or the variable is missing/empty.
+    Returns [] if .env or the variable is missing/empty.
     """
-    env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
-    try:
-        with open(env_path) as f:
-            content = f.read()
-    except OSError:
-        return ["/"]
-
-    match = re.search(r"SYSTEM_MONITOR_DISKS=\((.*?)\)", content, re.DOTALL)
+    match = re.search(rf"{name}=\((.*?)\)", _read_env(), re.DOTALL)
     if not match:
-        return ["/"]
+        return []
 
-    disks = []
+    values = []
     for line in match.group(1).splitlines():
         line = line.strip()
         if not line or line.startswith("#"):
             continue
         quoted = re.match(r'"([^"]*)"', line)
         if quoted:
-            disks.append(quoted.group(1))
+            values.append(quoted.group(1))
 
-    return disks or ["/"]
+    return values
 
 
-MONITOR_PATHS = _load_env_disks()
+MONITOR_PATHS = _load_env_array("SYSTEM_MONITOR_DISKS") or ["/"]
+# Network stats are only reported when this is set
+MONITOR_INTERFACE = _load_env_var("SYSTEM_MONITOR_INTERFACE")
 
 IS_FREEBSD = sys.platform.startswith("freebsd")
 
@@ -184,6 +195,17 @@ def get_disks():
         key = path.strip("/").replace("/", "_") or "root"
         disks[key] = {"path": path, "usage": pct}
     return disks
+
+
+def get_net_counters(iface):
+    """(rx_bytes, tx_bytes) since boot for iface from /proc/net/dev, or None."""
+    with open("/proc/net/dev") as f:
+        for line in f.readlines()[2:]:
+            name, data = line.split(":", 1)
+            if name.strip() == iface:
+                fields = data.split()
+                return int(fields[0]), int(fields[8])
+    return None
 
 
 def get_gpu():
@@ -351,28 +373,86 @@ def get_cpu_temps_freebsd():
     return temps or None
 
 
+def get_net_counters_freebsd(iface):
+    """(rx_bytes, tx_bytes) since boot for iface, or None.
+
+    From `netstat -ibn -I <iface> --libxo json`.
+
+    Each interface appears once per address; only the link-level
+    ('<Link#N>') row carries the full interface counters.
+    """
+    try:
+        out = subprocess.run(
+            ["netstat", "-ibn", "-I", iface, "--libxo", "json"],
+            capture_output=True, text=True, check=True,
+        ).stdout
+        rows = json.loads(out)["statistics"]["interface"]
+    except (OSError, subprocess.CalledProcessError, ValueError, KeyError):
+        return None
+
+    for row in rows:
+        if row.get("network", "").startswith("<Link#"):
+            return int(row["received-bytes"]), int(row["sent-bytes"])
+    return None
+
+
+def _network_stats(before, after, elapsed):
+    """Current speeds (Mb/s) and total data usage since boot (GB, sent +
+    received) for MONITOR_INTERFACE, or None if it wasn't found.
+
+    Negative deltas (counter reset) are clamped to 0.
+    """
+    if before is None or after is None:
+        return None
+    rx_delta = max(after[0] - before[0], 0)
+    tx_delta = max(after[1] - before[1], 0)
+
+    def mbps(byte_delta):
+        return round(byte_delta * 8 / elapsed / 1e6, 2) if elapsed > 0 else 0.0
+
+    def gb(total_bytes):
+        return round(total_bytes / 1e9, 2)
+
+    return {
+        "interface": MONITOR_INTERFACE,
+        "download": mbps(rx_delta),
+        "upload": mbps(tx_delta),
+        "total": gb(after[0] + after[1]),
+    }
+
+
 def get_metrics():
     if IS_FREEBSD:
-        uptime, cpu_usage, cpu_temps, mem_usage, swap_usage = (
+        uptime, cpu_usage, cpu_temps, mem_usage, swap_usage, net_counters = (
             get_uptime_freebsd,
             get_cpu_usage_freebsd,
             get_cpu_temps_freebsd,
             get_memory_usage_freebsd,
             get_swap_usage_freebsd,
+            get_net_counters_freebsd,
         )
     else:
-        uptime, cpu_usage, cpu_temps, mem_usage, swap_usage = (
+        uptime, cpu_usage, cpu_temps, mem_usage, swap_usage, net_counters = (
             get_uptime,
             get_cpu_usage,
             get_cpu_temps,
             get_memory_usage,
             get_swap_usage,
+            get_net_counters,
         )
 
-    return {
+    # Network speed piggybacks on the CPU usage's 1 second sample window
+    # rather than sleeping a second time
+    if MONITOR_INTERFACE:
+        net_before, t_before = net_counters(MONITOR_INTERFACE), time.monotonic()
+    cpu = cpu_usage()
+    if MONITOR_INTERFACE:
+        net_after, t_after = net_counters(MONITOR_INTERFACE), time.monotonic()
+
+    metrics = {
         "uptime": uptime(),
         "cpu": {
-            "usage": cpu_usage(),
+            "usage": cpu,
             "temperature": cpu_temps(),
         },
         "memory": {
@@ -380,8 +460,11 @@ def get_metrics():
             "swap_usage": swap_usage(),
         },
         "disks": get_disks(),
-        "gpu": get_gpu(),
     }
+    if MONITOR_INTERFACE:
+        metrics["network"] = _network_stats(net_before, net_after, t_after - t_before)
+    metrics["gpu"] = get_gpu()
+    return metrics
 
 
 if __name__ == "__main__":

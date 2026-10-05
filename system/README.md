@@ -133,7 +133,7 @@ To use this script, invoke it with either `--infile` (path to a URL file) or `--
 ## System Monitor
 [`system-monitor.py`](system-monitor.py)
 
-This script prints a JSON snapshot of a system's health metrics to stdout, including uptime, CPU usage, memory/swap usage, per-core CPU temperatures, disk usage, and NVIDIA GPU stats (usage, memory, temperature) via direct NVML bindings.
+This script prints a JSON snapshot of a system's health metrics to stdout, including uptime, CPU usage, memory/swap usage, per-core CPU temperatures, disk usage, network traffic (current upload/download in Mb/s, and total GB transferred since boot), and NVIDIA GPU stats (usage, memory, temperature) via direct NVML bindings.
 
 It's dependency-free (standard library only), which matters on immutable OSes that lack `nvidia-smi` or a package manager to install one.
 
@@ -142,6 +142,7 @@ It supports Linux (via `/proc` and `/sys`) and FreeBSD (via `sysctl` and `swapct
 ### Prerequisites
 This script assumes that:
 - You have filled out the [`.env`](sample.env) file (`SYSTEM_MONITOR_DISKS`). If omitted, it defaults to just `/`.
+- For network stats, `SYSTEM_MONITOR_INTERFACE` in [`.env`](sample.env) is set to the single interface to measure (on a router, the WAN interface). If it's unset, the `network` section is omitted entirely.
 - On FreeBSD, for CPU temperatures, the `coretemp` (Intel) or `amdtemp` (AMD) kernel module is loaded (e.g. `coretemp_load="YES"` in `/boot/loader.conf`). Otherwise it falls back to ACPI thermal zones, if any.
 
 ### Use
