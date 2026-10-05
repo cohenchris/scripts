@@ -58,7 +58,8 @@ def _load_env_array(name):
     return values
 
 
-MONITOR_PATHS = _load_env_array("SYSTEM_MONITOR_DISKS") or ["/"]
+# Disk usage is only reported when this is non-empty
+MONITOR_PATHS = _load_env_array("SYSTEM_MONITOR_DISKS")
 # Network stats are only reported when this is set
 MONITOR_INTERFACE = _load_env_var("SYSTEM_MONITOR_INTERFACE")
 
@@ -459,11 +460,14 @@ def get_metrics():
             "usage": mem_usage(),
             "swap_usage": swap_usage(),
         },
-        "disks": get_disks(),
     }
+    if MONITOR_PATHS:
+        metrics["disks"] = get_disks()
     if MONITOR_INTERFACE:
         metrics["network"] = _network_stats(net_before, net_after, t_after - t_before)
-    metrics["gpu"] = get_gpu()
+    gpu = get_gpu()
+    if gpu is not None:
+        metrics["gpu"] = gpu
     return metrics
 
 

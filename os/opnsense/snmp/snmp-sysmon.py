@@ -27,7 +27,7 @@ def flatten(obj, prefix=""):
     elif isinstance(obj, list):
         for i, v in enumerate(obj):
             yield from flatten(v, f"{prefix}.{i}")
-    elif obj is not None:              # nulls (e.g. gpu) are skipped
+    elif obj is not None:              # nulls are skipped
         yield prefix, obj
 
 def typed(v):
