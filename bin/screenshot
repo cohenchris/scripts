@@ -8,8 +8,6 @@ SCREENSHOT_SAVE_DIR=$(realpath "${XDG_DOWNLOAD_DIR:-${HOME}/Downloads}")
 DATE=$(date +"%Y%m%d-%H%M")
 SCREENSHOT_NAME="${SCREENSHOT_SAVE_DIR}/screenshot-${DATE}.jpg"
 
-notify NORMAL "󰩬  Taking Screenshot..." "Please select the area which you would like to capture"
-
 grim -g "$(slurp)" "${SCREENSHOT_NAME}"
 
 if [ $? -eq 0 ]; then
