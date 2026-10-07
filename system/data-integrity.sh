@@ -143,18 +143,10 @@ function smart_summarize()
   for drive in "${SMART_DRIVES[@]}"; do
     echo -e "\n############################## ${drive} ##############################"
 
-    local smartctl_output_short=$(smartctl -H ${drive})
-
-    if [[ ${smartctl_output_short} == *"PASSED"* ]]; then
-      # Print short-form health that basically only shows "PASSED"
-      echo -e "${smartctl_output_short}"
-    elif [[ ${smartctl_output_short} == *"Unable to detect device type"* ]]; then
+    if [[ ${smartctl_output_short} == *"Unable to detect device type"* ]]; then
       echo -e "${drive} is not S.M.A.R.T. capable, skipping..."
     else
-      # There's something wrong, print a more comprehensive summary
-      local smartctl_output_long=$(smartctl -a ${drive})
-
-      echo -e "${smartctl_output_long}"
+      smartctl -AH ${drive}
     fi
 
   done
