@@ -87,7 +87,11 @@ service configd restart
 ```
 Manually test by running:
 ```sh
-configctl dataintegrity backup
+configctl dataintegrity test
+```
+Manually send a report by running:
+```sh
+configctl dataintegrity report
 ```
 
 2. Automated setup using [`opnsense-env-setup.sh`](opnsense-env-setup.sh)
