@@ -146,7 +146,7 @@ function smart_summarize()
     if [[ ${smartctl_output_short} == *"Unable to detect device type"* ]]; then
       echo -e "${drive} is not S.M.A.R.T. capable, skipping..."
     else
-      smartctl -AH ${drive}
+      smartctl -AHi ${drive}
     fi
 
   done
