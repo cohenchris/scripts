@@ -5,7 +5,7 @@
 SCREENSHOT_SAVE_DIR=$(realpath "${XDG_DOWNLOAD_DIR:-${HOME}/Downloads}")
 ! [ -d "${SCREENSHOT_SAVE_DIR}" ] && mkdir -p "${SCREENSHOT_SAVE_DIR}"
 
-DATE=$(date +"%Y%m%d-%H%M")
+DATE=$(date +"%Y%m%d-%H%M%S")
 SCREENSHOT_NAME="${SCREENSHOT_SAVE_DIR}/screenshot-${DATE}.jpg"
 
 grim -g "$(slurp)" "${SCREENSHOT_NAME}"
