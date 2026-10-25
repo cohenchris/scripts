@@ -4,6 +4,7 @@ services:
     container_name: uptime-kuma
     volumes:
       - ${CONFIG}/uptime-kuma:/app/data
+      - ${CONFIG}/docker-tls:/app/data/docker-tls:ro
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - 3001:3001
@@ -55,11 +56,15 @@ services:
     container_name: whatsupdocker
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - ${CONFIG}/docker-tls:/certs:ro
     environment:
       - TZ
       - WUD_WATCHER_LOCAL_SOCKET=/var/run/docker.sock
       - WUD_WATCHER_REMOTE_HOST=${WUD_REMOTE_HOST}
-      - WUD_WATCHER_REMOTE_PORT=2375
+      - WUD_WATCHER_REMOTE_PORT=2376
+      - WUD_WATCHER_REMOTE_CAFILE=/certs/${WUD_REMOTE_HOST}/ca.pem
+      - WUD_WATCHER_REMOTE_CERTFILE=/certs/${WUD_REMOTE_HOST}/cert.pem
+      - WUD_WATCHER_REMOTE_KEYFILE=/certs/${WUD_REMOTE_HOST}/key.pem
       - WUD_REGISTRY_HUB_PUBLIC_LOGIN=${DOCKER_LOGIN}
       - WUD_REGISTRY_HUB_PUBLIC_PASSWORD=${DOCKER_TOKEN}
       - WUD_AUTH_BASIC_CHRIS_USER=${WUD_USERNAME}
