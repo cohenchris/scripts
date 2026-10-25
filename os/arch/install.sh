@@ -414,12 +414,17 @@ function post_chroot_setup() {
   # Configure repository mirrors
   echo
   echo "Enabling package repository mirrors..."
+cat <<EOF > /etc/xdg/reflector/reflector.conf
+--save /etc/pacman.d/mirrorlist
+--protocol https
+--country US
+--latest 5
+--age 12
+--sort rate
+EOF
+
   systemctl enable reflector.timer
-  reflector --latest 5 \
-    --age 12 \
-    --protocol https \
-    --sort rate \
-    --save /etc/pacman.d/mirrorlist
+  reflector @/etc/xdg/reflector/reflector.conf
   pacman -Syyy
 
   # Install paru AUR helper
