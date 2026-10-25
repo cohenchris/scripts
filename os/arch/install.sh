@@ -414,7 +414,6 @@ function post_chroot_setup() {
   # Configure repository mirrors
   echo
   echo "Enabling package repository mirrors..."
-  systemctl enable reflector.service
   systemctl enable reflector.timer
   reflector --latest 5 \
     --age 12 \
