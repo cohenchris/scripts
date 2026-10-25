@@ -84,13 +84,13 @@ function create_email_group()
     echo "Reusing existing group \"${EMAIL_GROUP}\"..."
   else
     echo "Creating group \"${EMAIL_GROUP}\"..."
-  fi
 
-  ${GROUPADD_CMD} "${EMAIL_GROUP}"
+    ${GROUPADD_CMD} "${EMAIL_GROUP}"
 
-  if [[ $? -ne 0 ]]; then
-    echo "ERROR: Failed to create group \"${EMAIL_GROUP}\"."
-    exit 1
+    if [[ $? -ne 0 ]]; then
+      echo "ERROR: Failed to create group \"${EMAIL_GROUP}\"."
+      exit 1
+    fi
   fi
 }
 
