@@ -9,7 +9,7 @@ I've categorized these into a few different categories:
 2. Ultra-portable scripts that are run arbitrarily
     - Operations that any computer can run regardless of how it is being used
     - Think file management, package updates, display configuration, etc
-    - No configuration required from the user - could be placed directly in `/usr/bin` on any system
+    - No configuration required from the user - could be placed directly in `/usr/bin` on any system that has the programs they wrap
 3. OS-specific scripts that are run once
      - Operations that you need to perform only once on a fresh install.
      - Think OS install/configuration, systemd services, etc.
@@ -22,10 +22,10 @@ I've categorized these into a few different categories:
 
 # Table of Contents
 
-- [Backups](#Backups)
-- [Generic Bin](#Generic-Bin)
-- [OS Configuration](#OS-Configuration)
-- [System Automation](#System-Automation)
+- [Backups](#backups)
+- [Generic Bin](#generic-bin)
+- [OS Configuration](#os-configuration)
+- [System Automation](#system-automation)
 
 
 
@@ -42,10 +42,10 @@ They are heavily driven by the .env file, but all generally assume a backup syst
 ## Generic Bin
 [`bin/`](bin/)
 
-Dependency-free system scripts which are intended to be added to PATH and run from the command line.
+Configuration-free scripts which are intended to be added to PATH and run from the command line.
 
 These focus on generic everyday automations.
-Think of these as scripts that can be easily moved from system to system with zero effort (assuming the correct packages are installed).
+Think of these as scripts that can be moved from system to system with no setup beyond installing the programs they wrap.
 For example, one of the scripts in here is a file extraction wrapper which uses different programs depending on the file extension - this can be dropped on any system that supports bash.
 
 

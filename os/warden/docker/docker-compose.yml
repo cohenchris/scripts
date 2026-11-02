@@ -16,7 +16,8 @@ services:
       start_period: 180s
       retries: 5
     labels:
-      - wud.tag.include=^\d+\.\d+\.\d+$ # include labels in the format #.#.#
+      - wud.tag.include=^2$ # floating major tag; updates tracked by digest
+      - wud.watch.digest=true
 
 
   nut:
@@ -49,6 +50,7 @@ services:
       retries: 3
     labels:
       - wud.tag.include=^\d+\.\d+\.\d+-r\d+$
+      - wud.watch.digest=true
 
 
   whatsupdocker:
@@ -90,6 +92,7 @@ services:
       retries: 5
     labels:
       - wud.tag.include=^\d+\.\d+\.\d+$
+      - wud.watch.digest=true
 
 
   signal:
@@ -110,6 +113,7 @@ services:
       retries: 3
     labels:
       - wud.tag.include=^\d+\.\d+$
+      - wud.watch.digest=true
 
 
   browserless:
@@ -136,3 +140,4 @@ services:
       start_period: 10s
     labels:
       - wud.tag.include=^\d+\.\d+\.\d+-chrome-stable$
+      - wud.watch.digest=true
