@@ -57,8 +57,9 @@ services:
     image: getwud/wud:latest
     container_name: whatsupdocker
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${CONFIG}/docker-tls:/certs:ro
+      - ${CONFIG}/wud:/store
     environment:
       - TZ
       - WUD_WATCHER_LOCAL_SOCKET=/var/run/docker.sock
@@ -81,6 +82,11 @@ services:
       - WUD_TRIGGER_SMTP_EMAIL_TLS_ENABLED=false
       - WUD_TRIGGER_SMTP_EMAIL_TLS_VERIFY=true
       - WUD_TRIGGER_SMTP_EMAIL_ALLOWCUSTOMTLD=false
+      - WUD_TRIGGER_SMTP_EMAIL_MODE=batch
+      - WUD_TRIGGER_SMTP_EMAIL_ONCE=true
+      - WUD_TRIGGER_SMTP_EMAIL_THRESHOLD=minor
+      - WUD_LOG_LEVEL=info
+      - WUD_LOG_FORMAT=json
     restart: always
     ports:
       - 3000:3000
