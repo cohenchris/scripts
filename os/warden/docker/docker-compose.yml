@@ -84,7 +84,7 @@ services:
       - WUD_TRIGGER_SMTP_EMAIL_ALLOWCUSTOMTLD=false
       - WUD_TRIGGER_SMTP_EMAIL_MODE=batch
       - WUD_TRIGGER_SMTP_EMAIL_ONCE=true
-      - WUD_TRIGGER_SMTP_EMAIL_THRESHOLD=minor
+      - WUD_TRIGGER_SMTP_EMAIL_THRESHOLD=major-only
       - WUD_LOG_LEVEL=info
       - WUD_LOG_FORMAT=json
     restart: always
