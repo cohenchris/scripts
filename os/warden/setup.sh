@@ -5,7 +5,7 @@ set -eu
 
 WORKING_DIR=$(dirname "$(realpath "$0")")
 # The compose stack is copied here; the shutdown script runs in place from this repo
-DOCKER_DIR="/home/${USER}/docker"
+DOCKER_DIR="/home/${USER}/warden"
 SHUTDOWN_SCRIPT="${WORKING_DIR}/scripts/shutdown-network.sh"
 
 if [[ "$(id -u)" -eq 0 ]]; then
