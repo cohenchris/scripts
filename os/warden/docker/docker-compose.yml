@@ -89,8 +89,10 @@ services:
       - WUD_TRIGGER_SMTP_EMAIL_MODE=batch
       - WUD_TRIGGER_SMTP_EMAIL_ONCE=true
       - WUD_TRIGGER_SMTP_EMAIL_THRESHOLD=major-only
+      - WUD_TRIGGER_SMTP_EMAIL_ONDIGEST=false
+      - WUD_PROMETHEUS_ENABLED=false
       - WUD_LOG_LEVEL=info
-      - WUD_LOG_FORMAT=json
+      - WUD_LOG_FORMAT=text
     restart: always
     ports:
       - 3000:3000
