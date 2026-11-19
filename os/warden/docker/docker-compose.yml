@@ -63,7 +63,11 @@ services:
     environment:
       - TZ
       - WUD_WATCHER_LOCAL_SOCKET=/var/run/docker.sock
+      - WUD_WATCHER_LOCAL_CRON=0 9 * * *
+      - WUD_WATCHER_LOCAL_WATCHATSTART=false
       - WUD_WATCHER_REMOTE_HOST=${WUD_REMOTE_HOST}
+      - WUD_WATCHER_REMOTE_CRON=0 9 * * *
+      - WUD_WATCHER_REMOTE_WATCHATSTART=false
       - WUD_WATCHER_REMOTE_PORT=2376
       - WUD_WATCHER_REMOTE_CAFILE=/certs/${WUD_REMOTE_HOST}/ca.pem
       - WUD_WATCHER_REMOTE_CERTFILE=/certs/${WUD_REMOTE_HOST}/cert.pem
